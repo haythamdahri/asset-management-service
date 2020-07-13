@@ -1,0 +1,28 @@
+# Mysql Parameters
+MYSQL_PORT_3306_TCP_ADDR=snipe-mysql
+MYSQL_ROOT_PASSWORD=toortoor
+MYSQL_DATABASE=snipeit
+MYSQL_USER=snipeit
+MYSQL_PASSWORD=toortoor
+
+# Email Parameters
+# - the hostname/IP address of your mailserver
+MAIL_PORT_587_TCP_ADDR=smtp.gmail.com
+#the port for the mailserver (probably 587, could be another)
+MAIL_PORT_587_TCP_PORT=587
+# the default from address, and from name for emails
+MAIL_ENV_FROM_ADDR=haytham.dahri@gmail.com
+MAIL_ENV_FROM_NAME=HAYTHAM DAHRI
+# - pick 'tls' for SMTP-over-SSL, 'tcp' for unencrypted
+MAIL_ENV_ENCRYPTION=tcp
+# SMTP username and password
+MAIL_ENV_USERNAME=haytham.dahri@gmail.com
+MAIL_ENV_PASSWORD=caytmymzlhuzlisg
+
+# Snipe-IT Settings
+APP_ENV=production
+APP_DEBUG=false
+APP_KEY=base64:PI47bNXwpbTgBpOuX/PIKTbBHl+9cSgECynXaWuA32o=
+APP_URL=http://127.0.0.1:80
+APP_TIMEZONE=Africa/Casablanca
+APP_LOCALE=fr
