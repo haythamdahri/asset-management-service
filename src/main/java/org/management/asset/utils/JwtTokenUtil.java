@@ -3,6 +3,8 @@ package org.management.asset.utils;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.management.asset.services.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -25,6 +27,9 @@ public class JwtTokenUtil implements Serializable {
 
     @Value("${jwt.secret}")
     private String secret;
+
+    @Autowired
+    private UserService userService;
 
     /**
      * retrieve email from jwt token
@@ -82,6 +87,9 @@ public class JwtTokenUtil implements Serializable {
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("roles", userDetails.getAuthorities());
+        this.userService.getUserByEmail(userDetails.getUsername()).getGroups().forEach(System.out::println);
+        System.out.println(userDetails.getUsername());
+        claims.put("groups", this.userService.getUserByEmail(userDetails.getUsername()).getGroups());
         return doGenerateToken(claims, userDetails.getUsername());
     }
 

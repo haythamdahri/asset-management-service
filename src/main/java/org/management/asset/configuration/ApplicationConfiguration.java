@@ -68,7 +68,7 @@ public class ApplicationConfiguration {
         // Add SuperAdmin Group
         if (this.groupService.getGroups().isEmpty()) {
             superAdmins = this.groupService.saveGroup(
-                    new Group(null, "SuperAdmins", new HashSet<>(this.roleService.getRoles()), null));
+                    new Group(null, "SuperAdmins", this.roleService.getRoles(), null));
         }
         // Add Demo User For Dev
         if (this.userService.getUsers().isEmpty()) {

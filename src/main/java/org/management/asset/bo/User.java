@@ -10,6 +10,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Haytham DAHRI
@@ -134,12 +135,39 @@ public class User implements Serializable {
     @JoinTable(name = "users_roles", joinColumns = {@JoinColumn(name = "user_id")}, inverseJoinColumns = {@JoinColumn(name = "role_name")})
     private List<Role> roles;
 
-    // Convenient method to add new role
+    /**
+     * Convenient method to add new role
+     */
     public void addRole(Role role) {
         if (this.roles == null) {
             this.roles = new ArrayList<>();
         }
         this.roles.add(role);
+    }
+
+    /**
+     * Convenient method to check if a user has a role
+     */
+    public boolean hasRole(RoleType roleType) {
+        List<Role> allRoles = new ArrayList<>();
+        // Check roles
+        if( this.roles != null ) {
+            allRoles = this.roles;
+        }
+        if( this.groups != null ) {
+            allRoles.addAll(this.groups.stream().map(Group::getRoles).flatMap(List::stream).collect(Collectors.toList()));
+        }
+        return allRoles.stream().anyMatch(role -> role.getRoleName().equals(roleType));
+    }
+
+    /**
+     * Convenient method to add a group
+     */
+    public void addGroup(Group group) {
+        if( this.groups == null ) {
+            this.groups = new ArrayList<>();
+        }
+        this.groups.add(group);
     }
 
 }

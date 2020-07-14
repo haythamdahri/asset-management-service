@@ -1,5 +1,6 @@
 package org.management.asset.bo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -32,10 +33,9 @@ public class Group implements Serializable {
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "groups_roles", joinColumns = {@JoinColumn(name = "group_id")}, inverseJoinColumns = {@JoinColumn(name = "role_name")})
-    private Set<Role> roles;
+    private List<Role> roles;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "groups_users", joinColumns = {@JoinColumn(name = "group_id")}, inverseJoinColumns = {@JoinColumn(name = "user_id")})
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "groups")
     private List<User> users;
 
     /**
@@ -48,5 +48,6 @@ public class Group implements Serializable {
             this.users = new ArrayList<>();
         }
         this.users.add(user);
+        user.addGroup(this);
     }
 }
