@@ -1,5 +1,6 @@
 package org.management.asset.configuration;
 
+import lombok.extern.log4j.Log4j2;
 import org.management.asset.bo.*;
 import org.management.asset.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,7 @@ import java.util.stream.Stream;
  * @author Haytham DAHRI
  */
 @Configuration
+@Log4j2
 public class ApplicationConfiguration {
 
     @Autowired
@@ -48,10 +50,13 @@ public class ApplicationConfiguration {
     private LocationService locationService;
 
     @Autowired
+    private CountryService countryService;
+
+    @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
-//    @EventListener(value = {ApplicationReadyEvent.class})
-//    @Transactional
+    @EventListener(value = {ApplicationReadyEvent.class})
+    @Transactional
     public void runApplication() throws IOException {
         Group superAdmins = null;
         // Add roles to the system
@@ -63,7 +68,7 @@ public class ApplicationConfiguration {
         // Add SuperAdmin Group
         if (this.groupService.getGroups().isEmpty()) {
             superAdmins = this.groupService.saveGroup(
-                    new Group(null, "Super Admins", new HashSet<>(this.roleService.getRoles()), null));
+                    new Group(null, "SuperAdmins", new HashSet<>(this.roleService.getRoles()), null));
         }
         // Add Demo User For Dev
         if (this.userService.getUsers().isEmpty()) {
@@ -77,17 +82,41 @@ public class ApplicationConfiguration {
             Department department = this.departmentService.saveDepartment(
                     new Department(null, "Système d'information", null));
             Location location = this.locationService.saveLocation(new Location(null, "Rabat, Morocco"));
-            Country country = new Country(null, "Morocco");
-            User user = this.userService.saveUser(new User(null, "Haytham", "Dahri", "haythamdahri", this.passwordEncoder.encode("toortoor"), "haytham.dahri@gmail.com",
-                    company, language, "EMP56210", "Developer", null, null, department, location, "0689855298", "google.com",
-                    "Developer", "Rabat", "Rabat", "Rabat-Kénitra", country, "10010", true, "", LocalDateTime.now().minusDays(5L),
-                    LocalDateTime.now().minusHours(12L), null, LocalDateTime.now().minusMinutes(50L), null, LocalDateTime.now().minusMinutes(50L), userAvatar, null, null));
+            Country country = this.countryService.saveCountry(new Country(null, "Morocco"));
+            User user = new User();
+            user.setFirstName("Haytham");
+            user.setLastName("Dahri");
+            user.setUsername("haythamdahri");
+            user.setPassword(this.passwordEncoder.encode("toortoor"));
+            user.setEmail("haytham.dahri@gmail.com");
+            user.setCompany(company);
+            user.setLanguage(language);
+            user.setEmployeeNumber("EMP56210");
+            user.setTitle("Mr");
+            user.setDepartment(department);
+            user.setLocation(location);
+            user.setPhone("0689855298");
+            user.setWebsite("https://www.google.com");
+            user.setJobTitle("Developer");
+            user.setCity("Rabat");
+            user.setAddress("Address Rabat");
+            user.setState("Rabat-Kénitra");
+            user.setCountry(country);
+            user.setZip("10010");
+            user.setActive(true);
+            user.setCreationDate(LocalDateTime.now().minusDays(5L));
+            user.setActivationDate(LocalDateTime.now().minusHours(12L));
+            user.setLastLogin(LocalDateTime.now().minusMinutes(50L));
+            user.setAvatar(userAvatar);
+            user.setNotes("");
+            // Assign user all roles & add it to SUPERADMINS
+            assert superAdmins != null;
             superAdmins.addUser(user);
-            this.roleService.getRoles().forEach(role -> {
-                user.addRole(role);
-            });
+            this.roleService.getRoles().forEach(user::addRole);
             this.userService.saveUser(user);
         }
+        // Logging Message
+        log.info("SYSTEM HAS BEEN INITIALIZED SUCCESSFULLY");
     }
 
 }

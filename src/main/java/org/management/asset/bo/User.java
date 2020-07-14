@@ -7,11 +7,9 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.lang.reflect.Array;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 /**
  * @author Haytham DAHRI
@@ -102,8 +100,8 @@ public class User implements Serializable {
     @Column(name = "active", nullable = false)
     private boolean active;
 
-    @Column(name = "token", unique = true)
     @JsonIgnore
+    @Column(name = "token", unique = true)
     private String token;
 
     @Column(name = "activationDate")
@@ -125,7 +123,7 @@ public class User implements Serializable {
     @JoinColumn(name = "avatar_id")
     private AssetFile avatar;
 
-    @Column(name = "notes", nullable = false)
+    @Column(name = "notes")
     private String notes;
 
     @ManyToMany(fetch = FetchType.LAZY)
@@ -136,9 +134,9 @@ public class User implements Serializable {
     @JoinTable(name = "users_roles", joinColumns = {@JoinColumn(name = "user_id")}, inverseJoinColumns = {@JoinColumn(name = "role_name")})
     private List<Role> roles;
 
-    // Convenient method to add neew role
+    // Convenient method to add new role
     public void addRole(Role role) {
-        if( this.roles == null ) {
+        if (this.roles == null) {
             this.roles = new ArrayList<>();
         }
         this.roles.add(role);

@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
  * @author Haytham DAHRI
  */
 @RestController
-@RequestMapping(path = "/auth")
+@RequestMapping(path = "/api/v1/auth")
 @CrossOrigin("*")
 public class JwtAuthenticationController {
 

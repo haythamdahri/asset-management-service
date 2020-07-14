@@ -61,7 +61,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 // Allow POST for authentication
                 .antMatchers(HttpMethod.POST,
-                        "/auth/**",
+                        "/api/v1/auth/**",
                         "/api/v1/users/"
                 ).permitAll()
                 // Deny retrieving all users only for employees and admins
