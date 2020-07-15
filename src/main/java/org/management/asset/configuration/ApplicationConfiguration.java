@@ -67,8 +67,8 @@ public class ApplicationConfiguration {
             superAdmins = this.groupService.saveGroup(
                     new Group(null, "SuperAdmins", this.roleService.getRoles(), null));
         }
-        // Add Demo User For Dev
         if (this.userService.getUsers().isEmpty()) {
+            // Add ADMIN User For Dev
             byte[] bytes = Files.readAllBytes(Paths.get("/home/haytham/Downloads/profile.jpg"));
             AssetFile companyImage = this.assetFileService.saveAssetFile(
                     new AssetFile(null, "Database.png", "png", MediaType.IMAGE_PNG_VALUE, bytes, null));
@@ -114,6 +114,38 @@ public class ApplicationConfiguration {
             superAdmins.addUser(user);
             this.roleService.getRoles().forEach(user::addRole);
             this.userService.saveUser(user);
+            // ========================= Add Basic User For Dev =========================
+            AssetFile newUserAvatar = this.assetFileService.saveAssetFile(
+                    new AssetFile(null, "Database.png", "png", MediaType.IMAGE_PNG_VALUE, bytes, null));
+           User basicUser = new User();
+            basicUser.setFirstName("Basic");
+            basicUser.setLastName("User");
+            basicUser.setUsername("basic");
+            basicUser.setPassword(this.passwordEncoder.encode("toortoor"));
+            basicUser.setEmail("basic.user@gmail.com");
+            basicUser.setCompany(company);
+            basicUser.setLanguage(language);
+            basicUser.setEmployeeNumber("EMP5000");
+            basicUser.setTitle("Mr");
+            basicUser.setDepartment(department);
+            basicUser.setLocation(location);
+            basicUser.setPhone("0600223366");
+            basicUser.setWebsite("https://www.google.com");
+            basicUser.setJobTitle("Analyst");
+            basicUser.setCity("Tanger");
+            basicUser.setAddress("Address Tanger");
+            basicUser.setState("Tanger");
+            basicUser.setCountry("Morocco");
+            basicUser.setZip("653000");
+            basicUser.setActive(true);
+            basicUser.setLocation(location);
+            basicUser.setCreationDate(LocalDateTime.now().minusDays(5L));
+            basicUser.setActivationDate(LocalDateTime.now().minusHours(12L));
+            basicUser.setLastLogin(LocalDateTime.now().minusMinutes(50L));
+            basicUser.setAvatar(newUserAvatar);
+            basicUser.setNotes("");
+            basicUser.addRole(this.roleService.getRole(RoleType.ROLE_USERS_VIEW));
+            this.userService.saveUser(basicUser);
         }
         // Logging Message
         log.info("SYSTEM HAS BEEN INITIALIZED SUCCESSFULLY");
