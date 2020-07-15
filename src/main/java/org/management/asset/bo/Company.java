@@ -1,5 +1,6 @@
 package org.management.asset.bo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -33,6 +34,7 @@ public class Company implements Serializable {
     private AssetFile image;
 
     @OneToMany(targetEntity = User.class, mappedBy = "company")
+    @JsonIgnore
     private Set<User> users;
 
 }

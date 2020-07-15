@@ -39,6 +39,7 @@ public class User implements Serializable {
     private String username;
 
     @Column(name = "password", nullable = false)
+    @JsonIgnore
     private String password;
 
     @Column(name = "email", nullable = false, unique = true)
@@ -60,9 +61,11 @@ public class User implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "manager_id")
+    @JsonIgnore
     private User manager;
 
     @OneToMany(targetEntity = User.class, mappedBy = "manager")
+    @JsonIgnore
     private List<User> subordinates;
 
     @ManyToOne
@@ -91,9 +94,8 @@ public class User implements Serializable {
     @Column(name = "state", nullable = false)
     private String state;
 
-    @ManyToOne
-    @JoinColumn(name = "country_id")
-    private Country country;
+    @Column(name = "country")
+    private String country;
 
     @Column(name = "zip", nullable = false)
     private String zip;
@@ -129,10 +131,12 @@ public class User implements Serializable {
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "users_groups", joinColumns = {@JoinColumn(name = "user_id")}, inverseJoinColumns = {@JoinColumn(name = "group_id")})
+    @JsonIgnore
     private List<Group> groups;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "users_roles", joinColumns = {@JoinColumn(name = "user_id")}, inverseJoinColumns = {@JoinColumn(name = "role_name")})
+    @JsonIgnore
     private List<Role> roles;
 
     /**

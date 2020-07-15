@@ -1,5 +1,7 @@
 package org.management.asset.controllers;
 
+import org.management.asset.bo.User;
+import org.management.asset.services.UserService;
 import org.management.asset.utils.JwtTokenUtil;
 import org.management.asset.dto.JwtRequestDTO;
 import org.management.asset.dto.JwtResponseDTO;
@@ -13,6 +15,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
 
 /**
  * @author Haytham DAHRI
@@ -32,6 +36,9 @@ public class JwtAuthenticationController {
     @Qualifier("userDetailsServiceImpl")
     private UserDetailsService userDetailsService;
 
+    @Autowired
+    private UserService userService;
+
     /**
      * @param authenticationRequest: Authentication request body for JWT
      * @return ResponseEntity<JwtResponse>
@@ -42,6 +49,10 @@ public class JwtAuthenticationController {
         final UserDetails userDetails = userDetailsService
                 .loadUserByUsername(authenticationRequest.getEmail());
         final String token = jwtTokenUtil.generateToken(userDetails);
+        // Set user last Login to now
+        User user = this.userService.getUserByEmail(userDetails.getUsername());
+        user.setLastLogin(LocalDateTime.now());
+        this.userService.saveUser(user);
         return ResponseEntity.ok(new JwtResponseDTO(token));
     }
 

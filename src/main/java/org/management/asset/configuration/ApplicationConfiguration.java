@@ -50,9 +50,6 @@ public class ApplicationConfiguration {
     private LocationService locationService;
 
     @Autowired
-    private CountryService countryService;
-
-    @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
     @EventListener(value = {ApplicationReadyEvent.class})
@@ -72,7 +69,7 @@ public class ApplicationConfiguration {
         }
         // Add Demo User For Dev
         if (this.userService.getUsers().isEmpty()) {
-            byte[] bytes = Files.readAllBytes(Paths.get("/home/haytham/Downloads/Database.png"));
+            byte[] bytes = Files.readAllBytes(Paths.get("/home/haytham/Downloads/profile.jpg"));
             AssetFile companyImage = this.assetFileService.saveAssetFile(
                     new AssetFile(null, "Database.png", "png", MediaType.IMAGE_PNG_VALUE, bytes, null));
             AssetFile userAvatar = this.assetFileService.saveAssetFile(
@@ -81,8 +78,10 @@ public class ApplicationConfiguration {
             Language language = this.languageService.saveLanguage(new Language(null, "Francais"));
             Department department = this.departmentService.saveDepartment(
                     new Department(null, "Système d'information", null));
-            Location location = this.locationService.saveLocation(new Location(null, "Rabat, Morocco"));
-            Country country = this.countryService.saveCountry(new Country(null, "Morocco"));
+            AssetFile locationAssetFile = this.assetFileService.saveAssetFile(
+                    new AssetFile(null, "Database.png", "png", MediaType.IMAGE_PNG_VALUE, bytes, null));
+            Location location = this.locationService.saveLocation(this.locationService.saveLocation(new Location(null, "Rabat, Morocco", null, "Address 2", "Address 2"
+            , "Rabat", "Rabat-Kénitra", "Morocco", "10010", locationAssetFile)));
             User user = new User();
             user.setFirstName("Haytham");
             user.setLastName("Dahri");
@@ -101,9 +100,10 @@ public class ApplicationConfiguration {
             user.setCity("Rabat");
             user.setAddress("Address Rabat");
             user.setState("Rabat-Kénitra");
-            user.setCountry(country);
+            user.setCountry("Morocco");
             user.setZip("10010");
             user.setActive(true);
+            user.setLocation(location);
             user.setCreationDate(LocalDateTime.now().minusDays(5L));
             user.setActivationDate(LocalDateTime.now().minusHours(12L));
             user.setLastLogin(LocalDateTime.now().minusMinutes(50L));

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.transaction.Transactional;
+import java.util.List;
 
 /**
  * @author Haytham DAHRI
@@ -26,6 +27,11 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @GetMapping(path = "/")
+    public ResponseEntity<List<User>> getUsers() {
+        return ResponseEntity.ok(this.userService.getUsers());
+    }
 
     /**
      * Check whether the user has a specific role or one of his groups has
@@ -53,6 +59,15 @@ public class UserController {
             // User must sign out and sign in again
             return ResponseEntity.ok(new RolesCheckResponseDTO("User must sign out and sign in again!", false, true));
         }
+    }
+
+    /**
+     * Get authenticated user details
+     * @return
+     */
+    @GetMapping(path = "/current")
+    public ResponseEntity<User> getCurrentUser() {
+        return ResponseEntity.ok(this.userService.getUserByEmail(this.authenticationFacade.getAuthentication().getName()));
     }
 
 }

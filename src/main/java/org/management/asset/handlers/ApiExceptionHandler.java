@@ -35,6 +35,7 @@ public class ApiExceptionHandler {
         // return response
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiExceptionResponse);
     }
+
     /**
      * BusinessException handler method
      */

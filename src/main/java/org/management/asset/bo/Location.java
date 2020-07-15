@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * @author Haytham DAHRI
@@ -26,5 +27,31 @@ public class Location implements Serializable {
 
     @Column(name = "name")
     private String name;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User manager;
+
+    @Column(name = "address1")
+    private String address1;
+
+    @Column(name = "address2")
+    private String address2;
+
+    @Column(name = "city")
+    private String city;
+
+    @Column(name = "state")
+    private String state;
+
+    @Column(name = "country")
+    private String country;
+
+    @Column(name = "zip")
+    private String zip;
+
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinColumn(name = "asset_id")
+    private AssetFile image;
 
 }
