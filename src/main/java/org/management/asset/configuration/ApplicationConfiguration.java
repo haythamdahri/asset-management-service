@@ -73,11 +73,14 @@ public class ApplicationConfiguration {
         if (this.userService.getUsers().isEmpty()) {
             // Add ADMIN User For Dev
             byte[] bytes = Files.readAllBytes(Paths.get("/home/haytham/Downloads/profile.jpg"));
-            AssetFile companyImage = this.assetFileService.saveAssetFile(
+            AssetFile acerImage = this.assetFileService.saveAssetFile(
+                    new AssetFile(null, "Database.png", "png", MediaType.IMAGE_PNG_VALUE, bytes, null));
+            AssetFile dellImage = this.assetFileService.saveAssetFile(
                     new AssetFile(null, "Database.png", "png", MediaType.IMAGE_PNG_VALUE, bytes, null));
             AssetFile userAvatar = this.assetFileService.saveAssetFile(
                     new AssetFile(null, "Database.png", "png", MediaType.IMAGE_PNG_VALUE, bytes, null));
-            Company company = this.companyService.saveCompany(new Company(null, "ACER", companyImage, null));
+            Company acerCompany = this.companyService.saveCompany(new Company(null, "ACER", acerImage, null));
+            Company dellCompany = this.companyService.saveCompany(new Company(null, "DELL", dellImage, null));
             Language language = this.languageService.saveLanguage(new Language(null, "Francais"));
             Department department = this.departmentService.saveDepartment(
                     new Department(null, "Système d'information", null));
@@ -91,7 +94,7 @@ public class ApplicationConfiguration {
             user.setUsername("haythamdahri");
             user.setPassword(this.passwordEncoder.encode("toortoor"));
             user.setEmail("haytham.dahri@gmail.com");
-            user.setCompany(company);
+            user.setCompany(acerCompany);
             user.setLanguage(language);
             user.setEmployeeNumber("EMP56210");
             user.setTitle("Mr");
@@ -112,6 +115,7 @@ public class ApplicationConfiguration {
             user.setLastLogin(LocalDateTime.now().minusMinutes(50L));
             user.setAvatar(userAvatar);
             user.setNotes("");
+            user.setCreationDate(LocalDateTime.now());
             // Assign user all roles & add it to SUPERADMINS
             assert superAdmins != null;
             superAdmins.addUser(user);
@@ -121,12 +125,13 @@ public class ApplicationConfiguration {
             AssetFile newUserAvatar = this.assetFileService.saveAssetFile(
                     new AssetFile(null, "Database.png", "png", MediaType.IMAGE_PNG_VALUE, bytes, null));
             User basicUser = new User();
+            basicUser.setCreationDate(LocalDateTime.now());
             basicUser.setFirstName("Basic");
             basicUser.setLastName("User");
             basicUser.setUsername("basic");
             basicUser.setPassword(this.passwordEncoder.encode("toortoor"));
             basicUser.setEmail("basic.user@gmail.com");
-            basicUser.setCompany(company);
+            basicUser.setCompany(dellCompany);
             basicUser.setLanguage(language);
             basicUser.setEmployeeNumber("EMP5000");
             basicUser.setTitle("Mr");

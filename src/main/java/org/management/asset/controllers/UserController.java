@@ -7,12 +7,12 @@ import org.management.asset.facades.IAuthenticationFacade;
 import org.management.asset.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
-import java.util.List;
 
 /**
  * @author Haytham DAHRI
@@ -34,13 +34,25 @@ public class UserController {
     }
 
     @GetMapping(path = "/{id}")
-    @PreAuthorize(value = "hasRole('ROLE_ADMIN')")
     public ResponseEntity<User> getUser(@PathVariable(name = "id") Long userId) {
+        // Check role for the desired user
+        User user = this.userService.getUser(userId);
+        User currentUser = this.userService.getUserByEmail(this.authenticationFacade.getAuthentication().getName());
+        if (user != null) {
+            // Check if user id is the path variable id
+            if (!user.getEmail().equals(this.authenticationFacade.getAuthentication().getName()) &&
+                    !currentUser.hasRole(RoleType.ROLE_ADMIN)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
         return ResponseEntity.ok(this.userService.getUser(userId));
     }
 
     /**
      * Check whether the user has a specific role or one of his groups has
+     *
      * @param roleType: RoleType
      * @return
      */
@@ -48,11 +60,11 @@ public class UserController {
     @Transactional
     public ResponseEntity<RolesCheckResponseDTO> checkRoleForCurrentUser(@RequestParam(name = "roleName") RoleType roleType) {
         User user = this.userService.getUserByEmail(this.authenticationFacade.getAuthentication().getName());
-        if( user != null ) {
+        if (user != null) {
             RolesCheckResponseDTO rolesCheckResponseDTO = new RolesCheckResponseDTO();
             rolesCheckResponseDTO.setSignOutRequired(false);
             // Check if user has the role
-            if( user.hasRole(roleType) ) {
+            if (user.hasRole(roleType)) {
                 rolesCheckResponseDTO.setHasRole(true);
                 rolesCheckResponseDTO.setMessage("Role found");
             } else {
@@ -69,6 +81,7 @@ public class UserController {
 
     /**
      * Get authenticated user details
+     *
      * @return
      */
     @GetMapping(path = "/current")

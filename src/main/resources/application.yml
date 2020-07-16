@@ -67,3 +67,7 @@ server:
 
 ## HOSTNAME
 HOSTNAME: http://localhost
+
+## PAGINATION CONFIGURATION
+page:
+  default-size: 20
