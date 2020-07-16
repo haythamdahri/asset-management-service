@@ -1,6 +1,8 @@
 package org.management.asset.services;
 
 import org.management.asset.bo.User;
+import org.management.asset.dto.UserDTO;
+import org.management.asset.dto.UserRequestDTO;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -12,7 +14,11 @@ public interface UserService {
 
     User saveUser(User user);
 
+    User saveUser(UserRequestDTO userRequest);
+
     User getUser(Long id);
+
+    UserDTO getCustomUser(Long id);
 
     User getUserByToken(String token);
 
@@ -25,6 +31,8 @@ public interface UserService {
     boolean deleteUser(Long id);
 
     List<User> getUsers();
+
+    List<UserDTO> getCustomUsers();
 
     Page<User> getUsers(String search, String excludedUserEmail, int page, int size);
 

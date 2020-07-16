@@ -2,6 +2,8 @@ package org.management.asset.services.impl;
 
 import org.management.asset.bo.User;
 import org.management.asset.dao.UserRepository;
+import org.management.asset.dto.UserDTO;
+import org.management.asset.dto.UserRequestDTO;
 import org.management.asset.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -26,9 +28,20 @@ public class UserServiceImpl implements UserService {
         return this.userRepository.save(user);
     }
 
+    // TODO: IMPLEMENT TOMORROW | 17/07/2020
+    @Override
+    public User saveUser(UserRequestDTO userRequest) {
+        return null;
+    }
+
     @Override
     public User getUser(Long id) {
         return this.userRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public UserDTO getCustomUser(Long id) {
+        return this.userRepository.findCustomUserById(id).orElse(null);
     }
 
     @Override
@@ -60,6 +73,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<User> getUsers() {
         return this.userRepository.findAll();
+    }
+
+    @Override
+    public List<UserDTO> getCustomUsers() {
+        return this.userRepository.findCustomUsers();
     }
 
     @Override

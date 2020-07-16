@@ -3,6 +3,7 @@ package org.management.asset.controllers;
 import org.management.asset.bo.RoleType;
 import org.management.asset.bo.User;
 import org.management.asset.dto.RolesCheckResponseDTO;
+import org.management.asset.dto.UserDTO;
 import org.management.asset.facades.IAuthenticationFacade;
 import org.management.asset.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
+import java.util.List;
 
 /**
  * @author Haytham DAHRI
@@ -87,6 +89,15 @@ public class UserController {
     @GetMapping(path = "/current")
     public ResponseEntity<User> getCurrentUser() {
         return ResponseEntity.ok(this.userService.getUserByEmail(this.authenticationFacade.getAuthentication().getName()));
+    }
+
+    /**
+     * Retrieve users with only id, firstName, lastName, email
+     * @return List<UserDTO>
+     */
+    @GetMapping(path = "/custom")
+    public ResponseEntity<List<UserDTO>> listCustomUsers() {
+        return ResponseEntity.ok(this.userService.getCustomUsers());
     }
 
 }

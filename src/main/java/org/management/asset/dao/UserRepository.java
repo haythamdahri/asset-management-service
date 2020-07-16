@@ -2,6 +2,7 @@ package org.management.asset.dao;
 
 import org.management.asset.bo.RoleType;
 import org.management.asset.bo.User;
+import org.management.asset.dto.UserDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -58,5 +59,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "or lower(u.department.name) like %:search% or lower(u.location.name) like %:search%) and u.email <> :excludedUserEmail")
     Page<User> findBySearch(@PageableDefault Pageable pageable, @Param(value = "search") String search, @Param("excludedUserEmail") String excludedUserEmail);
 
+    @Query(value = "SELECT u.id, u.username, u.firstName, u.lastName, u.email FROM User u WHERE u.id = :id")
+    Optional<UserDTO> findCustomUserById(@Param("id") Long id);
+
+    @Query(value = "SELECT new org.management.asset.dto.UserDTO(u.id, u.username, u.firstName, u.lastName, u.email) FROM User u")
+    List<UserDTO> findCustomUsers();
 
 }
