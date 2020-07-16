@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
-import java.util.HashSet;
+import java.util.Arrays;
 import java.util.stream.Stream;
 
 /**
@@ -56,6 +56,7 @@ public class ApplicationConfiguration {
     @Transactional
     public void runApplication() throws IOException {
         Group superAdmins = null;
+        Group basicUsers = null;
         // Add roles to the system
         if (this.roleService.getRoles().isEmpty()) {
             Stream.of(RoleType.values()).forEach(role -> {
@@ -65,7 +66,9 @@ public class ApplicationConfiguration {
         // Add SuperAdmin Group
         if (this.groupService.getGroups().isEmpty()) {
             superAdmins = this.groupService.saveGroup(
-                    new Group(null, "SuperAdmins", this.roleService.getRoles(), null));
+                    new Group(null, "Super Admins", this.roleService.getRoles(), null));
+            basicUsers = this.groupService.saveGroup(
+                    new Group(null, "Basic Users", Arrays.asList(this.roleService.getRole(RoleType.ROLE_USERS_VIEW)), null));
         }
         if (this.userService.getUsers().isEmpty()) {
             // Add ADMIN User For Dev
@@ -81,7 +84,7 @@ public class ApplicationConfiguration {
             AssetFile locationAssetFile = this.assetFileService.saveAssetFile(
                     new AssetFile(null, "Database.png", "png", MediaType.IMAGE_PNG_VALUE, bytes, null));
             Location location = this.locationService.saveLocation(this.locationService.saveLocation(new Location(null, "Rabat, Morocco", null, "Address 2", "Address 2"
-            , "Rabat", "Rabat-Kénitra", "Morocco", "10010", locationAssetFile)));
+                    , "Rabat", "Rabat-Kénitra", "Morocco", "10010", locationAssetFile)));
             User user = new User();
             user.setFirstName("Haytham");
             user.setLastName("Dahri");
@@ -117,7 +120,7 @@ public class ApplicationConfiguration {
             // ========================= Add Basic User For Dev =========================
             AssetFile newUserAvatar = this.assetFileService.saveAssetFile(
                     new AssetFile(null, "Database.png", "png", MediaType.IMAGE_PNG_VALUE, bytes, null));
-           User basicUser = new User();
+            User basicUser = new User();
             basicUser.setFirstName("Basic");
             basicUser.setLastName("User");
             basicUser.setUsername("basic");
@@ -127,6 +130,7 @@ public class ApplicationConfiguration {
             basicUser.setLanguage(language);
             basicUser.setEmployeeNumber("EMP5000");
             basicUser.setTitle("Mr");
+            basicUser.setManager(user);
             basicUser.setDepartment(department);
             basicUser.setLocation(location);
             basicUser.setPhone("0600223366");
@@ -145,6 +149,7 @@ public class ApplicationConfiguration {
             basicUser.setAvatar(newUserAvatar);
             basicUser.setNotes("");
             basicUser.addRole(this.roleService.getRole(RoleType.ROLE_USERS_VIEW));
+            basicUser.addGroup(basicUsers);
             this.userService.saveUser(basicUser);
         }
         // Logging Message

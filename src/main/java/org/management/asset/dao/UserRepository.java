@@ -47,8 +47,16 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query(value = "select u from User u inner join u.roles r where r.roleName in :roleNames and size(u.roles) = 1")
     Page<User> findBySpecificRolesPage(@PageableDefault Pageable pageable, @Param("roleNames") List<RoleType> roleName);
 
-    @Query(value = "select u from User u inner join u.roles r where r.roleName in :roleNames and size(u.roles) = 1 and " +
-            "(CONCAT(u.id, '') like %:search% or lower(u.username) like %:search% or lower(u.email) like %:search% or lower(u.location) like %:search%)")
-    Page<User> findBySpecificRolesAndSearchPage(@PageableDefault Pageable pageable, @Param("roleNames") List<RoleType> roleName, @Param(value = "search") String search);
+    @Query(value = "select u from User u where u.email <> :excludedUserEmail")
+    Page<User> findAllWithUserExclusion(@PageableDefault Pageable pageable, @Param("excludedUserEmail") String excludedUserEmail);
+
+    @Query(value = "select u from User u where (lower(u.username) like %:search% " +
+            "or lower(u.email) like %:search% or lower(u.firstName) like %:search% or lower(u.lastName) like %:search% " +
+            "or lower(u.city) like %:search% or lower(u.country) like %:search% or lower(u.employeeNumber) like %:search% " +
+            "or lower(u.jobTitle) like %:search% or lower(u.notes) like %:search% or lower(u.phone) like %:search% " +
+            "or lower(u.title) like %:search% or lower(u.website) like %:search% or lower(u.zip) like %:search% " +
+            "or lower(u.department.name) like %:search% or lower(u.location.name) like %:search%) and u.email <> :excludedUserEmail")
+    Page<User> findBySearch(@PageableDefault Pageable pageable, @Param(value = "search") String search, @Param("excludedUserEmail") String excludedUserEmail);
+
 
 }

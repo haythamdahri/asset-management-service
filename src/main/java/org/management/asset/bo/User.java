@@ -61,7 +61,6 @@ public class User implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "manager_id")
-    @JsonIgnore
     private User manager;
 
     @OneToMany(targetEntity = User.class, mappedBy = "manager")
@@ -131,7 +130,6 @@ public class User implements Serializable {
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "users_groups", joinColumns = {@JoinColumn(name = "user_id")}, inverseJoinColumns = {@JoinColumn(name = "group_id")})
-    @JsonIgnore
     private List<Group> groups;
 
     @ManyToMany(fetch = FetchType.EAGER)
@@ -155,10 +153,10 @@ public class User implements Serializable {
     public boolean hasRole(RoleType roleType) {
         List<Role> allRoles = new ArrayList<>();
         // Check roles
-        if( this.roles != null ) {
+        if (this.roles != null) {
             allRoles = this.roles;
         }
-        if( this.groups != null ) {
+        if (this.groups != null) {
             allRoles.addAll(this.groups.stream().map(Group::getRoles).flatMap(List::stream).collect(Collectors.toList()));
         }
         return allRoles.stream().anyMatch(role -> role.getRoleName().equals(roleType));
@@ -168,10 +166,27 @@ public class User implements Serializable {
      * Convenient method to add a group
      */
     public void addGroup(Group group) {
-        if( this.groups == null ) {
+        if (this.groups == null) {
             this.groups = new ArrayList<>();
         }
         this.groups.add(group);
+    }
+
+    /**
+     * Convenient method to add subordinates
+     *
+     * @param subordinate
+     */
+    public void addSubordinates(User subordinate) {
+        if (this.subordinates == null) {
+            this.subordinates = new ArrayList<>();
+        }
+        this.subordinates.add(subordinate);
+    }
+
+    public void setManager(User manager) {
+        this.manager = manager;
+        manager.addSubordinates(this);
     }
 
 }

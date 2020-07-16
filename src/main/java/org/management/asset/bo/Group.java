@@ -33,9 +33,11 @@ public class Group implements Serializable {
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "groups_roles", joinColumns = {@JoinColumn(name = "group_id")}, inverseJoinColumns = {@JoinColumn(name = "role_name")})
+    @JsonIgnore
     private List<Role> roles;
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "groups")
+    @JsonIgnore
     private List<User> users;
 
     /**

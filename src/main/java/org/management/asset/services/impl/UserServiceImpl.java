@@ -4,7 +4,11 @@ import org.management.asset.bo.User;
 import org.management.asset.dao.UserRepository;
 import org.management.asset.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 
@@ -56,6 +60,15 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<User> getUsers() {
         return this.userRepository.findAll();
+    }
+
+    @Override
+    public Page<User> getUsers(String search, String excludedUserEmail, int page, int size) {
+        // Check if search is required
+        if (StringUtils.isEmpty(search)) {
+            return this.userRepository.findAllWithUserExclusion(PageRequest.of(page, size, Sort.Direction.ASC, "id"), excludedUserEmail);
+        }
+        return this.userRepository.findBySearch(PageRequest.of(page, size, Sort.Direction.ASC, "id"), search.toLowerCase().trim(), excludedUserEmail);
     }
 
 }

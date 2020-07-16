@@ -1,6 +1,7 @@
 package org.management.asset.services;
 
 import org.management.asset.bo.User;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -24,5 +25,7 @@ public interface UserService {
     boolean deleteUser(Long id);
 
     List<User> getUsers();
+
+    Page<User> getUsers(String search, String excludedUserEmail, int page, int size);
 
 }

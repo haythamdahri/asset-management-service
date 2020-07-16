@@ -6,12 +6,10 @@ import org.management.asset.dto.RolesCheckResponseDTO;
 import org.management.asset.facades.IAuthenticationFacade;
 import org.management.asset.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
 import java.util.List;
@@ -31,8 +29,14 @@ public class UserController {
 
     @GetMapping(path = "/")
     @PreAuthorize(value = "hasRole('ROLE_ADMIN')")
-    public ResponseEntity<List<User>> getUsers() {
-        return ResponseEntity.ok(this.userService.getUsers());
+    public ResponseEntity<Page<User>> getUsers(@RequestParam(value = "search", required = false, defaultValue = "") String search, @RequestParam(value = "page", required = false, defaultValue = "0") int page, @RequestParam(value = "size", required = false, defaultValue = "${page.default-size}") int size) {
+        return ResponseEntity.ok(this.userService.getUsers(search, this.authenticationFacade.getAuthentication().getName(), page, size));
+    }
+
+    @GetMapping(path = "/{id}")
+    @PreAuthorize(value = "hasRole('ROLE_ADMIN')")
+    public ResponseEntity<User> getUser(@PathVariable(name = "id") Long userId) {
+        return ResponseEntity.ok(this.userService.getUser(userId));
     }
 
     /**
