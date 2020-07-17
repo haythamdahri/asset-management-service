@@ -4,6 +4,8 @@ import org.management.asset.bo.RoleType;
 import org.management.asset.bo.User;
 import org.management.asset.dto.RolesCheckResponseDTO;
 import org.management.asset.dto.UserDTO;
+import org.management.asset.dto.UserRequestDTO;
+import org.management.asset.exceptions.BusinessException;
 import org.management.asset.facades.IAuthenticationFacade;
 import org.management.asset.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +35,22 @@ public class UserController {
     @PreAuthorize(value = "hasRole('ROLE_ADMIN')")
     public ResponseEntity<Page<User>> getUsers(@RequestParam(value = "search", required = false, defaultValue = "") String search, @RequestParam(value = "page", required = false, defaultValue = "0") int page, @RequestParam(value = "size", required = false, defaultValue = "${page.default-size}") int size) {
         return ResponseEntity.ok(this.userService.getUsers(search, this.authenticationFacade.getAuthentication().getName(), page, size));
+    }
+
+    @PutMapping(path = "/")
+    public ResponseEntity<User> updateUser(@ModelAttribute UserRequestDTO userRequest) {
+        User user = this.userService.getUserByEmail(this.authenticationFacade.getAuthentication().getName());
+        // Check Role And User
+        if( !user.getId().equals(userRequest.getId())) {
+            if (userRequest.getId() != null && (!user.hasRole(RoleType.ROLE_ADMIN) || !user.hasRole(RoleType.ROLE_USERS_CREATE_USERS))) {
+                throw new BusinessException("Insufficient permissions");
+            }
+            if (userRequest.getId() != null && (!user.hasRole(RoleType.ROLE_ADMIN) || !user.hasRole(RoleType.ROLE_USERS_EDIT_USERS))) {
+                throw new BusinessException("Insufficient permissions");
+            }
+        }
+        // Save user
+        return ResponseEntity.ok(this.userService.saveUser(userRequest));
     }
 
     @GetMapping(path = "/{id}")
@@ -87,6 +105,7 @@ public class UserController {
      * @return
      */
     @GetMapping(path = "/current")
+    @Transactional
     public ResponseEntity<User> getCurrentUser() {
         return ResponseEntity.ok(this.userService.getUserByEmail(this.authenticationFacade.getAuthentication().getName()));
     }

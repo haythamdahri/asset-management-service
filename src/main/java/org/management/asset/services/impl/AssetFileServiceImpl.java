@@ -8,12 +8,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Haytham DAHRI
@@ -38,10 +40,15 @@ public class AssetFileServiceImpl implements AssetFileService {
 
     @Override
     public AssetFile saveAssetFile(MultipartFile file, AssetFile assetFile) throws IOException {
+        // Check if assetFile is null
+        if( assetFile == null ){
+            assetFile = new AssetFile();
+        }
         // Update image data
         assetFile.setName(FilenameUtils.removeExtension(file.getOriginalFilename()));
         assetFile.setExtension(FilenameUtils.getExtension(file.getOriginalFilename()));
         assetFile.setFile(file.getBytes());
+        assetFile.setMediaType(MediaType.valueOf(Objects.requireNonNull(file.getContentType())).toString());
         return this.assetFileRepository.save(assetFile);
     }
 

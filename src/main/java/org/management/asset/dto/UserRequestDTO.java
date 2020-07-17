@@ -20,10 +20,10 @@ import java.io.Serializable;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserRequestDTO implements Serializable {
 
-    private static final long serialVersionUID = -6040511937814466401L;
+    private static final Long serialVersionUID = -6040511937814466401L;
 
     @JsonProperty("id")
-    private Long id;
+    private String id;
 
     @JsonProperty("username")
     private String username;
@@ -37,23 +37,29 @@ public class UserRequestDTO implements Serializable {
     @JsonProperty("email")
     private String email;
 
+    @JsonProperty("phone")
+    private String phone;
+
     @JsonProperty("active")
     private boolean active;
 
     @JsonProperty("company")
-    private Long company;
+    private String company;
 
     @JsonProperty("language")
-    private Long language;
+    private String language;
 
     @JsonProperty("manager")
-    private Long manager;
+    private String manager;
 
     @JsonProperty("location")
-    private Long location;
+    private String location;
 
     @JsonProperty("department")
-    private Long department;
+    private String department;
+
+    @JsonProperty("avatar")
+    private String avatar;
 
     @JsonProperty("password")
     private String password;
@@ -79,6 +85,9 @@ public class UserRequestDTO implements Serializable {
     @JsonProperty("zip")
     private String zip;
 
+    @JsonProperty("title")
+    private String title;
+
     @JsonProperty("notes")
     private String notes;
 
@@ -87,5 +96,14 @@ public class UserRequestDTO implements Serializable {
 
     @JsonProperty("image")
     private MultipartFile image;
+
+    @JsonProperty("roles")
+    private String roles;
+
+    @JsonProperty("groups")
+    private String groups;
+
+    @JsonProperty("updatePermissions")
+    private boolean updatePermissions;
 
 }

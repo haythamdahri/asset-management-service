@@ -134,7 +134,6 @@ public class User implements Serializable {
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "users_roles", joinColumns = {@JoinColumn(name = "user_id")}, inverseJoinColumns = {@JoinColumn(name = "role_name")})
-    @JsonIgnore
     private List<Role> roles;
 
     /**
@@ -186,7 +185,9 @@ public class User implements Serializable {
 
     public void setManager(User manager) {
         this.manager = manager;
-        manager.addSubordinates(this);
+        if( manager != null ) {
+            manager.addSubordinates(this);
+        }
     }
 
 }

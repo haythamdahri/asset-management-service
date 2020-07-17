@@ -8,6 +8,8 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
+import java.util.Optional;
+
 /**
  * @author Haytam DAHRI
  */
@@ -16,6 +18,6 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 @CrossOrigin(value = "*")
 public interface RoleRepository extends JpaRepository<Role, Long> {
 
-    Role findByRoleName(@Param("roleName") RoleType roleType);
+    Optional<Role> findByRoleName(@Param("roleName") RoleType roleType);
 
 }

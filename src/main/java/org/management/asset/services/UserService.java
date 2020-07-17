@@ -4,7 +4,9 @@ import org.management.asset.bo.User;
 import org.management.asset.dto.UserDTO;
 import org.management.asset.dto.UserRequestDTO;
 import org.springframework.data.domain.Page;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -35,5 +37,7 @@ public interface UserService {
     List<UserDTO> getCustomUsers();
 
     Page<User> getUsers(String search, String excludedUserEmail, int page, int size);
+
+    User updateUserImage(MultipartFile file, String email, User user) throws IOException;
 
 }
