@@ -10,9 +10,11 @@ import org.management.asset.exceptions.TechnicalException;
 import org.management.asset.helpers.UserHelper;
 import org.management.asset.mappers.UserMapper;
 import org.management.asset.services.AssetFileService;
+import org.management.asset.services.EmailService;
 import org.management.asset.services.UserService;
 import org.management.asset.utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -26,6 +28,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * @author Haytham DAHRI
@@ -58,6 +61,9 @@ public class UserServiceImpl implements UserService {
     private AssetFileService assetFileService;
 
     @Autowired
+    private EmailService emailService;
+
+    @Autowired
     private UserHelper userHelper;
 
     @Autowired
@@ -65,6 +71,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
+
+    @Value("${token.expiration}")
+    private Long tokenExpiration;
 
     @Override
     public User saveUser(User user) {
@@ -84,23 +93,7 @@ public class UserServiceImpl implements UserService {
             }
             // Check if permissions will be changed
             if (userRequest.isUpdatePermissions()) {
-                System.out.println("UPDATING PERMISSIONS");
-                user.setRoles(null);
-                user.setGroups(null);
-                // Retrieve Roles
-                this.userHelper.extractList(userRequest.getRoles()).forEach(roleId -> {
-                    if (!StringUtils.isEmpty(roleId)) {
-                        user.addRole(this.roleRepository.findById(Long.parseLong(roleId)).orElseThrow(BusinessException::new));
-                    }
-                });
-                System.out.println(userRequest.getGroups());
-                System.out.println(Arrays.toString(this.userHelper.extractList(userRequest.getGroups()).toArray()));
-                // Retrieve groups
-                this.userHelper.extractList(userRequest.getGroups()).forEach(groupId -> {
-                    if (!StringUtils.isEmpty(groupId)) {
-                        user.addGroup(this.groupRepository.findById(Long.parseLong(groupId)).orElseThrow(BusinessException::new));
-                    }
-                });
+                this.setUserPermissions(userRequest.getRoles(), userRequest.getGroups(), user);
             } else {
                 user.setGroups(originalUser.getGroups());
                 user.setRoles(originalUser.getRoles());
@@ -184,6 +177,29 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    /**
+     * Set user Roles And Groups
+     * @param roles
+     * @param groups
+     * @param user
+     */
+    private void setUserPermissions(String roles, String groups, User user) {
+        user.setRoles(null);
+        user.setGroups(null);
+        // Retrieve Roles
+        this.userHelper.extractList(roles).forEach(roleId -> {
+            if (!StringUtils.isEmpty(roleId)) {
+                user.addRole(this.roleRepository.findById(Long.parseLong(roleId)).orElseThrow(BusinessException::new));
+            }
+        });
+        // Retrieve groups
+        this.userHelper.extractList(groups).forEach(groupId -> {
+            if (!StringUtils.isEmpty(groupId)) {
+                user.addGroup(this.groupRepository.findById(Long.parseLong(groupId)).orElseThrow(BusinessException::new));
+            }
+        });
+    }
+
     @Override
     public User getUser(Long id) {
         return this.userRepository.findById(id).orElse(null);
@@ -237,6 +253,28 @@ public class UserServiceImpl implements UserService {
             return this.userRepository.findAllWithUserExclusion(PageRequest.of(page, size, Sort.Direction.ASC, "id"), excludedUserEmail);
         }
         return this.userRepository.findBySearch(PageRequest.of(page, size, Sort.Direction.ASC, "id"), search.toLowerCase().trim(), excludedUserEmail);
+    }
+
+    @Override
+    public boolean requestUserPasswordReset(String email) {
+        // Retrieve user
+        User user = this.userRepository.findByEmail(email).orElse(null);
+        if (user != null && user.isActive()) {
+            // Generate token and expiry date
+            String token = UUID.randomUUID().toString();
+            user.setToken(token);
+            user.setExpiryDate(LocalDateTime.now().plusSeconds(this.tokenExpiration));
+            // Save user
+            user = this.userRepository.save(user);
+            // Send password reset email
+            this.emailService.sendResetPasswordEmail(user.getToken(), user.getEmail(), "Réinitialisation mot de passe");
+        } else if (user != null && !user.isActive()) {
+            throw new BusinessException(Constants.ACCOUNT_NOT_ACTIVE);
+        } else {
+            throw new BusinessException(Constants.EMAIL_NOT_FOUND);
+        }
+        // Return true for successful operation
+        return true;
     }
 
 }

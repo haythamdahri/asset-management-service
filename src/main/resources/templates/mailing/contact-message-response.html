@@ -1,0 +1,43 @@
+<!-- Content Section -->
+<table cellpadding="0" cellspacing="0" layout:decorate="~{layouts/layout.html(title='Contact Support!')}" layout:fragment="content"
+       width="100%" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+       xmlns:th="http://www.thymeleaf.org">
+    <tr>
+        <td align="center" class="title" data-color="title" data-link-color="link title color"
+            data-link-style="text-decoration:none; color:#292c34;"
+            data-max="45" data-min="25"
+            data-size="size title"
+            style="font:35px/38px Arial, Helvetica, sans-serif; color:#292c34; padding:0 0 24px;">
+            Restaurant Food Delivery
+        </td>
+    </tr>
+    <tr>
+        <td align="center" data-color="text" data-link-color="link text color"
+            data-link-style="font-weight:bold; text-decoration:underline; color:#000;"
+            data-max="26"
+            data-min="10"
+            data-size="size text"
+            style="font:bold 16px/25px Arial, Helvetica, sans-serif; color:#292c34; padding:0 0 23px;text-align: center;"
+        >
+            <p th:text="${response}"></p><br/>
+            <p th:text="${#dates.format(#dates.createNow(),'dd MMM YYYY  HH:mm:ss a')}"></p>
+        </td>
+    </tr>
+    <tr>
+        <td align="center" data-color="text" data-link-color="link text color"
+            data-link-style="font-weight:bold; text-decoration:underline; color:#40aceb;"
+            data-max="26"
+            data-min="10"
+            data-size="size text"
+            style="font:bold 16px/25px Arial, Helvetica, sans-serif; color:#888; padding:0 0 23px;">
+            Contact Support
+            <br/>
+            Please use the link below to reset your account password.<br/>
+            <i>If you didn't send us a contact support message, please ignore this email</i>
+        </td>
+    </tr>
+</table>
+
+
+
+

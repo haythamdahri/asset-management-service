@@ -40,4 +40,6 @@ public interface UserService {
 
     User updateUserImage(MultipartFile file, String email, User user) throws IOException;
 
+    boolean requestUserPasswordReset(String email);
+
 }

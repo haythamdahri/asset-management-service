@@ -6,8 +6,10 @@ import org.management.asset.dto.RolesCheckResponseDTO;
 import org.management.asset.dto.UserDTO;
 import org.management.asset.dto.UserRequestDTO;
 import org.management.asset.exceptions.BusinessException;
+import org.management.asset.exceptions.TechnicalException;
 import org.management.asset.facades.IAuthenticationFacade;
 import org.management.asset.services.UserService;
+import org.management.asset.utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -16,7 +18,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Haytham DAHRI
@@ -118,5 +122,31 @@ public class UserController {
     public ResponseEntity<List<UserDTO>> listCustomUsers() {
         return ResponseEntity.ok(this.userService.getCustomUsers());
     }
+
+    /**
+     * Password Reset Post Endpoint
+     *
+     * @param email: email
+     * @return ResponseEntity<Void>
+     */
+    @GetMapping(path = "/passwordresets")
+    public ResponseEntity<Void> performResetPassword(@RequestParam(name = "email") String email) {
+        // Use service to request password reset
+        this.userService.requestUserPasswordReset(email);
+        return ResponseEntity.status(200).build();
+    }
+
+    /**
+     * Password Reset Post Endpoint
+     *
+     * @param passwordResetRequest: passwordResetRequest
+     * @return ResponseEntity<Void>
+     */
+   /* @GetMapping(path = "/passwordresets")
+    public ResponseEntity<Void> performResetPassword(@RequestBody PasswordResetRequestDTO passwordResetRequest) {
+        // Use service to reset user password
+        this.userService.requestUserPasswordReset(email);
+        return ResponseEntity.status(200).build();
+    }*/
 
 }

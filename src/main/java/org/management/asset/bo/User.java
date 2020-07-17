@@ -106,6 +106,10 @@ public class User implements Serializable {
     @Column(name = "token", unique = true)
     private String token;
 
+    @JsonIgnore
+    @Column(name = "expiryDate")
+    private LocalDateTime expiryDate;
+
     @Column(name = "activationDate")
     private LocalDateTime activationDate;
 

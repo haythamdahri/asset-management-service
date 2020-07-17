@@ -59,7 +59,8 @@ jwt:
   secret: topsecretjwt
 
 ## ACTIVATION TOKEN EXPIRATION DURATION
-token_expiration: 216000
+token:
+  expiration: 216000
 
 ## SERVER PORT
 server:

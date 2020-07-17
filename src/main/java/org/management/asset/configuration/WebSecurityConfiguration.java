@@ -76,7 +76,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                         "/api/users/search/existsByEmail",
                         "/api/v1/users/**").permitAll()
                 // Allow POST request for password request
-                .antMatchers(HttpMethod.POST, "/api/v1/users/passwordreset").permitAll()
+                .antMatchers(HttpMethod.POST, "/api/v1/users/passwordresets").permitAll()
                 .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 // all other requests need to be authenticated
                 .anyRequest().authenticated().and().
