@@ -9,9 +9,11 @@ import org.management.asset.dto.UserRequestDTO;
 import org.management.asset.exceptions.BusinessException;
 import org.management.asset.facades.IAuthenticationFacade;
 import org.management.asset.services.UserService;
+import org.management.asset.utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -69,6 +71,18 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         return ResponseEntity.ok(this.userService.getUser(userId));
+    }
+
+    @DeleteMapping(path = "/{id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable(name = "id") Long userId) {
+        // Check if user is authorized
+        User user = this.userService.getUserByEmail(this.authenticationFacade.getAuthentication().getName());
+        if( !(user.hasRole(RoleType.ROLE_ADMIN) || user.hasRole(RoleType.ROLE_USERS_DELETE_USERS) || user.hasRole(RoleType.ROLE_SUPER_USER)) ) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        // Delete User after validation
+        this.userService.deleteUser(userId);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     /**

@@ -100,9 +100,11 @@ public class UserServiceImpl implements UserService {
                 user.setId(null);
             }
             // Check email and employeeNumber changes; if changed verify unique value
-            if (StringUtils.isEmpty(originalUser.getId()) && this.userRepository.findByEmail(userRequest.getEmail()).isPresent()) {
+            if (!org.apache.commons.lang3.StringUtils.equals(userRequest.getEmail(), originalUser.getEmail()) &&
+                    this.userRepository.findByEmail(userRequest.getEmail()).isPresent()) {
                 throw new BusinessException(Constants.EMAIL_ALREADY_USED);
-            } else if (StringUtils.isEmpty(originalUser.getId()) && this.userRepository.findByEmployeeNumber(userRequest.getEmployeeNumber()).isPresent()) {
+            } else if (!org.apache.commons.lang3.StringUtils.equals(originalUser.getEmployeeNumber(), userRequest.getEmployeeNumber()) &&
+                    this.userRepository.findByEmployeeNumber(userRequest.getEmployeeNumber()).isPresent()) {
                 throw new BusinessException(Constants.EMPLOYEE_NUMBER_ALREADY_USED);
             }
             // Check if permissions will be changed
