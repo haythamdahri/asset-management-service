@@ -28,7 +28,8 @@ public interface UserMapper {
                     @Mapping(source = "source.zip", target = "zip"),
                     @Mapping(source = "source.notes", target = "notes"),
                     @Mapping(source = "source.title", target = "title"),
-                    @Mapping(source = "source.phone", target = "phone")
+                    @Mapping(source = "source.phone", target = "phone"),
+                    @Mapping(source = "source.jobTitle", target = "jobTitle")
             })
     User toModel(UserRequestDTO source);
 

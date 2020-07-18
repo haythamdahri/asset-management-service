@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.util.StringUtils;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -192,6 +193,14 @@ public class User implements Serializable {
         if( manager != null ) {
             manager.addSubordinates(this);
         }
+    }
+
+    /**
+     * Check current user token validity
+     * @return boolean
+     */
+    public boolean isValidToken() {
+        return (this.expiryDate != null && this.token != null && !StringUtils.isEmpty(this.token) && this.expiryDate.isAfter(LocalDateTime.now()));
     }
 
 }

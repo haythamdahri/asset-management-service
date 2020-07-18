@@ -2,14 +2,13 @@ package org.management.asset.controllers;
 
 import org.management.asset.bo.RoleType;
 import org.management.asset.bo.User;
+import org.management.asset.dto.PasswordResetRequestDTO;
 import org.management.asset.dto.RolesCheckResponseDTO;
 import org.management.asset.dto.UserDTO;
 import org.management.asset.dto.UserRequestDTO;
 import org.management.asset.exceptions.BusinessException;
-import org.management.asset.exceptions.TechnicalException;
 import org.management.asset.facades.IAuthenticationFacade;
 import org.management.asset.services.UserService;
-import org.management.asset.utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -18,9 +17,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Haytham DAHRI
@@ -45,7 +42,7 @@ public class UserController {
     public ResponseEntity<User> updateUser(@ModelAttribute UserRequestDTO userRequest) {
         User user = this.userService.getUserByEmail(this.authenticationFacade.getAuthentication().getName());
         // Check Role And User
-        if( !user.getId().equals(userRequest.getId())) {
+        if (!user.getId().toString().equalsIgnoreCase(userRequest.getId())) {
             if (userRequest.getId() != null && (!user.hasRole(RoleType.ROLE_ADMIN) || !user.hasRole(RoleType.ROLE_USERS_CREATE_USERS))) {
                 throw new BusinessException("Insufficient permissions");
             }
@@ -116,6 +113,7 @@ public class UserController {
 
     /**
      * Retrieve users with only id, firstName, lastName, email
+     *
      * @return List<UserDTO>
      */
     @GetMapping(path = "/custom")
@@ -129,11 +127,23 @@ public class UserController {
      * @param email: email
      * @return ResponseEntity<Void>
      */
-    @GetMapping(path = "/passwordresets")
-    public ResponseEntity<Void> performResetPassword(@RequestParam(name = "email") String email) {
+    @GetMapping(path = "/passwordsreset")
+    public ResponseEntity<Void> requestPasswordResetEmail(@RequestParam(name = "email") String email) {
         // Use service to request password reset
         this.userService.requestUserPasswordReset(email);
         return ResponseEntity.status(200).build();
+    }
+
+    @GetMapping(path = "/passwordsreset/tokensvalidity/{token}")
+    public ResponseEntity<Void> checkTokenValidity(@PathVariable(name = "token") String token) {
+        HttpStatus httpStatus;
+        // Check token validity via user service
+        if( this.userService.checkTokenValidity(token) ) {
+            httpStatus = HttpStatus.OK;
+        } else {
+            httpStatus = HttpStatus.UNAUTHORIZED;
+        }
+        return ResponseEntity.status(httpStatus).build();
     }
 
     /**
@@ -142,11 +152,11 @@ public class UserController {
      * @param passwordResetRequest: passwordResetRequest
      * @return ResponseEntity<Void>
      */
-   /* @GetMapping(path = "/passwordresets")
+    @PutMapping(path = "/passwordsreset")
     public ResponseEntity<Void> performResetPassword(@RequestBody PasswordResetRequestDTO passwordResetRequest) {
         // Use service to reset user password
-        this.userService.requestUserPasswordReset(email);
+        this.userService.resetUserPassword(passwordResetRequest.getToken(), passwordResetRequest.getPassword());
         return ResponseEntity.status(200).build();
-    }*/
+    }
 
 }

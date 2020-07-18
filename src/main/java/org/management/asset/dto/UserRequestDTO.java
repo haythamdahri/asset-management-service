@@ -103,6 +103,9 @@ public class UserRequestDTO implements Serializable {
     @JsonProperty("groups")
     private String groups;
 
+    @JsonProperty("jobTitle")
+    private String jobTitle;
+
     @JsonProperty("updatePermissions")
     private boolean updatePermissions;
 
