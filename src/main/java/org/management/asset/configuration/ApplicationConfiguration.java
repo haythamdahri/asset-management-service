@@ -15,7 +15,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
-import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -59,16 +62,14 @@ public class ApplicationConfiguration {
         Group basicUsers = null;
         // Add roles to the system
         if (this.roleService.getRoles().isEmpty()) {
-            Stream.of(RoleType.values()).forEach(role -> {
-                this.roleService.saveRole(new Role(null, role, null, null));
-            });
+            Stream.of(RoleType.values()).forEach(role -> this.roleService.saveRole(new Role(null, role, null, null)));
         }
         // Add SuperAdmin Group
         if (this.groupService.getGroups().isEmpty()) {
             superAdmins = this.groupService.saveGroup(
-                    new Group(null, "Super Admins", this.roleService.getRoles(), null));
+                    new Group(null, "Super Admins", new HashSet<>(this.roleService.getRoles()), null));
             basicUsers = this.groupService.saveGroup(
-                    new Group(null, "Basic Users", Arrays.asList(this.roleService.getRole(RoleType.ROLE_USERS_VIEW)), null));
+                    new Group(null, "Basic Users", Stream.of(this.roleService.getRole(RoleType.ROLE_USERS_VIEW)).collect(Collectors.toCollection(HashSet::new)), null));
         }
         if (this.userService.getUsers().isEmpty()) {
             // Add ADMIN User For Dev

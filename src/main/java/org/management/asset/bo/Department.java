@@ -3,6 +3,7 @@ package org.management.asset.bo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
@@ -29,6 +30,7 @@ public class Department implements Serializable {
     @Column(name = "name")
     private String name;
 
+    @EqualsAndHashCode.Exclude
     @OneToMany(targetEntity = User.class, mappedBy = "department")
     @JsonIgnore
     private Set<User> users;

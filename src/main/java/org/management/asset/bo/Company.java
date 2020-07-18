@@ -3,6 +3,7 @@ package org.management.asset.bo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
@@ -33,6 +34,7 @@ public class Company implements Serializable {
     @JoinColumn(name = "image_id")
     private AssetFile image;
 
+    @EqualsAndHashCode.Exclude
     @OneToMany(targetEntity = User.class, mappedBy = "company")
     @JsonIgnore
     private Set<User> users;

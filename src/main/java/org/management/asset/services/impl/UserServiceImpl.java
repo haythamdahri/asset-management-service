@@ -1,5 +1,6 @@
 package org.management.asset.services.impl;
 
+import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.management.asset.bo.AssetFile;
 import org.management.asset.bo.User;
@@ -34,6 +35,7 @@ import java.util.UUID;
  * @author Haytham DAHRI
  */
 @Service
+@Log4j2
 public class UserServiceImpl implements UserService {
 
     @Autowired
@@ -81,6 +83,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public User saveUser(UserRequestDTO userRequest) {
         try {
             final String userRequestId = userRequest.getId();
@@ -89,7 +92,7 @@ public class UserServiceImpl implements UserService {
             // MAP DTO to BO
             User user = this.userMapper.toModel(userRequest);
             User originalUser;
-            if(NumberUtils.isCreatable(userRequestId)){
+            if (NumberUtils.isCreatable(userRequestId)) {
                 originalUser = this.userRepository.findById(Long.parseLong(userRequestId)).orElse(new User());
                 user.setId(Long.parseLong(userRequestId));
             } else {
@@ -99,7 +102,7 @@ public class UserServiceImpl implements UserService {
             // Check email and employeeNumber changes; if changed verify unique value
             if (StringUtils.isEmpty(originalUser.getId()) && this.userRepository.findByEmail(userRequest.getEmail()).isPresent()) {
                 throw new BusinessException(Constants.EMAIL_ALREADY_USED);
-            } else if( StringUtils.isEmpty(originalUser.getId()) && this.userRepository.findByEmployeeNumber(userRequest.getEmployeeNumber()).isPresent() ) {
+            } else if (StringUtils.isEmpty(originalUser.getId()) && this.userRepository.findByEmployeeNumber(userRequest.getEmployeeNumber()).isPresent()) {
                 throw new BusinessException(Constants.EMPLOYEE_NUMBER_ALREADY_USED);
             }
             // Check if permissions will be changed
@@ -174,7 +177,6 @@ public class UserServiceImpl implements UserService {
         target.setActivationDate((!StringUtils.isEmpty(source.getId()) && source.getId() != null && source.getActivationDate() != null) ? source.getActivationDate() : LocalDateTime.now());
         target.setToken(source.getToken());
         target.setDeletionDate(source.getDeletionDate());
-        target.setSubordinates(source.getSubordinates());
     }
 
     @Override
@@ -184,8 +186,9 @@ public class UserServiceImpl implements UserService {
             if (file == null || file.isEmpty() || !Constants.IMAGE_CONTENT_TYPES.contains(file.getContentType())) {
                 throw new BusinessException(Constants.INVALID_USER_IMAGE);
             } else {
+                AssetFile avatar = this.assetFileService.getAssetFileByUser(user.getId());
                 // Update user image file and link it with current user
-                AssetFile assetFile = this.assetFileService.saveAssetFile(file, user.getAvatar());
+                AssetFile assetFile = this.assetFileService.saveAssetFile(file, avatar);
                 user.setAvatar(assetFile);
             }
             // Return User
@@ -277,7 +280,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean requestUserPasswordReset(String email) {
+    public Boolean requestUserPasswordReset(String email) {
         // Retrieve user
         User user = this.userRepository.findByEmail(email).orElse(null);
         if (user != null && user.isActive()) {
@@ -299,7 +302,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean checkTokenValidity(String token) {
+    public Boolean checkTokenValidity(String token) {
         // Check token validity
         User user = this.userRepository.findByToken(token).orElse(null);
         if (user == null) {

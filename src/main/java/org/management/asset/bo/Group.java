@@ -3,12 +3,12 @@ package org.management.asset.bo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -31,14 +31,15 @@ public class Group implements Serializable {
     @Column(name = "name", unique = true)
     private String name;
 
+    @EqualsAndHashCode.Exclude
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "groups_roles", joinColumns = {@JoinColumn(name = "group_id")}, inverseJoinColumns = {@JoinColumn(name = "role_name")})
     @JsonIgnore
-    private List<Role> roles;
+    private Set<Role> roles;
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "groups")
     @JsonIgnore
-    private List<User> users;
+    private Set<User> users;
 
     /**
      * Convenient method to add a new user to the current group
@@ -47,7 +48,7 @@ public class Group implements Serializable {
      */
     public void addUser(User user) {
         if (this.users == null) {
-            this.users = new ArrayList<>();
+            this.users = new HashSet<>();
         }
         this.users.add(user);
         user.addGroup(this);

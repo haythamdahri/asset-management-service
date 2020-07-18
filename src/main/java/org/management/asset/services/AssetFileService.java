@@ -23,6 +23,8 @@ public interface AssetFileService {
 
     AssetFile getAssetFile(Long id);
 
+    AssetFile getAssetFileByUser(Long userId);
+
     AssetFile getAssetFile(String name);
 
     Page<AssetFile> getAssetFiles(int page, int size);

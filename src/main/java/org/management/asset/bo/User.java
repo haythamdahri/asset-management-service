@@ -1,16 +1,20 @@
 package org.management.asset.bo;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -21,9 +25,11 @@ import java.util.stream.Collectors;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class User implements Serializable {
 
     private static final long serialVersionUID = 3848632254782687991L;
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -63,10 +69,6 @@ public class User implements Serializable {
     @ManyToOne
     @JoinColumn(name = "manager_id")
     private User manager;
-
-    @OneToMany(targetEntity = User.class, mappedBy = "manager")
-    @JsonIgnore
-    private List<User> subordinates;
 
     @ManyToOne
     @JoinColumn(name = "department_id")
@@ -126,42 +128,46 @@ public class User implements Serializable {
     @Column(name = "lastLogin")
     private LocalDateTime lastLogin;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, targetEntity = AssetFile.class)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, targetEntity = AssetFile.class)
     @JoinColumn(name = "avatar_id")
     private AssetFile avatar;
 
     @Column(name = "notes")
     private String notes;
 
+    @EqualsAndHashCode.Exclude
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "users_groups", joinColumns = {@JoinColumn(name = "user_id")}, inverseJoinColumns = {@JoinColumn(name = "group_id")})
-    private List<Group> groups;
+    private Set<Group> groups;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "users_roles", joinColumns = {@JoinColumn(name = "user_id")}, inverseJoinColumns = {@JoinColumn(name = "role_name")})
-    private List<Role> roles;
+    private Set<Role> roles;
 
     /**
      * Convenient method to add new role
      */
     public void addRole(Role role) {
         if (this.roles == null) {
-            this.roles = new ArrayList<>();
+            this.roles = new HashSet<>();
         }
-        this.roles.add(role);
+        // Check that the role is not assigned to the user
+        if (this.roles.stream().noneMatch(tempRole -> tempRole.getId().equals(role.getId()))) {
+            this.roles.add(role);
+        }
     }
 
     /**
      * Convenient method to check if a user has a role
      */
     public boolean hasRole(RoleType roleType) {
-        List<Role> allRoles = new ArrayList<>();
+        Set<Role> allRoles = new HashSet<>();
         // Check roles
         if (this.roles != null) {
             allRoles = this.roles;
         }
         if (this.groups != null) {
-            allRoles.addAll(this.groups.stream().map(Group::getRoles).flatMap(List::stream).collect(Collectors.toList()));
+            allRoles.addAll(this.groups.stream().map(Group::getRoles).flatMap(Set::stream).collect(Collectors.toSet()));
         }
         return allRoles.stream().anyMatch(role -> role.getRoleName().equals(roleType));
     }
@@ -171,32 +177,14 @@ public class User implements Serializable {
      */
     public void addGroup(Group group) {
         if (this.groups == null) {
-            this.groups = new ArrayList<>();
+            this.groups = new HashSet<>();
         }
         this.groups.add(group);
     }
 
     /**
-     * Convenient method to add subordinates
-     *
-     * @param subordinate
-     */
-    public void addSubordinates(User subordinate) {
-        if (this.subordinates == null) {
-            this.subordinates = new ArrayList<>();
-        }
-        this.subordinates.add(subordinate);
-    }
-
-    public void setManager(User manager) {
-        this.manager = manager;
-        if( manager != null ) {
-            manager.addSubordinates(this);
-        }
-    }
-
-    /**
      * Check current user token validity
+     *
      * @return boolean
      */
     public boolean isValidToken() {

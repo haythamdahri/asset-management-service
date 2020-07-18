@@ -63,6 +63,12 @@ public class AssetFileServiceImpl implements AssetFileService {
         return this.assetFileRepository.findById(id).orElse(null);
     }
 
+
+    @Override
+    public AssetFile getAssetFileByUser(Long userId) {
+        return this.assetFileRepository.findByUserId(userId).orElse(null);
+    }
+
     @Override
     public AssetFile getAssetFile(String name) {
         return this.assetFileRepository.findByNameContainingIgnoreCase(name).orElse(null);

@@ -1,5 +1,6 @@
 package org.management.asset.services;
 
+import org.management.asset.bo.AssetFile;
 import org.management.asset.bo.User;
 import org.management.asset.dto.UserDTO;
 import org.management.asset.dto.UserRequestDTO;
@@ -40,9 +41,9 @@ public interface UserService {
 
     User updateUserImage(MultipartFile file, String email, User user) throws IOException;
 
-    boolean checkTokenValidity(String token);
+    Boolean checkTokenValidity(String token);
 
-    boolean requestUserPasswordReset(String email);
+    Boolean requestUserPasswordReset(String email);
 
     User resetUserPassword(String token, String password);
 
