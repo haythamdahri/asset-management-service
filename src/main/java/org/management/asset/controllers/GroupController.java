@@ -4,7 +4,6 @@ import org.management.asset.bo.Group;
 import org.management.asset.services.GroupService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,7 +20,6 @@ public class GroupController {
     @Autowired
     private GroupService groupService;
 
-    @PreAuthorize(value = "hasRole('ROLE_ADMIN') or hasRole('ROLE_SUPER_USER')")
     @GetMapping(path = "")
     public ResponseEntity<List<Group>> listGroups() {
         return ResponseEntity.ok(this.groupService.getGroups());

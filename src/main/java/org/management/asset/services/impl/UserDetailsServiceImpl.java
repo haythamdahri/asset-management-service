@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -23,6 +24,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     private UserService userService;
 
     @Override
+    @Transactional
     public UserDetails loadUserByUsername(String email) {
         // Fetch user from database using his email
         User user = this.userService.getActiveUser(email);
@@ -31,6 +33,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             user.getRoles().forEach(role ->
                     grantedAuthorities.add(new SimpleGrantedAuthority(role.getRoleName().name()))
             );
+            // Check user group roles
+            user.getGroups().forEach(group -> group.getRoles().forEach(role ->
+                    grantedAuthorities.add(new SimpleGrantedAuthority(role.getRoleName().name()))
+            ));
             return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), grantedAuthorities);
         }
         throw new UsernameNotFoundException("No user found with " + email);

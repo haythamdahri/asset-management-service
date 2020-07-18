@@ -21,7 +21,6 @@ public class CompanyController {
     @Autowired
     private CompanyService companyService;
 
-    @PreAuthorize(value  = "hasRole('ROLE_ADMIN')")
     @GetMapping(path = "/")
     public ResponseEntity<List<Company>> listCompanies() {
         return ResponseEntity.ok(this.companyService.getCompanies());

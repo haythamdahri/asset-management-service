@@ -304,7 +304,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Boolean checkTokenValidity(String token) {
+    public boolean checkTokenValidity(String token) {
         // Check token validity
         User user = this.userRepository.findByToken(token).orElse(null);
         if (user == null) {

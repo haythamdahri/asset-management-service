@@ -41,7 +41,7 @@ public interface UserService {
 
     User updateUserImage(MultipartFile file, String email, User user) throws IOException;
 
-    Boolean checkTokenValidity(String token);
+    boolean checkTokenValidity(String token);
 
     Boolean requestUserPasswordReset(String email);
 

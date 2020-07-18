@@ -1,6 +1,5 @@
 package org.management.asset.handlers;
 
-import com.sun.javaws.exceptions.InvalidArgumentException;
 import org.management.asset.exceptions.BusinessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +22,7 @@ public class ApiExceptionHandler {
     /**
      * BusinessException handler method
      */
-    @ExceptionHandler(value = {BusinessException.class, InvalidArgumentException.class, InputMismatchException.class})
+    @ExceptionHandler(value = {BusinessException.class, IllegalArgumentException.class, InputMismatchException.class})
     public ResponseEntity<?> handleBusinessExceptions(Exception ex) {
         // Create Payload
         ApiExceptionResponse apiExceptionResponse = new ApiExceptionResponse();

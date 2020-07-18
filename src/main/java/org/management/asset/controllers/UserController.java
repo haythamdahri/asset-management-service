@@ -1,19 +1,17 @@
 package org.management.asset.controllers;
 
+import org.apache.commons.lang3.StringUtils;
 import org.management.asset.bo.RoleType;
 import org.management.asset.bo.User;
 import org.management.asset.dto.PasswordResetRequestDTO;
 import org.management.asset.dto.RolesCheckResponseDTO;
 import org.management.asset.dto.UserDTO;
 import org.management.asset.dto.UserRequestDTO;
-import org.management.asset.exceptions.BusinessException;
 import org.management.asset.facades.IAuthenticationFacade;
 import org.management.asset.services.UserService;
-import org.management.asset.utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -34,52 +32,28 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USERS_VIEW') or hasRole('ROLE_SUPER_USER')")
     @GetMapping(path = "/")
-    @PreAuthorize(value = "hasRole('ROLE_ADMIN')")
     public ResponseEntity<Page<User>> getUsers(@RequestParam(value = "search", required = false, defaultValue = "") String search, @RequestParam(value = "page", required = false, defaultValue = "0") int page, @RequestParam(value = "size", required = false, defaultValue = "${page.default-size}") int size) {
         return ResponseEntity.ok(this.userService.getUsers(search, this.authenticationFacade.getAuthentication().getName(), page, size));
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USERS_CREATE_USERS') or hasRole('ROLE_USERS_EDIT_USERS') or hasRole('ROLE_SUPER_USER')")
     @PutMapping(path = "/")
     public ResponseEntity<User> updateUser(@ModelAttribute UserRequestDTO userRequest) {
-        User user = this.userService.getUserByEmail(this.authenticationFacade.getAuthentication().getName());
-        // Check Role And User
-        if (!user.getId().toString().equalsIgnoreCase(userRequest.getId())) {
-            if (userRequest.getId() != null && (!user.hasRole(RoleType.ROLE_ADMIN) || !user.hasRole(RoleType.ROLE_USERS_CREATE_USERS))) {
-                throw new BusinessException("Insufficient permissions");
-            }
-            if (userRequest.getId() != null && (!user.hasRole(RoleType.ROLE_ADMIN) || !user.hasRole(RoleType.ROLE_USERS_EDIT_USERS))) {
-                throw new BusinessException("Insufficient permissions");
-            }
-        }
         // Save user
         return ResponseEntity.ok(this.userService.saveUser(userRequest));
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USERS_EDIT_USERS') or hasRole('ROLE_SUPER_USER')")
     @GetMapping(path = "/{id}")
     public ResponseEntity<User> getUser(@PathVariable(name = "id") Long userId) {
-        // Check role for the desired user
-        User user = this.userService.getUser(userId);
-        User currentUser = this.userService.getUserByEmail(this.authenticationFacade.getAuthentication().getName());
-        if (user != null) {
-            // Check if user id is the path variable id
-            if (!user.getEmail().equals(this.authenticationFacade.getAuthentication().getName()) &&
-                    !currentUser.hasRole(RoleType.ROLE_ADMIN)) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-            }
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
         return ResponseEntity.ok(this.userService.getUser(userId));
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USERS_DELETE_USERS') or hasRole('ROLE_SUPER_USER')")
     @DeleteMapping(path = "/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable(name = "id") Long userId) {
-        // Check if user is authorized
-        User user = this.userService.getUserByEmail(this.authenticationFacade.getAuthentication().getName());
-        if( !(user.hasRole(RoleType.ROLE_ADMIN) || user.hasRole(RoleType.ROLE_USERS_DELETE_USERS) || user.hasRole(RoleType.ROLE_SUPER_USER)) ) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
         // Delete User after validation
         this.userService.deleteUser(userId);
         return ResponseEntity.status(HttpStatus.OK).build();
@@ -152,7 +126,7 @@ public class UserController {
     public ResponseEntity<Void> checkTokenValidity(@PathVariable(name = "token") String token) {
         HttpStatus httpStatus;
         // Check token validity via user service
-        if( this.userService.checkTokenValidity(token) ) {
+        if (this.userService.checkTokenValidity(token)) {
             httpStatus = HttpStatus.OK;
         } else {
             httpStatus = HttpStatus.UNAUTHORIZED;
