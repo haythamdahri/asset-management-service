@@ -15,7 +15,6 @@ import java.util.Optional;
  */
 @Repository
 @RepositoryRestResource
-@CrossOrigin(value = "*")
 public interface RoleRepository extends JpaRepository<Role, Long> {
 
     Optional<Role> findByRoleName(@Param("roleName") RoleType roleType);

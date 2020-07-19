@@ -14,7 +14,6 @@ import java.util.Optional;
  */
 @Repository
 @RepositoryRestResource
-@CrossOrigin(value = "*")
 public interface GroupRepository extends JpaRepository<Group, Long> {
 
     Optional<Group> findByNameIgnoreCase(@Param("name") String name);

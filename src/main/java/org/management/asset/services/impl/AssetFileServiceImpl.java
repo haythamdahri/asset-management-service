@@ -21,7 +21,6 @@ import java.util.Objects;
  * @author Haytham DAHRI
  */
 @Service
-@Transactional
 public class AssetFileServiceImpl implements AssetFileService {
 
     @Autowired

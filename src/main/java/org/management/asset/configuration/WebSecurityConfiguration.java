@@ -74,6 +74,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                         "/api/v1/assetfiles/**",
                         "/api/roles/**",
                         "/api/users/search/existsByEmail",
+                        "/api/v1/main/**",
                         "/api/v1/users/**").permitAll()
                 // Allow POST request for password request
                 .antMatchers(HttpMethod.PUT, "/api/v1/users/passwordsreset").permitAll()

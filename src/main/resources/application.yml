@@ -10,7 +10,6 @@ spring:
     url: jdbc:mysql://localhost:3306/assetManagementDb?allowPublicKeyRetrieval=true&useSSL=false
     username: root
     password: toortoor
-  data:
     jpa:
       repositories:
         enabled: true
@@ -49,6 +48,14 @@ spring:
       max-file-size: 200MB
       # ========= Max Request Size =========
       max-request-size: 215MB
+  data:
+    mongodb:
+      authentication-database: admin
+      host: localhost
+      username: root
+      password: toortoor
+      port: 27017
+      database: assetmanagement
 
 ## JWT CONFIGURATION
 jwt:

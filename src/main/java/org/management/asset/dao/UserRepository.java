@@ -22,7 +22,6 @@ import java.util.Optional;
  */
 @Repository
 @RepositoryRestResource
-@CrossOrigin(value = "*")
 public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByEmail(@Param("email") String email);

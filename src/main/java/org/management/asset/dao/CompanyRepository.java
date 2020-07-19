@@ -14,7 +14,6 @@ import java.util.Optional;
  */
 @Repository
 @RepositoryRestResource
-@CrossOrigin(value = "*")
 public interface CompanyRepository extends JpaRepository<Company, Long> {
 
     Optional<Company> findByNameIgnoreCase(@Param("name") String name);

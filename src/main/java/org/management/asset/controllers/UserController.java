@@ -60,6 +60,17 @@ public class UserController {
     }
 
     /**
+     * Get authenticated user details
+     *
+     * @return
+     */
+    @GetMapping(path = "/profile")
+    @Transactional
+    public ResponseEntity<User> getCurrentUser() {
+        return ResponseEntity.ok(this.userService.getUserByEmail(this.authenticationFacade.getAuthentication().getName()));
+    }
+
+    /**
      * Check whether the user has a specific role or one of his groups has
      *
      * @param roleType: RoleType
@@ -86,17 +97,6 @@ public class UserController {
             // User must sign out and sign in again
             return ResponseEntity.ok(new RolesCheckResponseDTO("User must sign out and sign in again!", false, true));
         }
-    }
-
-    /**
-     * Get authenticated user details
-     *
-     * @return
-     */
-    @GetMapping(path = "/current")
-    @Transactional
-    public ResponseEntity<User> getCurrentUser() {
-        return ResponseEntity.ok(this.userService.getUserByEmail(this.authenticationFacade.getAuthentication().getName()));
     }
 
     /**

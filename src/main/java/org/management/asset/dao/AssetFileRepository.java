@@ -18,7 +18,6 @@ import java.util.Optional;
  */
 @Repository
 @RepositoryRestResource
-@CrossOrigin(value = "*")
 public interface AssetFileRepository extends JpaRepository<AssetFile, Long> {
 
     Page<AssetFile> findByOrderByIdDesc(@PageableDefault Pageable pageable);
