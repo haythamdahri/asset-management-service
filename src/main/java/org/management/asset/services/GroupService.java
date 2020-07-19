@@ -11,11 +11,11 @@ public interface GroupService {
 
     Group saveGroup(Group group);
 
-    boolean deleteGroup(Long id);
+    boolean deleteGroup(String id);
 
-    Group getGroup(Long id);
+    Group getGroup(String id);
 
-    Group getGroup(String name);
+    Group getGroupByName(String name);
 
     List<Group> getGroups();
 

@@ -1,8 +1,7 @@
 package org.management.asset.dao;
 
 import org.management.asset.bo.Language;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.repository.query.Param;
+import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.stereotype.Repository;
 
@@ -13,8 +12,8 @@ import java.util.Optional;
  */
 @Repository
 @RepositoryRestResource
-public interface LanguageRepository extends JpaRepository<Language, Long> {
+public interface LanguageRepository extends MongoRepository<Language, String> {
 
-    Optional<Language> findByNameIgnoreCase(@Param("name") String name);
+    Optional<Language> findByNameIgnoreCase(final String name);
 
 }

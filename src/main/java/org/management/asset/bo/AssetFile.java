@@ -1,54 +1,40 @@
 package org.management.asset.bo;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.mongodb.core.mapping.Field;
 
-import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 /**
  * @author Haytham DAHRI
  */
-@Entity
-@Table(name = "files")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class AssetFile implements Serializable {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id")
-    private Long id;
+    private static final long serialVersionUID = -5593733910696898093L;
 
-    @Column(name = "name", nullable = false)
+    @Field(name = "name")
     private String name;
 
-    @Column(name = "extension", nullable = false)
+    @Field(name = "extension")
     private String extension;
 
-    @Column(name = "media_type", nullable = false)
+    @Field(name = "media_type")
     private String mediaType;
 
-    @Lob
-    @Column(name = "file")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private byte[] file;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "timestamp")
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private Date timestamp;
+    private LocalDateTime creationDate;
 
-    @PrePersist
-    public void prePersist() {
-        this.timestamp = new Date();
-    }
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private LocalDateTime updateDate;
 
 }

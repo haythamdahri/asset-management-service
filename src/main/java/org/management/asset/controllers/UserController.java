@@ -1,6 +1,6 @@
 package org.management.asset.controllers;
 
-import org.apache.commons.lang3.StringUtils;
+import org.management.asset.bo.AssetFile;
 import org.management.asset.bo.RoleType;
 import org.management.asset.bo.User;
 import org.management.asset.dto.PasswordResetRequestDTO;
@@ -11,12 +11,13 @@ import org.management.asset.facades.IAuthenticationFacade;
 import org.management.asset.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import javax.transaction.Transactional;
 import java.util.List;
 
 /**
@@ -47,13 +48,27 @@ public class UserController {
 
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USERS_EDIT_USERS') or hasRole('ROLE_SUPER_USER')")
     @GetMapping(path = "/{id}")
-    public ResponseEntity<User> getUser(@PathVariable(name = "id") Long userId) {
+    public ResponseEntity<User> getUser(@PathVariable(name = "id") String userId) {
         return ResponseEntity.ok(this.userService.getUser(userId));
+    }
+
+    @GetMapping(path = "/{id}/avatar/file")
+    public ResponseEntity<byte[]> getUserAvatarFile(@PathVariable(name = "id") String userId) {
+        // Retrieve AssetFile
+        AssetFile assetFile = this.userService.getUserAvatar(userId);
+        // Check file existence
+        if (assetFile != null) {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.valueOf(assetFile.getMediaType()));
+            return ResponseEntity.status(HttpStatus.OK).headers(headers).body(assetFile.getFile());
+        }
+        // Return 404 not found
+        return ResponseEntity.notFound().build();
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USERS_DELETE_USERS') or hasRole('ROLE_SUPER_USER')")
     @DeleteMapping(path = "/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable(name = "id") Long userId) {
+    public ResponseEntity<Void> deleteUser(@PathVariable(name = "id") String userId) {
         // Delete User after validation
         this.userService.deleteUser(userId);
         return ResponseEntity.status(HttpStatus.OK).build();
@@ -65,7 +80,6 @@ public class UserController {
      * @return
      */
     @GetMapping(path = "/profile")
-    @Transactional
     public ResponseEntity<User> getCurrentUser() {
         return ResponseEntity.ok(this.userService.getUserByEmail(this.authenticationFacade.getAuthentication().getName()));
     }
@@ -77,7 +91,6 @@ public class UserController {
      * @return
      */
     @GetMapping(path = "/roles/checking")
-    @Transactional
     public ResponseEntity<RolesCheckResponseDTO> checkRoleForCurrentUser(@RequestParam(name = "roleName") RoleType roleType) {
         User user = this.userService.getUserByEmail(this.authenticationFacade.getAuthentication().getName());
         if (user != null) {

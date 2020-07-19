@@ -23,13 +23,13 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public boolean deleteCompany(Long id) {
+    public boolean deleteCompany(String id) {
         this.companyRepository.deleteById(id);
         return !this.companyRepository.findById(id).isPresent();
     }
 
     @Override
-    public Company getCompany(Long id) {
+    public Company getCompanyByName(String id) {
         return this.companyRepository.findById(id).orElse(null);
     }
 

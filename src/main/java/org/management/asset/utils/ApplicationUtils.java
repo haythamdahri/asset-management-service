@@ -5,11 +5,15 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import java.util.regex.Pattern;
 
 /**
  * @author Haytam DAHRI
  */
 public class ApplicationUtils {
+
+    private static final Pattern SPECIAL_REGEX_CHARS = Pattern.compile("[{}()\\[\\].+*?^$\\\\|]");
+
 
     private ApplicationUtils() {
     }
@@ -44,6 +48,10 @@ public class ApplicationUtils {
         helper.setText(text, isMultipart);
         // return built helper
         return helper;
+    }
+
+    public static String escapeSpecialRegexChars(String str) {
+        return SPECIAL_REGEX_CHARS.matcher(str).replaceAll("\\\\$0");
     }
 
 }

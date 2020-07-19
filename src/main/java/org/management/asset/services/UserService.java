@@ -19,9 +19,11 @@ public interface UserService {
 
     User saveUser(UserRequestDTO userRequest);
 
-    User getUser(Long id);
+    User getUser(String id);
 
-    UserDTO getCustomUser(Long id);
+    AssetFile getUserAvatar(String id);
+
+    UserDTO getCustomUser(String id);
 
     User getUserByToken(String token);
 
@@ -31,7 +33,7 @@ public interface UserService {
 
     User getUserByUsername(String username);
 
-    boolean deleteUser(Long id);
+    boolean deleteUser(String id);
 
     List<User> getUsers();
 

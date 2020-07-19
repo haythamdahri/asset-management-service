@@ -20,7 +20,7 @@ public class GroupController {
     @Autowired
     private GroupService groupService;
 
-    @GetMapping(path = "")
+    @GetMapping(path = "/")
     public ResponseEntity<List<Group>> listGroups() {
         return ResponseEntity.ok(this.groupService.getGroups());
     }

@@ -3,10 +3,11 @@ package org.management.asset.bo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-import javax.persistence.*;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
@@ -14,8 +15,7 @@ import java.util.Set;
 /**
  * @author Haytham DAHRI
  */
-@Entity
-@Table(name = "asset_groups")
+@Document(collection = "groups")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -24,20 +24,14 @@ public class Group implements Serializable {
     private static final long serialVersionUID = -8419641167020237211L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id")
-    private Long id;
-
-    @Column(name = "name", unique = true)
+    private String id;
     private String name;
 
-    @EqualsAndHashCode.Exclude
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "groups_roles", joinColumns = {@JoinColumn(name = "group_id")}, inverseJoinColumns = {@JoinColumn(name = "role_name")})
+    @DBRef
     @JsonIgnore
     private Set<Role> roles;
 
-    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "groups")
+    @DBRef
     @JsonIgnore
     private Set<User> users;
 

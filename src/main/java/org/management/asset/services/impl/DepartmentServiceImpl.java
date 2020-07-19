@@ -23,18 +23,18 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     @Override
-    public boolean deleteDepartment(Long id) {
+    public boolean deleteDepartment(String id) {
         this.departmentRepository.deleteById(id);
         return !this.departmentRepository.findById(id).isPresent();
     }
 
     @Override
-    public Department getDepartment(Long id) {
+    public Department getDepartment(String id) {
         return this.departmentRepository.findById(id).orElse(null);
     }
 
     @Override
-    public Department getDepartment(String name) {
+    public Department getDepartmentByName(String name) {
         return this.departmentRepository.findByNameIgnoreCase(name).orElse(null);
     }
 

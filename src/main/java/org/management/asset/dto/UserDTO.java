@@ -18,7 +18,7 @@ public class UserDTO implements Serializable {
     private static final long serialVersionUID = 3086114819123634507L;
 
     @JsonProperty("id")
-    private Long id;
+    private String id;
 
     @JsonProperty("username")
     private String username;

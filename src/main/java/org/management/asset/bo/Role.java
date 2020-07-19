@@ -3,41 +3,36 @@ package org.management.asset.bo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Set;
 
 /**
  * @author Haytam DAHRI
  */
-@Entity
-@Table(name = "roles")
+@Document(collection = "roles")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class Role implements Serializable {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Long id;
+    private static final long serialVersionUID = 6912880882655635525L;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "role_name", unique = true, updatable = false)
+    @Id
+    private String id;
+
     private RoleType roleName;
 
-    @EqualsAndHashCode.Exclude
-    @ManyToMany(targetEntity = User.class, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @DBRef
     @JsonIgnore
     private Set<User> users;
 
-    @EqualsAndHashCode.Exclude
-    @ManyToMany(targetEntity = Group.class, mappedBy = "roles", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @DBRef
     @JsonIgnore
     private Set<Group> groups;
-
 
 }

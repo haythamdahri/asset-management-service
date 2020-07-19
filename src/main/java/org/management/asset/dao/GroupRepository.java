@@ -1,11 +1,9 @@
 package org.management.asset.dao;
 
 import org.management.asset.bo.Group;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.repository.query.Param;
+import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.stereotype.Repository;
-import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.util.Optional;
 
@@ -14,8 +12,8 @@ import java.util.Optional;
  */
 @Repository
 @RepositoryRestResource
-public interface GroupRepository extends JpaRepository<Group, Long> {
+public interface GroupRepository extends MongoRepository<Group, String> {
 
-    Optional<Group> findByNameIgnoreCase(@Param("name") String name);
+    Optional<Group> findByNameIgnoreCase(final String name);
 
 }

@@ -11,11 +11,11 @@ public interface DepartmentService {
 
     Department saveDepartment(Department department);
 
-    boolean deleteDepartment(Long id);
+    boolean deleteDepartment(String id);
 
-    Department getDepartment(Long id);
+    Department getDepartment(String id);
 
-    Department getDepartment(String name);
+    Department getDepartmentByName(String name);
 
     List<Department> getDepartments();
 

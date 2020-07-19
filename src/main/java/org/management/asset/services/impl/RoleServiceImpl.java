@@ -24,7 +24,7 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public Role getRole(Long id) {
+    public Role getRole(String id) {
         return this.roleRepository.findById(id).orElse(null);
     }
 
@@ -34,7 +34,7 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public boolean deleteRole(Long id) {
+    public boolean deleteRole(String id) {
         this.roleRepository.deleteById(id);
         return true;
     }

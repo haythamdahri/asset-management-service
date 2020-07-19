@@ -23,18 +23,18 @@ public class LocationServiceImpl implements LocationService {
     }
 
     @Override
-    public boolean deleteLocation(Long id) {
+    public boolean deleteLocation(String id) {
         this.locationRepository.deleteById(id);
         return !this.locationRepository.findById(id).isPresent();
     }
 
     @Override
-    public Location getLocation(Long id) {
+    public Location getLocation(String id) {
         return this.locationRepository.findById(id).orElse(null);
     }
 
     @Override
-    public Location getLocation(String name) {
+    public Location getLocationByName(String name) {
         return this.locationRepository.findByNameIgnoreCase(name).orElse(null);
     }
 

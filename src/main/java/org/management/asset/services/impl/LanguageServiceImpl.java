@@ -23,18 +23,18 @@ public class LanguageServiceImpl implements LanguageService {
     }
 
     @Override
-    public boolean deleteLanguage(Long id) {
+    public boolean deleteLanguage(String id) {
         this.languageRepository.deleteById(id);
         return !this.languageRepository.findById(id).isPresent();
     }
 
     @Override
-    public Language getLanguage(Long id) {
+    public Language getLanguage(String id) {
         return this.languageRepository.findById(id).orElse(null);
     }
 
     @Override
-    public Language getLanguage(String name) {
+    public Language getLanguageByName(String name) {
         return this.languageRepository.findByNameIgnoreCase(name).orElse(null);
     }
 

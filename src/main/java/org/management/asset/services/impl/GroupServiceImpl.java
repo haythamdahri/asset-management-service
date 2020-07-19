@@ -23,18 +23,18 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
-    public boolean deleteGroup(Long id) {
+    public boolean deleteGroup(String id) {
         this.groupRepository.deleteById(id);
         return !this.groupRepository.findById(id).isPresent();
     }
 
     @Override
-    public Group getGroup(Long id) {
+    public Group getGroup(String id) {
         return this.groupRepository.findById(id).orElse(null);
     }
 
     @Override
-    public Group getGroup(String name) {
+    public Group getGroupByName(String name) {
         return this.groupRepository.findByNameIgnoreCase(name).orElse(null);
     }
 

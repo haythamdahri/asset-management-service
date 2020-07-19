@@ -11,11 +11,11 @@ public interface LanguageService {
 
     Language saveLanguage(Language language);
 
-    boolean deleteLanguage(Long id);
+    boolean deleteLanguage(String id);
 
-    Language getLanguage(Long id);
+    Language getLanguage(String id);
 
-    Language getLanguage(String name);
+    Language getLanguageByName(String name);
 
     List<Language> getLanguages();
 

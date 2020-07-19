@@ -11,11 +11,11 @@ public interface LocationService {
 
     Location saveLocation(Location location);
 
-    boolean deleteLocation(Long id);
+    boolean deleteLocation(String id);
 
-    Location getLocation(Long id);
+    Location getLocation(String id);
 
-    Location getLocation(String name);
+    Location getLocationByName(String name);
 
     List<Location> getLocations();
 

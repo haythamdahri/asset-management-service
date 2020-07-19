@@ -1,7 +1,8 @@
 package org.management.asset.services.impl;
 
 import lombok.extern.log4j.Log4j2;
-import org.apache.commons.lang3.math.NumberUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.management.asset.bo.AssetFile;
 import org.management.asset.bo.User;
 import org.management.asset.dao.*;
@@ -11,24 +12,25 @@ import org.management.asset.exceptions.BusinessException;
 import org.management.asset.exceptions.TechnicalException;
 import org.management.asset.helpers.UserHelper;
 import org.management.asset.mappers.UserMapper;
-import org.management.asset.services.AssetFileService;
 import org.management.asset.services.EmailService;
 import org.management.asset.services.UserService;
+import org.management.asset.utils.ApplicationUtils;
 import org.management.asset.utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.MediaType;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.transaction.Transactional;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -60,9 +62,6 @@ public class UserServiceImpl implements UserService {
     private GroupRepository groupRepository;
 
     @Autowired
-    private AssetFileService assetFileService;
-
-    @Autowired
     private EmailService emailService;
 
     @Autowired
@@ -83,32 +82,26 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional
     public User saveUser(UserRequestDTO userRequest) {
         try {
-            final String userRequestId = userRequest.getId();
-            // Fill user id to prevent NumberFormatException
-            userRequest.setId("0");
+            // Set ID to null if empty
+            userRequest.setId(StringUtils.isEmpty(userRequest.getId()) || userRequest.getId() == null ? null : userRequest.getId());
             // MAP DTO to BO
             User user = this.userMapper.toModel(userRequest);
             User originalUser;
-            if (NumberUtils.isCreatable(userRequestId)) {
-                originalUser = this.userRepository.findById(Long.parseLong(userRequestId)).orElse(new User());
-                user.setId(Long.parseLong(userRequestId));
+            if (userRequest.getId() != null) {
+                originalUser = this.userRepository.findById(userRequest.getId()).orElse(new User());
             } else {
                 originalUser = new User();
-                user.setId(null);
             }
             // Check email and employeeNumber changes; if changed verify unique value
-            if (!org.apache.commons.lang3.StringUtils.equals(userRequest.getEmail(), originalUser.getEmail()) &&
-                    this.userRepository.findByEmail(userRequest.getEmail()).isPresent()) {
+            if (this.userRepository.findByIdNotAndEmail(userRequest.getId(), userRequest.getEmail()).isPresent()) {
                 throw new BusinessException(Constants.EMAIL_ALREADY_USED);
-            } else if (!org.apache.commons.lang3.StringUtils.equals(originalUser.getEmployeeNumber(), userRequest.getEmployeeNumber()) &&
-                    this.userRepository.findByEmployeeNumber(userRequest.getEmployeeNumber()).isPresent()) {
+            } else if (this.userRepository.findByIdNotAndEmployeeNumber(userRequest.getId(), userRequest.getEmployeeNumber()).isPresent()) {
                 throw new BusinessException(Constants.EMPLOYEE_NUMBER_ALREADY_USED);
             }
             // Check if permissions will be changed
-            if (userRequest.isUpdatePermissions() || StringUtils.isEmpty(userRequestId)) {
+            if (userRequest.isUpdatePermissions() || userRequest.getId() == null) {
                 this.setUserPermissions(userRequest.getRoles(), userRequest.getGroups(), user);
             } else {
                 user.setGroups(originalUser.getGroups());
@@ -131,39 +124,39 @@ public class UserServiceImpl implements UserService {
 
     private void setUserData(UserRequestDTO userRequest, User user, User originalUser) throws IOException {
         // Set Location
-        if (!userRequest.getLocation().equalsIgnoreCase("null") && !StringUtils.isEmpty(userRequest.getLocation())) {
-            user.setLocation(this.locationRepository.findById(Long.parseLong(userRequest.getLocation())).orElse(null));
+        if (userRequest.getLocation() != null && !StringUtils.isEmpty(userRequest.getLocation())) {
+            user.setLocation(this.locationRepository.findById(userRequest.getLocation()).orElse(null));
         } else {
             user.setLocation(originalUser.getLocation());
         }
         // Set Department
-        if (!userRequest.getDepartment().equalsIgnoreCase("null") && !StringUtils.isEmpty(userRequest.getDepartment())) {
-            user.setDepartment(this.departmentRepository.findById(Long.parseLong(userRequest.getDepartment())).orElse(null));
+        if (userRequest.getDepartment() != null && !StringUtils.isEmpty(userRequest.getDepartment())) {
+            user.setDepartment(this.departmentRepository.findById(userRequest.getDepartment()).orElse(null));
         } else {
             user.setDepartment(originalUser.getDepartment());
         }
         // Set Language
-        if (!userRequest.getLanguage().equalsIgnoreCase("null") && !StringUtils.isEmpty(userRequest.getLanguage())) {
-            user.setLanguage(this.languageRepository.findById(Long.parseLong(userRequest.getLanguage())).orElse(null));
+        if (userRequest.getLanguage() != null && !StringUtils.isEmpty(userRequest.getLanguage())) {
+            user.setLanguage(this.languageRepository.findById(userRequest.getLanguage()).orElse(null));
         } else {
             user.setLanguage(originalUser.getLanguage());
         }
         // Set Manager
-        user.setManager(this.userRepository.findById(Long.parseLong(userRequest.getManager())).orElse(null));
+        user.setManager(this.userRepository.findById(userRequest.getManager()).orElse(null));
         // Set Company
-        if (!userRequest.getCompany().equalsIgnoreCase("null") && !StringUtils.isEmpty(userRequest.getCompany())) {
-            user.setCompany(this.companyRepository.findById(Long.parseLong(userRequest.getCompany())).orElse(null));
+        if (userRequest.getCompany() != null && !StringUtils.isEmpty(userRequest.getCompany())) {
+            user.setCompany(this.companyRepository.findById(userRequest.getCompany()).orElse(null));
         } else {
             user.setCompany(originalUser.getCompany());
         }
         // Set Password
-        if (!StringUtils.isEmpty(userRequest.getPassword()) || userRequest.getId() == null) {
+        if (userRequest.isUpdatePassword() || userRequest.getId() == null) {
             user.setPassword(this.passwordEncoder.encode(userRequest.getPassword()));
         } else {
             user.setPassword(originalUser.getPassword());
         }
         // Set Image
-        if (userRequest.isUpdateImage() || user.getId() == null) {
+        if (userRequest.isUpdateImage() || userRequest.getId() == null) {
             this.updateUserImage(userRequest.getImage(), userRequest.getEmail(), user);
         } else {
             user.setAvatar(originalUser.getAvatar());
@@ -188,10 +181,13 @@ public class UserServiceImpl implements UserService {
             if (file == null || file.isEmpty() || !Constants.IMAGE_CONTENT_TYPES.contains(file.getContentType())) {
                 throw new BusinessException(Constants.INVALID_USER_IMAGE);
             } else {
-                AssetFile avatar = this.assetFileService.getAssetFileByUser(user.getId());
+                AssetFile avatar = user.getAvatar() != null ? user.getAvatar() : new AssetFile();
                 // Update user image file and link it with current user
-                AssetFile assetFile = this.assetFileService.saveAssetFile(file, avatar);
-                user.setAvatar(assetFile);
+                avatar.setName(FilenameUtils.removeExtension(file.getOriginalFilename()));
+                avatar.setExtension(FilenameUtils.getExtension(file.getOriginalFilename()));
+                avatar.setFile(file.getBytes());
+                avatar.setMediaType(MediaType.valueOf(Objects.requireNonNull(file.getContentType())).toString());
+                user.setAvatar(avatar);
             }
             // Return User
             return user;
@@ -215,24 +211,29 @@ public class UserServiceImpl implements UserService {
         // Retrieve Roles
         this.userHelper.extractList(roles).forEach(roleId -> {
             if (!StringUtils.isEmpty(roleId)) {
-                user.addRole(this.roleRepository.findById(Long.parseLong(roleId)).orElseThrow(BusinessException::new));
+                user.addRole(this.roleRepository.findById(roleId).orElseThrow(BusinessException::new));
             }
         });
         // Retrieve groups
         this.userHelper.extractList(groups).forEach(groupId -> {
             if (!StringUtils.isEmpty(groupId)) {
-                user.addGroup(this.groupRepository.findById(Long.parseLong(groupId)).orElseThrow(BusinessException::new));
+                user.addGroup(this.groupRepository.findById(groupId).orElseThrow(BusinessException::new));
             }
         });
     }
 
     @Override
-    public User getUser(Long id) {
+    public User getUser(String id) {
         return this.userRepository.findById(id).orElse(null);
     }
 
     @Override
-    public UserDTO getCustomUser(Long id) {
+    public AssetFile getUserAvatar(String id) {
+        return this.userRepository.findById(id).map(User::getAvatar).orElse(null);
+    }
+
+    @Override
+    public UserDTO getCustomUser(String id) {
         return this.userRepository.findCustomUserById(id).orElse(null);
     }
 
@@ -257,7 +258,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean deleteUser(Long id) {
+    public boolean deleteUser(String id) {
         this.userRepository.deleteById(id);
         return !this.userRepository.findById(id).isPresent();
     }
@@ -276,9 +277,9 @@ public class UserServiceImpl implements UserService {
     public Page<User> getUsers(String search, String excludedUserEmail, int page, int size) {
         // Check if search is required
         if (StringUtils.isEmpty(search)) {
-            return this.userRepository.findAllWithUserExclusion(PageRequest.of(page, size, Sort.Direction.ASC, "id"), excludedUserEmail);
+            return this.userRepository.findAllWithUserExclusion(excludedUserEmail, PageRequest.of(page, size, Sort.Direction.ASC, "id"));
         }
-        return this.userRepository.findBySearch(PageRequest.of(page, size, Sort.Direction.ASC, "id"), search.toLowerCase().trim(), excludedUserEmail);
+        return this.userRepository.findBySearch(ApplicationUtils.escapeSpecialRegexChars(search.toLowerCase().trim()), excludedUserEmail, PageRequest.of(page, size, Sort.Direction.ASC, "id"));
     }
 
     @Override

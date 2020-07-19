@@ -1,20 +1,19 @@
 package org.management.asset.bo;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Set;
 
 /**
  * @author Haytham DAHRI
  */
-@Entity
-@Table(name = "departments")
+@Document(collection = "departments")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -23,16 +22,10 @@ public class Department implements Serializable {
     private static final long serialVersionUID = 3021098015902959779L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id")
-    private Long id;
-
-    @Column(name = "name")
+    private String id;
     private String name;
 
-    @EqualsAndHashCode.Exclude
-    @OneToMany(targetEntity = User.class, mappedBy = "department")
-    @JsonIgnore
+    @DBRef
     private Set<User> users;
 
 }

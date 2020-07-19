@@ -10,14 +10,11 @@ import org.springframework.context.event.EventListener;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import javax.transaction.Transactional;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -38,9 +35,6 @@ public class ApplicationConfiguration {
     private GroupService groupService;
 
     @Autowired
-    private AssetFileService assetFileService;
-
-    @Autowired
     private CompanyService companyService;
 
     @Autowired
@@ -56,7 +50,6 @@ public class ApplicationConfiguration {
     private BCryptPasswordEncoder passwordEncoder;
 
     @EventListener(value = {ApplicationReadyEvent.class})
-    @Transactional
     public void runApplication() throws IOException {
         Group superAdmins = null;
         Group basicUsers = null;
@@ -74,21 +67,14 @@ public class ApplicationConfiguration {
         if (this.userService.getUsers().isEmpty()) {
             // Add ADMIN User For Dev
             byte[] bytes = Files.readAllBytes(Paths.get("/home/haytham/Downloads/profile.jpg"));
-            AssetFile acerImage = this.assetFileService.saveAssetFile(
-                    new AssetFile(null, "Database.png", "png", MediaType.IMAGE_PNG_VALUE, bytes, null));
-            AssetFile dellImage = this.assetFileService.saveAssetFile(
-                    new AssetFile(null, "Database.png", "png", MediaType.IMAGE_PNG_VALUE, bytes, null));
-            AssetFile userAvatar = this.assetFileService.saveAssetFile(
-                    new AssetFile(null, "Database.png", "png", MediaType.IMAGE_PNG_VALUE, bytes, null));
-            Company acerCompany = this.companyService.saveCompany(new Company(null, "ACER", acerImage, null));
-            Company dellCompany = this.companyService.saveCompany(new Company(null, "DELL", dellImage, null));
+            AssetFile avatar = new AssetFile("Database.png", "png", MediaType.IMAGE_PNG_VALUE, bytes, LocalDateTime.now(), LocalDateTime.now());
+            Company acerCompany = this.companyService.saveCompany(new Company(null, "ACER", avatar, null));
+            Company dellCompany = this.companyService.saveCompany(new Company(null, "DELL", avatar, null));
             Language language = this.languageService.saveLanguage(new Language(null, "Francais"));
             Department department = this.departmentService.saveDepartment(
                     new Department(null, "Système d'information", null));
-            AssetFile locationAssetFile = this.assetFileService.saveAssetFile(
-                    new AssetFile(null, "Database.png", "png", MediaType.IMAGE_PNG_VALUE, bytes, null));
             Location location = this.locationService.saveLocation(this.locationService.saveLocation(new Location(null, "Rabat, Morocco", null, "Address 2", "Address 2"
-                    , "Rabat", "Rabat-Kénitra", "Morocco", "10010", locationAssetFile)));
+                    , "Rabat", "Rabat-Kénitra", "Morocco", "10010", avatar)));
             User user = new User();
             user.setFirstName("Haytham");
             user.setLastName("Dahri");
@@ -114,7 +100,7 @@ public class ApplicationConfiguration {
             user.setCreationDate(LocalDateTime.now().minusDays(5L));
             user.setActivationDate(LocalDateTime.now().minusHours(12L));
             user.setLastLogin(LocalDateTime.now().minusMinutes(50L));
-            user.setAvatar(userAvatar);
+            user.setAvatar(avatar);
             user.setNotes("");
             user.setCreationDate(LocalDateTime.now());
             // Assign user all roles & add it to SUPERADMINS
@@ -123,8 +109,6 @@ public class ApplicationConfiguration {
             this.roleService.getRoles().forEach(user::addRole);
             this.userService.saveUser(user);
             // ========================= Add Basic User For Dev =========================
-            AssetFile newUserAvatar = this.assetFileService.saveAssetFile(
-                    new AssetFile(null, "Database.png", "png", MediaType.IMAGE_PNG_VALUE, bytes, null));
             User basicUser = new User();
             basicUser.setCreationDate(LocalDateTime.now());
             basicUser.setFirstName("Basic");
@@ -152,7 +136,7 @@ public class ApplicationConfiguration {
             basicUser.setCreationDate(LocalDateTime.now().minusDays(5L));
             basicUser.setActivationDate(LocalDateTime.now().minusHours(12L));
             basicUser.setLastLogin(LocalDateTime.now().minusMinutes(50L));
-            basicUser.setAvatar(newUserAvatar);
+            basicUser.setAvatar(avatar);
             basicUser.setNotes("");
             basicUser.addRole(this.roleService.getRole(RoleType.ROLE_USERS_VIEW));
             basicUser.addGroup(basicUsers);

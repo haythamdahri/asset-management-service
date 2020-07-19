@@ -13,11 +13,11 @@ public interface RoleService {
 
     Role saveRole(Role role);
 
-    Role getRole(Long id);
+    Role getRole(String id);
 
     Role getRole(RoleType roleType);
 
-    boolean deleteRole(Long id);
+    boolean deleteRole(String id);
 
     List<Role> getRoles();
 

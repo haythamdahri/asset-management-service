@@ -58,11 +58,11 @@ public class UserRequestDTO implements Serializable {
     @JsonProperty("department")
     private String department;
 
-    @JsonProperty("avatar")
-    private String avatar;
-
     @JsonProperty("password")
     private String password;
+
+    @JsonProperty("password")
+    private boolean updatePassword;
 
     @JsonProperty("employeeNumber")
     private String employeeNumber;

@@ -11,11 +11,11 @@ public interface CompanyService {
 
     Company saveCompany(Company company);
 
-    boolean deleteCompany(Long id);
+    boolean deleteCompany(String id);
 
-    Company getCompany(Long id);
+    Company getCompany(String id);
 
-    Company getCompany(String name);
+    Company getCompanyByName(String name);
 
     List<Company> getCompanies();
 
