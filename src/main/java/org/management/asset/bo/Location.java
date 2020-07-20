@@ -22,7 +22,6 @@ public class Location implements Serializable {
     @Id
     private String id;
     private String name;
-    private User manager;
     private String address1;
     private String address2;
     private String city;

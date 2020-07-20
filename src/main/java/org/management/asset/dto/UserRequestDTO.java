@@ -43,8 +43,8 @@ public class UserRequestDTO implements Serializable {
     @JsonProperty("active")
     private boolean active;
 
-    @JsonProperty("company")
-    private String company;
+    @JsonProperty("organization")
+    private String organization;
 
     @JsonProperty("language")
     private String language;
@@ -55,8 +55,8 @@ public class UserRequestDTO implements Serializable {
     @JsonProperty("location")
     private String location;
 
-    @JsonProperty("department")
-    private String department;
+    @JsonProperty("entity")
+    private String entity;
 
     @JsonProperty("password")
     private String password;

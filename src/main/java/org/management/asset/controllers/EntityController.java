@@ -1,7 +1,7 @@
 package org.management.asset.controllers;
 
-import org.management.asset.bo.Department;
-import org.management.asset.services.DepartmentService;
+import org.management.asset.bo.Entity;
+import org.management.asset.services.EntityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,15 +14,15 @@ import java.util.List;
  * @author Haytham DAHRI
  */
 @RestController
-@RequestMapping(path = "/api/v1/departments")
-public class DepartmentController {
+@RequestMapping(path = "/api/v1/entities")
+public class EntityController {
 
     @Autowired
-    private DepartmentService departmentService;
+    private EntityService entityService;
 
     @GetMapping(path = "/")
-    public ResponseEntity<List<Department>> listDepartments() {
-        return ResponseEntity.ok(this.departmentService.getDepartments());
+    public ResponseEntity<List<Entity>> listEntities() {
+        return ResponseEntity.ok(this.entityService.getEntities());
     }
 
 }

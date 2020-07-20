@@ -19,10 +19,7 @@ public class AssetFile implements Serializable {
 
     private static final long serialVersionUID = -5593733910696898093L;
 
-    @Field(name = "name")
     private String name;
-
-    @Field(name = "extension")
     private String extension;
 
     @Field(name = "media_type")

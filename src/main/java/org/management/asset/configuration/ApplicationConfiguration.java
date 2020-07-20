@@ -35,13 +35,13 @@ public class ApplicationConfiguration {
     private GroupService groupService;
 
     @Autowired
-    private CompanyService companyService;
+    private OrganizationService organizationService;
 
     @Autowired
     private LanguageService languageService;
 
     @Autowired
-    private DepartmentService departmentService;
+    private EntityService entityService;
 
     @Autowired
     private LocationService locationService;
@@ -68,24 +68,24 @@ public class ApplicationConfiguration {
             // Add ADMIN User For Dev
             byte[] bytes = Files.readAllBytes(Paths.get("/home/haytham/Downloads/profile.jpg"));
             AssetFile avatar = new AssetFile("Database.png", "png", MediaType.IMAGE_PNG_VALUE, bytes, LocalDateTime.now(), LocalDateTime.now());
-            Company acerCompany = this.companyService.saveCompany(new Company(null, "ACER", avatar, null));
-            Company dellCompany = this.companyService.saveCompany(new Company(null, "DELL", avatar, null));
+            Organization acerOrganization = this.organizationService.saveOrganization(new Organization(null, "ACER", "Description", avatar, null, null));
+            Organization dellOrganization = this.organizationService.saveOrganization(new Organization(null, "DELL", "Description", avatar, null, null));
             Language language = this.languageService.saveLanguage(new Language(null, "Francais"));
-            Department department = this.departmentService.saveDepartment(
-                    new Department(null, "Système d'information", null));
-            Location location = this.locationService.saveLocation(this.locationService.saveLocation(new Location(null, "Rabat, Morocco", null, "Address 2", "Address 2"
-                    , "Rabat", "Rabat-Kénitra", "Morocco", "10010", avatar)));
+            Entity entity = this.entityService.saveEntity(
+                    new Entity(null, "Système d'information", null));
+            Location location = this.locationService.saveLocation(new Location(null, "Rabat, Morocco", "Address 2", "Address 2"
+                    , "Rabat", "Rabat-Kénitra", "Morocco", "10010", avatar));
             User user = new User();
             user.setFirstName("Haytham");
             user.setLastName("Dahri");
             user.setUsername("haythamdahri");
             user.setPassword(this.passwordEncoder.encode("toortoor"));
             user.setEmail("haytham.dahri@gmail.com");
-            user.setCompany(acerCompany);
+            user.setOrganization(acerOrganization);
             user.setLanguage(language);
             user.setEmployeeNumber("EMP56210");
             user.setTitle("Mr");
-            user.setDepartment(department);
+            user.setEntity(entity);
             user.setLocation(location);
             user.setPhone("0689855298");
             user.setWebsite("https://www.google.com");
@@ -116,12 +116,12 @@ public class ApplicationConfiguration {
             basicUser.setUsername("basic");
             basicUser.setPassword(this.passwordEncoder.encode("toortoor"));
             basicUser.setEmail("basic.user@gmail.com");
-            basicUser.setCompany(dellCompany);
+            basicUser.setOrganization(dellOrganization);
             basicUser.setLanguage(language);
             basicUser.setEmployeeNumber("EMP5000");
             basicUser.setTitle("Mr");
             basicUser.setManager(user);
-            basicUser.setDepartment(department);
+            basicUser.setEntity(entity);
             basicUser.setLocation(location);
             basicUser.setPhone("0600223366");
             basicUser.setWebsite("https://www.google.com");
@@ -142,6 +142,49 @@ public class ApplicationConfiguration {
             basicUser.addGroup(basicUsers);
             this.userService.saveUser(basicUser);
         }
+//            // =============== Generate Users ===============
+//            byte[] bytes = Files.readAllBytes(Paths.get("/home/haytham/Downloads/profile.jpg"));
+//            AssetFile avatar = new AssetFile("Database.png", "png", MediaType.IMAGE_PNG_VALUE, bytes, LocalDateTime.now(), LocalDateTime.now());
+//            Company dellCompany = this.companyService.saveCompany(new Company(null, "DELL", avatar, null));
+//            Language language = this.languageService.saveLanguage(new Language(null, "Francais"));
+//            Department department = this.departmentService.saveDepartment(
+//                    new Department(null, "Système d'information", null));
+//            Location location = this.locationService.saveLocation(this.locationService.saveLocation(new Location(null, "Rabat, Morocco", null, "Address 2", "Address 2"
+//                    , "Rabat", "Rabat-Kénitra", "Morocco", "10010", avatar)));
+//            for(int i=0; i<650; i++) {
+//                User basicUser = new User();
+//                basicUser.setCreationDate(LocalDateTime.now());
+//                basicUser.setFirstName("Basic" + i);
+//                basicUser.setLastName("User" + i);
+//                basicUser.setUsername("basic" + i);
+//                basicUser.setPassword(this.passwordEncoder.encode("toortoor"));
+//                basicUser.setEmail("basic.user" + i + "@gmail.com");
+//                basicUser.setCompany(dellCompany);
+//                basicUser.setLanguage(language);
+//                basicUser.setEmployeeNumber("EMP5000"+ i);
+//                basicUser.setTitle("Mr");
+//                basicUser.setManager(null);
+//                basicUser.setDepartment(department);
+//                basicUser.setLocation(location);
+//                basicUser.setPhone("0600223366");
+//                basicUser.setWebsite("https://www.google.com");
+//                basicUser.setJobTitle("Analyst");
+//                basicUser.setCity("Tanger");
+//                basicUser.setAddress("Address Tanger");
+//                basicUser.setState("Tanger");
+//                basicUser.setCountry("Morocco");
+//                basicUser.setZip("653000");
+//                basicUser.setActive(true);
+//                basicUser.setLocation(location);
+//                basicUser.setCreationDate(LocalDateTime.now().minusDays(5L));
+//                basicUser.setActivationDate(LocalDateTime.now().minusHours(12L));
+//                basicUser.setLastLogin(LocalDateTime.now().minusMinutes(50L));
+//                basicUser.setAvatar(avatar);
+//                basicUser.setNotes("");
+//                basicUser.addRole(this.roleService.getRole(RoleType.ROLE_USERS_VIEW));
+//                basicUser.addGroup(basicUsers);
+//                this.userService.saveUser(basicUser);
+//            }
         // Logging Message
         log.info("SYSTEM HAS BEEN INITIALIZED SUCCESSFULLY");
     }

@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.util.StringUtils;
@@ -34,13 +35,27 @@ public class User implements Serializable {
 
     @JsonIgnore
     private String password;
+
+    @Indexed(name="email", unique=true)
     private String email;
-    private Company company;
+
+    @DBRef
+    private Organization organization;
+
+    @DBRef
     private Language language;
+
+    @Indexed(name="employeeNumber", unique=true)
     private String employeeNumber;
     private String title;
+
+    @DBRef
     private User manager;
-    private Department department;
+
+    @DBRef
+    private Entity entity;
+
+    @DBRef
     private Location location;
     private String phone;
     private String website;
@@ -114,7 +129,7 @@ public class User implements Serializable {
      *
      * @return boolean
      */
-    public boolean isValidToken() {
+    public boolean checkTokenValidity() {
         return (this.expiryDate != null && this.token != null && !StringUtils.isEmpty(this.token) && this.expiryDate.isAfter(LocalDateTime.now()));
     }
 

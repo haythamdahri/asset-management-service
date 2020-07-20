@@ -13,7 +13,7 @@ public class RepositoryConfig implements RepositoryRestConfigurer {
 
     @Override
     public void configureRepositoryRestConfiguration(RepositoryRestConfiguration config) {
-        config.exposeIdsFor(Company.class, Department.class, Group.class, Language.class, Location.class, Role.class, User.class);
+        config.exposeIdsFor(Organization.class, Entity.class, Group.class, Language.class, Location.class, Role.class, User.class);
     }
 
 }

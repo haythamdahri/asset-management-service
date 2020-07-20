@@ -30,7 +30,6 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -50,13 +49,13 @@ public class UserServiceImpl implements UserService {
     private LocationRepository locationRepository;
 
     @Autowired
-    private DepartmentRepository departmentRepository;
+    private EntityRepository entityRepository;
 
     @Autowired
     private LanguageRepository languageRepository;
 
     @Autowired
-    private CompanyRepository companyRepository;
+    private OrganizationRepository organizationRepository;
 
     @Autowired
     private GroupRepository groupRepository;
@@ -129,11 +128,11 @@ public class UserServiceImpl implements UserService {
         } else {
             user.setLocation(originalUser.getLocation());
         }
-        // Set Department
-        if (userRequest.getDepartment() != null && !StringUtils.isEmpty(userRequest.getDepartment())) {
-            user.setDepartment(this.departmentRepository.findById(userRequest.getDepartment()).orElse(null));
+        // Set Entity
+        if (userRequest.getEntity() != null && !StringUtils.isEmpty(userRequest.getEntity())) {
+            user.setEntity(this.entityRepository.findById(userRequest.getEntity()).orElse(null));
         } else {
-            user.setDepartment(originalUser.getDepartment());
+            user.setEntity(originalUser.getEntity());
         }
         // Set Language
         if (userRequest.getLanguage() != null && !StringUtils.isEmpty(userRequest.getLanguage())) {
@@ -143,11 +142,11 @@ public class UserServiceImpl implements UserService {
         }
         // Set Manager
         user.setManager(this.userRepository.findById(userRequest.getManager()).orElse(null));
-        // Set Company
-        if (userRequest.getCompany() != null && !StringUtils.isEmpty(userRequest.getCompany())) {
-            user.setCompany(this.companyRepository.findById(userRequest.getCompany()).orElse(null));
+        // Set Organization
+        if (userRequest.getOrganization() != null && !StringUtils.isEmpty(userRequest.getOrganization())) {
+            user.setOrganization(this.organizationRepository.findById(userRequest.getOrganization()).orElse(null));
         } else {
-            user.setCompany(originalUser.getCompany());
+            user.setOrganization(originalUser.getOrganization());
         }
         // Set Password
         if (userRequest.isUpdatePassword() || userRequest.getId() == null) {
@@ -310,7 +309,7 @@ public class UserServiceImpl implements UserService {
         User user = this.userRepository.findByToken(token).orElse(null);
         if (user == null) {
             throw new BusinessException(Constants.INVALID_TOKEN);
-        } else if (!user.isValidToken()) {
+        } else if (!user.checkTokenValidity()) {
             throw new BusinessException(Constants.EXPIRED_TOKEN);
         }
         return true;
@@ -325,7 +324,7 @@ public class UserServiceImpl implements UserService {
             throw new BusinessException(Constants.INVALID_TOKEN);
         } else if (!user.isActive()) {
             throw new BusinessException(Constants.ACCOUNT_NOT_ACTIVE);
-        } else if (!user.isValidToken()) {
+        } else if (!user.checkTokenValidity()) {
             throw new BusinessException(Constants.EXPIRED_TOKEN);
         }
         // Update user password

@@ -8,26 +8,34 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Set;
 
 /**
  * @author Haytham DAHRI
  */
-@Document(collection = "companies")
+@Document(collection = "processes")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Company implements Serializable {
+public class Process implements Serializable {
 
-    private static final long serialVersionUID = 6911109441298292437L;
+    private static final long serialVersionUID = -8923997747362630547L;
 
     @Id
     private String id;
     private String name;
-
-    private AssetFile image;
+    private String description;
+    private boolean status;
 
     @DBRef
-    private Set<User> users;
+    private Process parentProcess;
+    private ClassificationDICT classificationDICT;
+
+    /**
+     * Actifs
+     */
+    @DBRef
+    private Set<Asset> assets;
 
 }

@@ -1,7 +1,7 @@
 package org.management.asset.controllers;
 
-import org.management.asset.bo.Company;
-import org.management.asset.services.CompanyService;
+import org.management.asset.bo.Organization;
+import org.management.asset.services.OrganizationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,15 +14,15 @@ import java.util.List;
  * @author Haytham DAHRI
  */
 @RestController
-@RequestMapping(path = "/api/v1/companies")
-public class CompanyController {
+@RequestMapping(path = "/api/v1/organizations")
+public class OrganizationController {
 
     @Autowired
-    private CompanyService companyService;
+    private OrganizationService organizationService;
 
     @GetMapping(path = "/")
-    public ResponseEntity<List<Company>> listCompanies() {
-        return ResponseEntity.ok(this.companyService.getCompanies());
+    public ResponseEntity<List<Organization>> listCompanies() {
+        return ResponseEntity.ok(this.organizationService.getOrganizations());
     }
 
 }
