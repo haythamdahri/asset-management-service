@@ -80,8 +80,8 @@ public class ApplicationConfiguration {
             user.setLastName("Dahri");
             user.setUsername("haythamdahri");
             user.setPassword(this.passwordEncoder.encode("toortoor"));
-            user.setEmail("haytham.dahri@gmail.com");
             user.setOrganization(acerOrganization);
+            user.setEmail("haytham.dahri@gmail.com");
             user.setLanguage(language);
             user.setEmployeeNumber("EMP56210");
             user.setTitle("Mr");
@@ -116,7 +116,7 @@ public class ApplicationConfiguration {
             basicUser.setUsername("basic");
             basicUser.setPassword(this.passwordEncoder.encode("toortoor"));
             basicUser.setEmail("basic.user@gmail.com");
-            basicUser.setOrganization(dellOrganization);
+            user.setOrganization(acerOrganization);
             basicUser.setLanguage(language);
             basicUser.setEmployeeNumber("EMP5000");
             basicUser.setTitle("Mr");
@@ -141,50 +141,42 @@ public class ApplicationConfiguration {
             basicUser.addRole(this.roleService.getRole(RoleType.ROLE_USERS_VIEW));
             basicUser.addGroup(basicUsers);
             this.userService.saveUser(basicUser);
+            // =============== Generate Users ===============
+            for(int i=0; i<650; i++) {
+                basicUser = new User();
+                basicUser.setCreationDate(LocalDateTime.now());
+                basicUser.setFirstName("Basic" + i);
+                basicUser.setLastName("User" + i);
+                basicUser.setUsername("basic" + i);
+                basicUser.setPassword(this.passwordEncoder.encode("toortoor"));
+                basicUser.setEmail("basic.user" + i + "@gmail.com");
+                basicUser.setOrganization(dellOrganization);
+                basicUser.setLanguage(language);
+                basicUser.setEmployeeNumber("EMP5000"+ i);
+                basicUser.setTitle("Mr");
+                basicUser.setManager(null);
+                basicUser.setEntity(entity);
+                basicUser.setLocation(location);
+                basicUser.setPhone("0600223366");
+                basicUser.setWebsite("https://www.google.com");
+                basicUser.setJobTitle("Analyst");
+                basicUser.setCity("Tanger");
+                basicUser.setAddress("Address Tanger");
+                basicUser.setState("Tanger");
+                basicUser.setCountry("Morocco");
+                basicUser.setZip("653000");
+                basicUser.setActive(true);
+                basicUser.setLocation(location);
+                basicUser.setCreationDate(LocalDateTime.now().minusDays(5L));
+                basicUser.setActivationDate(LocalDateTime.now().minusHours(12L));
+                basicUser.setLastLogin(LocalDateTime.now().minusMinutes(50L));
+                basicUser.setAvatar(avatar);
+                basicUser.setNotes("My Notes " + i);
+                basicUser.addRole(this.roleService.getRole(RoleType.ROLE_USERS_VIEW));
+                basicUser.addGroup(basicUsers);
+                this.userService.saveUser(basicUser);
+            }
         }
-//            // =============== Generate Users ===============
-//            byte[] bytes = Files.readAllBytes(Paths.get("/home/haytham/Downloads/profile.jpg"));
-//            AssetFile avatar = new AssetFile("Database.png", "png", MediaType.IMAGE_PNG_VALUE, bytes, LocalDateTime.now(), LocalDateTime.now());
-//            Company dellCompany = this.companyService.saveCompany(new Company(null, "DELL", avatar, null));
-//            Language language = this.languageService.saveLanguage(new Language(null, "Francais"));
-//            Department department = this.departmentService.saveDepartment(
-//                    new Department(null, "Système d'information", null));
-//            Location location = this.locationService.saveLocation(this.locationService.saveLocation(new Location(null, "Rabat, Morocco", null, "Address 2", "Address 2"
-//                    , "Rabat", "Rabat-Kénitra", "Morocco", "10010", avatar)));
-//            for(int i=0; i<650; i++) {
-//                User basicUser = new User();
-//                basicUser.setCreationDate(LocalDateTime.now());
-//                basicUser.setFirstName("Basic" + i);
-//                basicUser.setLastName("User" + i);
-//                basicUser.setUsername("basic" + i);
-//                basicUser.setPassword(this.passwordEncoder.encode("toortoor"));
-//                basicUser.setEmail("basic.user" + i + "@gmail.com");
-//                basicUser.setCompany(dellCompany);
-//                basicUser.setLanguage(language);
-//                basicUser.setEmployeeNumber("EMP5000"+ i);
-//                basicUser.setTitle("Mr");
-//                basicUser.setManager(null);
-//                basicUser.setDepartment(department);
-//                basicUser.setLocation(location);
-//                basicUser.setPhone("0600223366");
-//                basicUser.setWebsite("https://www.google.com");
-//                basicUser.setJobTitle("Analyst");
-//                basicUser.setCity("Tanger");
-//                basicUser.setAddress("Address Tanger");
-//                basicUser.setState("Tanger");
-//                basicUser.setCountry("Morocco");
-//                basicUser.setZip("653000");
-//                basicUser.setActive(true);
-//                basicUser.setLocation(location);
-//                basicUser.setCreationDate(LocalDateTime.now().minusDays(5L));
-//                basicUser.setActivationDate(LocalDateTime.now().minusHours(12L));
-//                basicUser.setLastLogin(LocalDateTime.now().minusMinutes(50L));
-//                basicUser.setAvatar(avatar);
-//                basicUser.setNotes("");
-//                basicUser.addRole(this.roleService.getRole(RoleType.ROLE_USERS_VIEW));
-//                basicUser.addGroup(basicUsers);
-//                this.userService.saveUser(basicUser);
-//            }
         // Logging Message
         log.info("SYSTEM HAS BEEN INITIALIZED SUCCESSFULLY");
     }

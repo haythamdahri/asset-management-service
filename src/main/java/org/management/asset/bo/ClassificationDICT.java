@@ -20,7 +20,7 @@ public class ClassificationDICT implements Serializable {
 
     private static final long serialVersionUID = -1459913926470809020L;
 
-    private String id;
+    private String id = UUID.randomUUID().toString();
     // Confidentialité
     private int confidentiality;
     // Disponibilité
@@ -37,10 +37,6 @@ public class ClassificationDICT implements Serializable {
 
     @PostConstruct
     private void postConstruct() {
-        // Assign id
-        if (id == null) {
-            this.id = UUID.randomUUID().toString();
-        }
         // Calculate score
         this.score = this.confidentiality + this.availability + this.traceability + this.integrity;
     }

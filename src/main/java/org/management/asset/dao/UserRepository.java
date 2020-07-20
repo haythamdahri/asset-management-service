@@ -57,8 +57,8 @@ public interface UserRepository extends MongoRepository<User, String> {
     @Query(value = "{$or: [{'username': {$regex : '.*?0.*', $options: 'i'}}, {'email': {$regex : '.*?0.*', $options: 'i'}}, {'firstName': {$regex : '.*?0.*', $options: 'i'}}, " +
             "{'lastName': {$regex : '.*?0.*', $options: 'i'}}, {'city': {$regex : '.*?0.*', $options: 'i'}}, {'country': {$regex : '.*?0.*', $options: 'i'}}, " +
             "{'employeeNumber': {$regex : '.*?0.*', $options: 'i'}}, {'jobTitle': {$regex : '.*?0.*', $options: 'i'}}, {'notes': {$regex : '.*?0.*', $options: 'i'}}, " +
-            "{'phone': {$regex : '.*?0.*', $options: 'i'}}, {'title': {$regex : '.*?0.*', $options: 'i'}}, {'website': {$regex : '.*?0.*', $options: 'i'}}, " +
-            "{'zip': {$regex : '.*?0.*', $options: 'i'}}, {'department.name': {$regex : '.*?0.*', $options: 'i'}}, {'location.name': {$regex : '.*?0.*', $options: 'i'}}], " +
+            "{'phone': {$regex : '.*?0.*', $options: 'i'}}, {'title': {$regex : '.*?0.*', $options: 'i'}}, {'website': {$regex : '.*?0.*', $options: 'i'}}, {'organization': {name: {$regex : '.*?0.*', $options: 'i'}}}, " +
+            "{'zip': {$regex : '.*?0.*', $options: 'i'}}, {'entity': {name: {$regex : '.*?0.*', $options: 'i'}}}, {'location': {name : {$regex : '.*?0.*', $options: 'i'}}}], " +
             "'email': {$ne: ?1}}")
     Page<User> findBySearch(String search, String excludedUserEmail, @PageableDefault Pageable pageable);
 

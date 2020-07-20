@@ -17,17 +17,9 @@ import java.util.UUID;
 @AllArgsConstructor
 public class Threat {
 
-    private String id;
+    private String id = UUID.randomUUID().toString();
     private String description;
     private boolean status;
     private LocalDateTime identificationDate;
-
-    @PostConstruct
-    private void postConstruct() {
-        // Assign id
-        if( this.id == null ) {
-            this.id = UUID.randomUUID().toString();
-        }
-    }
 
 }

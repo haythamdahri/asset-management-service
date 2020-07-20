@@ -1,9 +1,7 @@
 package org.management.asset.bo;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.DBRef;
@@ -40,6 +38,7 @@ public class User implements Serializable {
     private String email;
 
     @DBRef
+    @EqualsAndHashCode.Exclude
     private Organization organization;
 
     @DBRef
@@ -81,6 +80,7 @@ public class User implements Serializable {
     private String notes;
 
     @DBRef
+    @EqualsAndHashCode.Exclude
     private Set<Group> groups;
 
     @DBRef
@@ -94,9 +94,7 @@ public class User implements Serializable {
             this.roles = new HashSet<>();
         }
         // Check that the role is not assigned to the user
-        if (this.roles.stream().noneMatch(tempRole -> tempRole.getId().equals(role.getId()))) {
-            this.roles.add(role);
-        }
+        this.roles.add(role);
     }
 
     /**

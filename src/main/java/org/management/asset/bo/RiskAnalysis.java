@@ -5,7 +5,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Transient;
 
-import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -18,7 +17,7 @@ import java.util.stream.Stream;
 @AllArgsConstructor
 public class RiskAnalysis {
 
-    private String id;
+    private String id = UUID.randomUUID().toString();
     private int probability;
     private int financialImpact;
     private int operationalImpact;
@@ -61,14 +60,6 @@ public class RiskAnalysis {
     private Threat threat;
     private Vulnerability vulnerability;
     private RiskScenario riskScenario;
-
-    @PostConstruct
-    private void postConstruct() {
-        // Fill id
-        if( this.id == null ) {
-            this.id = UUID.randomUUID().toString();
-        }
-    }
 
     public void calculateGeneratedValues(Asset asset) {
         // Set impact value
