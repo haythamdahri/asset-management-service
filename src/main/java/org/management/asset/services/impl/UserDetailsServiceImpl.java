@@ -36,9 +36,13 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             }
             // Check user group roles
             if (user.getGroups() != null) {
-                user.getGroups().forEach(group -> group.getRoles().forEach(role ->
-                        grantedAuthorities.add(new SimpleGrantedAuthority(role.getRoleName().name()))
-                ));
+                user.getGroups().forEach(group -> {
+                    if (group != null && group.getRoles() != null) {
+                        group.getRoles().forEach(role ->
+                                grantedAuthorities.add(new SimpleGrantedAuthority(role.getRoleName().name()))
+                        );
+                    }
+                });
             }
             return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), grantedAuthorities);
         }

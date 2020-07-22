@@ -84,7 +84,11 @@ public class UserServiceImpl implements UserService {
     public User saveUser(UserRequestDTO userRequest) {
         try {
             // Set ID to null if empty
-            userRequest.setId(StringUtils.isEmpty(userRequest.getId()) || userRequest.getId() == null ? null : userRequest.getId());
+            final boolean userRequestIdNotExists = StringUtils.isEmpty(userRequest.getId()) ||
+                    userRequest.getId() == null ||
+                    StringUtils.equals(userRequest.getId(), "null") ||
+                    StringUtils.equals(userRequest.getId(), "undefined");
+            userRequest.setId(userRequestIdNotExists ? null : userRequest.getId());
             // MAP DTO to BO
             User user = this.userMapper.toModel(userRequest);
             User originalUser;
@@ -155,6 +159,9 @@ public class UserServiceImpl implements UserService {
             user.setPassword(originalUser.getPassword());
         }
         // Set Image
+        System.out.println(userRequest.isUpdateImage());
+        System.out.println(userRequest.getId());
+        System.out.println(userRequest.isUpdateImage() || userRequest.getId() == null);
         if (userRequest.isUpdateImage() || userRequest.getId() == null) {
             this.updateUserImage(userRequest.getImage(), userRequest.getEmail(), user);
         } else {

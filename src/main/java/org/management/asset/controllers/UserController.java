@@ -18,7 +18,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author Haytham DAHRI
@@ -49,6 +52,11 @@ public class UserController {
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USERS_EDIT_USERS') or hasRole('ROLE_SUPER_USER')")
     @GetMapping(path = "/{id}")
     public ResponseEntity<User> getUser(@PathVariable(name = "id") String userId) {
+        // Retrieve user
+        User user = this.userService.getUser(userId);
+        if( user == null ) {
+            return ResponseEntity.notFound().build();
+        }
         return ResponseEntity.ok(this.userService.getUser(userId));
     }
 
@@ -93,23 +101,55 @@ public class UserController {
     @GetMapping(path = "/roles/checking")
     public ResponseEntity<RolesCheckResponseDTO> checkRoleForCurrentUser(@RequestParam(name = "roleName") RoleType roleType) {
         User user = this.userService.getUserByEmail(this.authenticationFacade.getAuthentication().getName());
-        if (user != null) {
-            RolesCheckResponseDTO rolesCheckResponseDTO = new RolesCheckResponseDTO();
-            rolesCheckResponseDTO.setSignOutRequired(false);
+            RolesCheckResponseDTO rolesCheckResponse = new RolesCheckResponseDTO();
             // Check if user has the role
             if (user.hasRole(roleType)) {
-                rolesCheckResponseDTO.setHasRole(true);
-                rolesCheckResponseDTO.setMessage("Role found");
+                rolesCheckResponse.setHasRole(true);
+                rolesCheckResponse.setMessage("Role found");
             } else {
-                rolesCheckResponseDTO.setHasRole(false);
-                rolesCheckResponseDTO.setMessage("Role not found");
+                rolesCheckResponse.setHasRole(false);
+                rolesCheckResponse.setMessage("Role not found");
             }
             // Return response
-            return ResponseEntity.ok(rolesCheckResponseDTO);
-        } else {
-            // User must sign out and sign in again
-            return ResponseEntity.ok(new RolesCheckResponseDTO("User must sign out and sign in again!", false, true));
+            return ResponseEntity.ok(rolesCheckResponse);
+    }
+
+    /**
+     * Check whether the user is an ADMIN
+     *
+     * @return
+     */
+    @PreAuthorize(value = "hasRole('ROLE_ADMIN') or hasRole('ROLE_SUPER_USER')")
+    @GetMapping(path = "/roles/checking/admin")
+    public ResponseEntity<RolesCheckResponseDTO> pingUserAdmin() {
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * Check user privileges to add or edit a user
+     *
+     * @return
+     */
+    @GetMapping(path = "/roles/checking/users")
+    public ResponseEntity<RolesCheckResponseDTO> checkUserEditRoleForCurrentUser() {
+        User user = this.userService.getUserByEmail(this.authenticationFacade.getAuthentication().getName());
+        RolesCheckResponseDTO rolesCheckResponse = new RolesCheckResponseDTO();
+        List<RoleType> roleTypes = Stream.of(RoleType.ROLE_ADMIN, RoleType.ROLE_SUPER_USER,
+                RoleType.ROLE_USERS_CREATE_USERS, RoleType.ROLE_USERS_EDIT_USERS).collect(Collectors.toList());
+        for( RoleType roleType : roleTypes ) {
+            // Check if user has the role
+            if( user.hasRole(roleType) ) {
+                rolesCheckResponse.setHasRole(true);
+                rolesCheckResponse.setMessage("Role found");
+                // Return response
+                return ResponseEntity.ok(rolesCheckResponse);
+            }
         }
+        // Set role not found
+        rolesCheckResponse.setHasRole(false);
+        rolesCheckResponse.setMessage("Role not found");
+        // Return response
+        return ResponseEntity.ok(rolesCheckResponse);
     }
 
     /**

@@ -1,13 +1,12 @@
 package org.management.asset.dao;
 
-import org.management.asset.dto.UserDTO;
 import org.management.asset.bo.RoleType;
 import org.management.asset.bo.User;
+import org.management.asset.dto.UserDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.data.rest.core.annotation.RestResource;
 import org.springframework.data.web.PageableDefault;
@@ -40,7 +39,7 @@ public interface UserRepository extends MongoRepository<User, String> {
 
     Optional<User> findByUsernameAndActiveIsTrue(final String username);
 
-    Optional<User> findByToken(@Param("token") String token);
+    Optional<User> findByToken(final String token);
 
     @Query(value = "{'roles': { $elemMatch: { 'roleName' : {$in: [?0]} }, $size: {$eq: 1}}}")
     List<User> findBySpecificRoles(List<RoleType> roleName);
@@ -52,13 +51,12 @@ public interface UserRepository extends MongoRepository<User, String> {
     Page<User> findBySpecificRolesPage(List<RoleType> roleName, @PageableDefault Pageable pageable);
 
     @Query(value = "{'email': {$ne: ?0}}")
-    Page<User> findAllWithUserExclusion(String excludedUserEmail, @PageableDefault Pageable pageable);
+    Page<User> findAllWithUserExclusion(final String excludedUserEmail, @PageableDefault Pageable pageable);
 
     @Query(value = "{$or: [{'username': {$regex : '.*?0.*', $options: 'i'}}, {'email': {$regex : '.*?0.*', $options: 'i'}}, {'firstName': {$regex : '.*?0.*', $options: 'i'}}, " +
             "{'lastName': {$regex : '.*?0.*', $options: 'i'}}, {'city': {$regex : '.*?0.*', $options: 'i'}}, {'country': {$regex : '.*?0.*', $options: 'i'}}, " +
             "{'employeeNumber': {$regex : '.*?0.*', $options: 'i'}}, {'jobTitle': {$regex : '.*?0.*', $options: 'i'}}, {'notes': {$regex : '.*?0.*', $options: 'i'}}, " +
-            "{'phone': {$regex : '.*?0.*', $options: 'i'}}, {'title': {$regex : '.*?0.*', $options: 'i'}}, {'website': {$regex : '.*?0.*', $options: 'i'}}, {'organization': {name: {$regex : '.*?0.*', $options: 'i'}}}, " +
-            "{'zip': {$regex : '.*?0.*', $options: 'i'}}, {'entity': {name: {$regex : '.*?0.*', $options: 'i'}}}, {'location': {name : {$regex : '.*?0.*', $options: 'i'}}}], " +
+            "{'phone': {$regex : '.*?0.*', $options: 'i'}}, {'title': {$regex : '.*?0.*', $options: 'i'}}, {'website': {$regex : '.*?0.*', $options: 'i'}}, {'zip': {$regex : '.*?0.*', $options: 'i'}}], " +
             "'email': {$ne: ?1}}")
     Page<User> findBySearch(String search, String excludedUserEmail, @PageableDefault Pageable pageable);
 

@@ -3,12 +3,14 @@ package org.management.asset.bo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -29,10 +31,24 @@ public class Role implements Serializable {
 
     @DBRef
     @JsonIgnore
+    @EqualsAndHashCode.Exclude
     private Set<User> users;
 
     @DBRef
     @JsonIgnore
+    @EqualsAndHashCode.Exclude
     private Set<Group> groups;
+
+    /**
+     * Convenient method to add a new group to the current role
+     *
+     * @param group: Group
+     */
+    public void addGroup(Group group) {
+        if (this.groups == null) {
+            this.groups = new HashSet<>();
+        }
+        this.groups.add(group);
+    }
 
 }

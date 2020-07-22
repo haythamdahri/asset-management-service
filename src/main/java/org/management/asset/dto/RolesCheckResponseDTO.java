@@ -23,7 +23,4 @@ public class RolesCheckResponseDTO implements Serializable {
     @JsonProperty("hasRole")
     private boolean hasRole;
 
-    @JsonProperty("signOutRequired")
-    private boolean signOutRequired;
-
 }

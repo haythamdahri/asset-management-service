@@ -1,12 +1,17 @@
 package org.management.asset.controllers;
 
 import org.management.asset.bo.Group;
+import org.management.asset.dto.GroupDTO;
 import org.management.asset.services.GroupService;
+import org.management.asset.services.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -20,9 +25,38 @@ public class GroupController {
     @Autowired
     private GroupService groupService;
 
+    @Autowired
+    private RoleService roleService;
+
     @GetMapping(path = "/")
     public ResponseEntity<List<Group>> listGroups() {
         return ResponseEntity.ok(this.groupService.getGroups());
+    }
+
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_SUPER_USER')")
+    @PostMapping(path = "/")
+    public ResponseEntity<Group> saveGroup(@RequestBody GroupDTO group) {
+        return ResponseEntity.ok(this.groupService.saveGroup(group));
+    }
+
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_SUPER_USER')")
+    @GetMapping(path = "/pages")
+    public ResponseEntity<Page<Group>> getUsers(@RequestParam(value = "name", required = false, defaultValue = "") String name, @RequestParam(value = "page", required = false, defaultValue = "0") int page, @RequestParam(value = "size", required = false, defaultValue = "${page.default-size}") int size) {
+        return ResponseEntity.ok(this.groupService.getGroups(name, page, size));
+    }
+
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_SUPER_USER')")
+    @DeleteMapping(path = "/{id}")
+    public ResponseEntity<Void> deleteGroup(@PathVariable(name = "id") String groupId) {
+        // Delete Group after validation
+        this.groupService.deleteGroup(groupId);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_SUPER_USER')")
+    @GetMapping(path = "/{id}")
+    public ResponseEntity<Group> getGroup(@PathVariable(name = "id") String groupId) {
+        return ResponseEntity.ok(this.groupService.getGroup(groupId));
     }
 
 }

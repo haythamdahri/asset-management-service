@@ -1,6 +1,8 @@
 package org.management.asset.services;
 
 import org.management.asset.bo.Group;
+import org.management.asset.dto.GroupDTO;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -11,6 +13,8 @@ public interface GroupService {
 
     Group saveGroup(Group group);
 
+    Group saveGroup(GroupDTO groupDTO);
+
     boolean deleteGroup(String id);
 
     Group getGroup(String id);
@@ -18,5 +22,7 @@ public interface GroupService {
     Group getGroupByName(String name);
 
     List<Group> getGroups();
+
+    Page<Group> getGroups(String name, int page, int size);
 
 }
