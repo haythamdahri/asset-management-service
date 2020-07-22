@@ -1,5 +1,6 @@
 package org.management.asset.controllers;
 
+import lombok.SneakyThrows;
 import org.management.asset.bo.AssetFile;
 import org.management.asset.bo.RoleType;
 import org.management.asset.bo.User;
@@ -17,6 +18,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Arrays;
 import java.util.List;
@@ -198,6 +200,16 @@ public class UserController {
         // Use service to reset user password
         this.userService.resetUserPassword(passwordResetRequest.getToken(), passwordResetRequest.getPassword());
         return ResponseEntity.status(200).build();
+    }
+
+    /**
+     * Update current authenticated user profile image
+     * @param file
+     * @return
+     */
+    @PutMapping(path = "/profile/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<User> updateImage(@RequestParam(name = "image") MultipartFile file) {
+        return ResponseEntity.ok(this.userService.updateUserImage(file, this.authenticationFacade.getAuthentication().getName()));
     }
 
 }

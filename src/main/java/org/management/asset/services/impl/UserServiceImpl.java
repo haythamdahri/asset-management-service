@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -159,11 +160,8 @@ public class UserServiceImpl implements UserService {
             user.setPassword(originalUser.getPassword());
         }
         // Set Image
-        System.out.println(userRequest.isUpdateImage());
-        System.out.println(userRequest.getId());
-        System.out.println(userRequest.isUpdateImage() || userRequest.getId() == null);
         if (userRequest.isUpdateImage() || userRequest.getId() == null) {
-            this.updateUserImage(userRequest.getImage(), userRequest.getEmail(), user);
+            this.updateLocalUserImage(userRequest.getImage(), userRequest.getEmail(), user);
         } else {
             user.setAvatar(originalUser.getAvatar());
         }
@@ -180,14 +178,13 @@ public class UserServiceImpl implements UserService {
         target.setDeletionDate(source.getDeletionDate());
     }
 
-    @Override
-    public User updateUserImage(MultipartFile file, String email, User user) throws IOException {
+    private User updateLocalUserImage(MultipartFile file, String email, User user) throws IOException {
         try {
+            AssetFile avatar = new AssetFile();
             // Retrieve user
             if (file == null || file.isEmpty() || !Constants.IMAGE_CONTENT_TYPES.contains(file.getContentType())) {
                 throw new BusinessException(Constants.INVALID_USER_IMAGE);
             } else {
-                AssetFile avatar = user.getAvatar() != null ? user.getAvatar() : new AssetFile();
                 // Update user image file and link it with current user
                 avatar.setName(FilenameUtils.removeExtension(file.getOriginalFilename()));
                 avatar.setExtension(FilenameUtils.getExtension(file.getOriginalFilename()));
@@ -195,7 +192,33 @@ public class UserServiceImpl implements UserService {
                 avatar.setMediaType(MediaType.valueOf(Objects.requireNonNull(file.getContentType())).toString());
                 user.setAvatar(avatar);
             }
-            // Return User
+            // Return avatar
+            return user;
+        } catch (BusinessException ex) {
+            throw ex;
+        } catch (Exception ex) {
+            throw new TechnicalException(ex);
+        }
+    }
+
+    @Override
+    public User updateUserImage(MultipartFile file, String email) {
+        try {
+            User user = this.userRepository.findByEmail(email).orElseThrow(BusinessException::new);
+            // Retrieve user
+            if (file == null || file.isEmpty() || !Constants.IMAGE_CONTENT_TYPES.contains(file.getContentType())) {
+                throw new BusinessException(Constants.INVALID_USER_IMAGE);
+            } else {
+                // Update user image file and link it with current user
+                AssetFile avatar = new AssetFile();
+                avatar.setName(FilenameUtils.removeExtension(file.getOriginalFilename()));
+                avatar.setExtension(FilenameUtils.getExtension(file.getOriginalFilename()));
+                avatar.setFile(file.getBytes());
+                avatar.setMediaType(MediaType.valueOf(Objects.requireNonNull(file.getContentType())).toString());
+                user.setAvatar(avatar);
+                user = this.userRepository.save(user);
+            }
+            // Return avatar
             return user;
         } catch (BusinessException ex) {
             throw ex;

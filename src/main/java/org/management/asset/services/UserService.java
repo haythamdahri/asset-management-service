@@ -41,7 +41,7 @@ public interface UserService {
 
     Page<User> getUsers(String search, String excludedUserEmail, int page, int size);
 
-    User updateUserImage(MultipartFile file, String email, User user) throws IOException;
+    User updateUserImage(MultipartFile file, String email) ;
 
     boolean checkTokenValidity(String token);
 
