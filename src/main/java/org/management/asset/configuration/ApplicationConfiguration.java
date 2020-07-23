@@ -60,9 +60,9 @@ public class ApplicationConfiguration {
         // Add SuperAdmin Group
         if (this.groupService.getGroups().isEmpty()) {
             superAdmins = this.groupService.saveGroup(
-                    new Group(null, "Super Admins", new HashSet<>(this.roleService.getRoles()), null));
+                    new Group(null, "Super Admins", "Utilisateurs Admins", new HashSet<>(this.roleService.getRoles()), null));
             basicUsers = this.groupService.saveGroup(
-                    new Group(null, "Basic Users", Stream.of(this.roleService.getRole(RoleType.ROLE_USERS_VIEW)).collect(Collectors.toCollection(HashSet::new)), null));
+                    new Group(null, "Basic Users", "Utilisateurs Basiques", Stream.of(this.roleService.getRole(RoleType.ROLE_USERS_VIEW)).collect(Collectors.toCollection(HashSet::new)), null));
         }
         if (this.userService.getUsers().isEmpty()) {
             // Add ADMIN User For Dev

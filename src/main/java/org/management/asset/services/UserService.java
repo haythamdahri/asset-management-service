@@ -2,6 +2,7 @@ package org.management.asset.services;
 
 import org.management.asset.bo.AssetFile;
 import org.management.asset.bo.User;
+import org.management.asset.dto.ProfileRequestDTO;
 import org.management.asset.dto.UserDTO;
 import org.management.asset.dto.UserRequestDTO;
 import org.springframework.data.domain.Page;
@@ -18,6 +19,8 @@ public interface UserService {
     User saveUser(User user);
 
     User saveUser(UserRequestDTO userRequest);
+
+    User saveUser(ProfileRequestDTO profileRequest, String email);
 
     User getUser(String id);
 

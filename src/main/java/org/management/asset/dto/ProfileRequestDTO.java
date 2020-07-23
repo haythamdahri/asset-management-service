@@ -18,12 +18,9 @@ import java.io.Serializable;
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class UserRequestDTO implements Serializable {
+public class ProfileRequestDTO implements Serializable {
 
     private static final Long serialVersionUID = -6040511937814466401L;
-
-    @JsonProperty("id")
-    private String id;
 
     @JsonProperty("username")
     private String username;
@@ -34,38 +31,20 @@ public class UserRequestDTO implements Serializable {
     @JsonProperty("lastName")
     private String lastName;
 
-    @JsonProperty("email")
-    private String email;
-
     @JsonProperty("phone")
     private String phone;
-
-    @JsonProperty("active")
-    private boolean active;
-
-    @JsonProperty("organization")
-    private String organization;
 
     @JsonProperty("language")
     private String language;
 
-    @JsonProperty("manager")
-    private String manager;
-
     @JsonProperty("location")
     private String location;
-
-    @JsonProperty("entity")
-    private String entity;
 
     @JsonProperty("password")
     private String password;
 
     @JsonProperty("updatePassword")
     private boolean updatePassword;
-
-    @JsonProperty("employeeNumber")
-    private String employeeNumber;
 
     @JsonProperty("website")
     private String website;
@@ -90,23 +69,5 @@ public class UserRequestDTO implements Serializable {
 
     @JsonProperty("notes")
     private String notes;
-
-    @JsonProperty("updateImage")
-    private boolean updateImage;
-
-    @JsonProperty("image")
-    private MultipartFile image;
-
-    @JsonProperty("roles")
-    private String roles;
-
-    @JsonProperty("groups")
-    private String groups;
-
-    @JsonProperty("jobTitle")
-    private String jobTitle;
-
-    @JsonProperty("updatePermissions")
-    private boolean updatePermissions;
 
 }

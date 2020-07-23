@@ -6,6 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.management.asset.bo.AssetFile;
 import org.management.asset.bo.User;
 import org.management.asset.dao.*;
+import org.management.asset.dto.ProfileRequestDTO;
 import org.management.asset.dto.UserDTO;
 import org.management.asset.dto.UserRequestDTO;
 import org.management.asset.exceptions.BusinessException;
@@ -16,6 +17,8 @@ import org.management.asset.services.EmailService;
 import org.management.asset.services.UserService;
 import org.management.asset.utils.ApplicationUtils;
 import org.management.asset.utils.Constants;
+import org.mapstruct.Mapping;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -161,7 +164,7 @@ public class UserServiceImpl implements UserService {
         }
         // Set Image
         if (userRequest.isUpdateImage() || userRequest.getId() == null) {
-            this.updateLocalUserImage(userRequest.getImage(), userRequest.getEmail(), user);
+            this.updateLocalUserImage(userRequest.getImage(), user);
         } else {
             user.setAvatar(originalUser.getAvatar());
         }
@@ -178,7 +181,7 @@ public class UserServiceImpl implements UserService {
         target.setDeletionDate(source.getDeletionDate());
     }
 
-    private User updateLocalUserImage(MultipartFile file, String email, User user) throws IOException {
+    private User updateLocalUserImage(MultipartFile file, User user) throws IOException {
         try {
             AssetFile avatar = new AssetFile();
             // Retrieve user
@@ -198,6 +201,48 @@ public class UserServiceImpl implements UserService {
             throw ex;
         } catch (Exception ex) {
             throw new TechnicalException(ex);
+        }
+    }
+
+    @Override
+    public User saveUser(ProfileRequestDTO profileRequest, String email) {
+        System.out.println(profileRequest);
+        try {
+            // Retrieve user
+            User user = this.userRepository.findByEmail(email).orElseThrow(BusinessException::new);
+            // Set profile data
+            this.setProfileData(profileRequest, user);
+            // Save user
+            return this.userRepository.save(user);
+        } catch (BusinessException ex) {
+            ex.printStackTrace();
+            throw ex;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            throw new TechnicalException(ex);
+        }
+    }
+
+    private void setProfileData(ProfileRequestDTO profileRequest, User user) {
+        user.setUsername(profileRequest.getUsername());
+        user.setFirstName(profileRequest.getFirstName());
+        user.setLastName(profileRequest.getLastName());
+        user.setWebsite(profileRequest.getWebsite());
+        user.setAddress(profileRequest.getAddress());
+        user.setCity(profileRequest.getCity());
+        user.setState(profileRequest.getState());
+        user.setCountry(profileRequest.getCountry());
+        user.setZip(profileRequest.getZip());
+        user.setNotes(profileRequest.getNotes());
+        user.setTitle(profileRequest.getTitle());
+        user.setPhone(profileRequest.getPhone());
+        // Set Location
+        this.locationRepository.findById(profileRequest.getLocation()).ifPresent(user::setLocation);
+        // Set Language
+        this.languageRepository.findById(profileRequest.getLanguage()).ifPresent(user::setLanguage);
+        // Set encrypted password
+        if( profileRequest.isUpdatePassword() ) {
+            user.setPassword(this.passwordEncoder.encode(profileRequest.getPassword()));
         }
     }
 

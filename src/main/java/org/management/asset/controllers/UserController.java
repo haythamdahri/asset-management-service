@@ -4,10 +4,7 @@ import lombok.SneakyThrows;
 import org.management.asset.bo.AssetFile;
 import org.management.asset.bo.RoleType;
 import org.management.asset.bo.User;
-import org.management.asset.dto.PasswordResetRequestDTO;
-import org.management.asset.dto.RolesCheckResponseDTO;
-import org.management.asset.dto.UserDTO;
-import org.management.asset.dto.UserRequestDTO;
+import org.management.asset.dto.*;
 import org.management.asset.facades.IAuthenticationFacade;
 import org.management.asset.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -92,6 +89,16 @@ public class UserController {
     @GetMapping(path = "/profile")
     public ResponseEntity<User> getCurrentUser() {
         return ResponseEntity.ok(this.userService.getUserByEmail(this.authenticationFacade.getAuthentication().getName()));
+    }
+
+    /**
+     * Get authenticated user details
+     *
+     * @return
+     */
+    @PutMapping(path = "/profile")
+    public ResponseEntity<User> saveUserProfile(@RequestBody ProfileRequestDTO profileRequest) {
+        return ResponseEntity.ok(this.userService.saveUser(profileRequest, this.authenticationFacade.getAuthentication().getName()));
     }
 
     /**

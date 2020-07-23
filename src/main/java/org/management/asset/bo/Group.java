@@ -30,6 +30,7 @@ public class Group implements Serializable {
 
     @Indexed(name = "name", unique = true)
     private String name;
+    private String description;
 
     @DBRef
     @EqualsAndHashCode.Exclude

@@ -14,7 +14,8 @@ public interface GroupMapper {
     @Mappings(
             value = {
                     @Mapping(source = "source.id", target = "id"),
-                    @Mapping(source = "source.name", target = "name")
+                    @Mapping(source = "source.name", target = "name"),
+                    @Mapping(source = "source.description", target = "description")
             })
     Group toModel(GroupDTO source);
 

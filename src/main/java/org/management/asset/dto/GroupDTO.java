@@ -24,6 +24,9 @@ public class GroupDTO implements Serializable {
     @JsonProperty("name")
     private String name;
 
+    @JsonProperty("description")
+    private String description;
+
     @JsonProperty("roles")
     private List<String> roles;
 
