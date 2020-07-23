@@ -343,6 +343,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public Long getUsersCounter() {
+        return this.userRepository.countUsers();
+    }
+
+    @Override
     public List<UserDTO> getCustomUsers() {
         return this.userRepository.findCustomUsers();
     }

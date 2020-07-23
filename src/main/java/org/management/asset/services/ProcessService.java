@@ -19,6 +19,8 @@ public interface ProcessService {
 
     List<Process> getProcesses();
 
+    Long getProcessesCounter();
+
     Page<Process> getProcesses(int page, int size);
 
 }

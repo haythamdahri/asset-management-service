@@ -3,6 +3,7 @@ package org.management.asset.services.impl;
 import org.management.asset.bo.Asset;
 import org.management.asset.dao.AssetRepository;
 import org.management.asset.services.AssetService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -17,6 +18,7 @@ import java.util.List;
 @Service
 public class AssetServiceImpl implements AssetService {
 
+    @Autowired
     private AssetRepository assetRepository;
 
     @Override
@@ -38,6 +40,11 @@ public class AssetServiceImpl implements AssetService {
     @Override
     public List<Asset> getAssets() {
         return this.assetRepository.findAll();
+    }
+
+    @Override
+    public Long getAssetsCounter() {
+        return this.assetRepository.countAssets();
     }
 
     @Override

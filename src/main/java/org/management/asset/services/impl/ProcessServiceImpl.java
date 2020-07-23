@@ -43,6 +43,11 @@ public class ProcessServiceImpl implements ProcessService {
     }
 
     @Override
+    public Long getProcessesCounter() {
+        return this.processRepository.countProcesses();
+    }
+
+    @Override
     public Page<Process> getProcesses(int page, int size) {
         return this.processRepository.findAll(PageRequest.of(page, size, Sort.Direction.ASC, "id"));
     }

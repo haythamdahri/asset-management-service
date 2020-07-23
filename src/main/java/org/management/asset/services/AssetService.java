@@ -19,6 +19,8 @@ public interface AssetService {
 
     List<Asset> getAssets();
 
+    Long getAssetsCounter();
+
     Page<Asset> getAssets(int page, int size);
 
 }

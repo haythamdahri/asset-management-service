@@ -40,6 +40,8 @@ public interface UserService {
 
     List<User> getUsers();
 
+    Long getUsersCounter();
+
     List<UserDTO> getCustomUsers();
 
     Page<User> getUsers(String search, String excludedUserEmail, int page, int size);

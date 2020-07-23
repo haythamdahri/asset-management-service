@@ -42,4 +42,9 @@ public class OrganizationServiceImpl implements OrganizationService {
     public List<Organization> getOrganizations() {
         return this.organizationRepository.findAll();
     }
+
+    @Override
+    public Long getOrganizationsCounter() {
+        return this.organizationRepository.countOrganizations();
+    }
 }

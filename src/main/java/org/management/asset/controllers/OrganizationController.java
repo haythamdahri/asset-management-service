@@ -21,8 +21,13 @@ public class OrganizationController {
     private OrganizationService organizationService;
 
     @GetMapping(path = "/")
-    public ResponseEntity<List<Organization>> listCompanies() {
+    public ResponseEntity<List<Organization>> listOrganization() {
         return ResponseEntity.ok(this.organizationService.getOrganizations());
+    }
+
+    @GetMapping(path = "/counter")
+    public ResponseEntity<Long> countOrganizations() {
+        return ResponseEntity.ok(this.organizationService.getOrganizationsCounter());
     }
 
 }

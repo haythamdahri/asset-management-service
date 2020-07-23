@@ -219,4 +219,9 @@ public class UserController {
         return ResponseEntity.ok(this.userService.updateUserImage(file, this.authenticationFacade.getAuthentication().getName()));
     }
 
+    @GetMapping(path = "/counter")
+    public ResponseEntity<Long> getUserCounter() {
+        return ResponseEntity.ok(this.userService.getUsersCounter());
+    }
+
 }
