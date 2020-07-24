@@ -6,8 +6,11 @@ import org.management.asset.dao.GroupRepository;
 import org.management.asset.dao.RoleRepository;
 import org.management.asset.dto.GroupDTO;
 import org.management.asset.exceptions.BusinessException;
+import org.management.asset.exceptions.TechnicalException;
 import org.management.asset.mappers.GroupMapper;
 import org.management.asset.services.GroupService;
+import org.management.asset.utils.ApplicationUtils;
+import org.management.asset.utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -46,6 +49,12 @@ public class GroupServiceImpl implements GroupService {
                     StringUtils.equals(groupDTO.getId(), "null") ||
                     StringUtils.equals(groupDTO.getId(), "undefined");
             groupDTO.setId(groupIdNotExists ? null : groupDTO.getId());
+            // Check group Name
+            if ((groupIdNotExists && this.groupRepository.findByNameIgnoreCase(groupDTO.getName()).isPresent()) || (
+                    !groupIdNotExists && !StringUtils.equals(group.getName(), groupDTO.getName()) && this.groupRepository.findByNameIgnoreCase(groupDTO.getName()).isPresent())
+            ) {
+                throw new BusinessException(Constants.GROUP_NAME_ALREADY_TAKEN);
+            }
             // Set group roles
             if (groupIdNotExists || groupDTO.isUpdatePermissions()) {
                 group.setRoles(null);
@@ -53,8 +62,10 @@ public class GroupServiceImpl implements GroupService {
             }
             // Save group
             return this.groupRepository.save(group);
+        } catch(BusinessException ex) {
+            throw ex;
         } catch (Exception ex) {
-            throw new BusinessException(ex.getMessage());
+            throw new TechnicalException(ex.getMessage());
         }
     }
 
@@ -84,7 +95,7 @@ public class GroupServiceImpl implements GroupService {
         if (StringUtils.isEmpty(name)) {
             return this.groupRepository.findAll(PageRequest.of(page, size, Sort.Direction.ASC, "id"));
         } else {
-            return this.groupRepository.findByNameContainingIgnoreCase(name, PageRequest.of(page, size, Sort.Direction.ASC, "id"));
+            return this.groupRepository.findByNameContainingIgnoreCase(ApplicationUtils.escapeSpecialRegexChars(name.toLowerCase().trim()), PageRequest.of(page, size, Sort.Direction.ASC, "id"));
         }
     }
 }

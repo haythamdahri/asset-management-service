@@ -60,6 +60,13 @@ public interface UserRepository extends MongoRepository<User, String> {
             "'email': {$ne: ?1}}")
     Page<User> findBySearch(String search, String excludedUserEmail, @PageableDefault Pageable pageable);
 
+
+    @Query(value = "{$or: [{'username': {$regex : '.*?0.*', $options: 'i'}}, {'email': {$regex : '.*?0.*', $options: 'i'}}, {'firstName': {$regex : '.*?0.*', $options: 'i'}}, " +
+            "{'lastName': {$regex : '.*?0.*', $options: 'i'}}, {'city': {$regex : '.*?0.*', $options: 'i'}}, {'country': {$regex : '.*?0.*', $options: 'i'}}, " +
+            "{'employeeNumber': {$regex : '.*?0.*', $options: 'i'}}, {'jobTitle': {$regex : '.*?0.*', $options: 'i'}}, {'notes': {$regex : '.*?0.*', $options: 'i'}}, " +
+            "{'phone': {$regex : '.*?0.*', $options: 'i'}}, {'title': {$regex : '.*?0.*', $options: 'i'}}, {'website': {$regex : '.*?0.*', $options: 'i'}}, {'zip': {$regex : '.*?0.*', $options: 'i'}}]}")
+    Page<User> findBySearch(String search, @PageableDefault Pageable pageable);
+
     @Query(value = "{'id': ?0}", fields = "{id: 0, username: 0, firstName: 0, lastName: 0, email: 0}")
     Optional<UserDTO> findCustomUserById(String id);
 

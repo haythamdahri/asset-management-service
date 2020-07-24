@@ -13,6 +13,8 @@ public interface ProcessService {
 
     Process saveProcess(Process process);
 
+    Process updateProcessStatus(String id, boolean status);
+
     boolean deleteProcess(String id);
 
     Process getProcess(String id);
@@ -22,5 +24,7 @@ public interface ProcessService {
     Long getProcessesCounter();
 
     Page<Process> getProcesses(int page, int size);
+
+    Page<Process> getProcesses(String search, int page, int size);
 
 }

@@ -1,8 +1,10 @@
 package org.management.asset.bo;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import org.management.asset.listeners.CascadeSave;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -12,7 +14,6 @@ import org.springframework.util.StringUtils;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -37,19 +38,20 @@ public class User implements Serializable {
     @JsonIgnore
     private String password;
 
-    @Indexed(name="email", unique=true)
+    @Indexed(name = "email", unique = true)
     private String email;
 
     @DBRef
     @CascadeSave
     @EqualsAndHashCode.Exclude
+    @JsonIgnore
     private Organization organization;
 
     @DBRef
     @CascadeSave
     private Language language;
 
-    @Indexed(name="employeeNumber", unique=true)
+    @Indexed(name = "employeeNumber", unique = true)
     private String employeeNumber;
     private String title;
 
@@ -113,11 +115,17 @@ public class User implements Serializable {
     public boolean hasRole(RoleType roleType) {
         Set<Role> allRoles = new HashSet<>();
         // Check roles
-        if (this.roles != null) {
-            allRoles = this.roles;
+        try {
+            if (this.roles != null) {
+                allRoles = this.roles;
+            }
+        } catch (Exception ignored) {
         }
-        if (this.groups != null) {
-            allRoles.addAll(this.groups.stream().map(Group::getRoles).flatMap(Set::stream).collect(Collectors.toSet()));
+        try {
+            if (this.groups != null) {
+                allRoles.addAll(this.groups.stream().map(Group::getRoles).flatMap(Set::stream).collect(Collectors.toSet()));
+            }
+        } catch (Exception ignored) {
         }
         return allRoles.stream().anyMatch(role -> role.getRoleName().equals(roleType));
     }

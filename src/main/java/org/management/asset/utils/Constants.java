@@ -28,6 +28,8 @@ public class Constants {
     public static final String ORGANIZATION_NAME_ALREADY_USER = "Le nom d'organisme est déja utilisé!";
     public static final String INVALID_ORGANIZATION_IMAGE = "Image d'organisme non valide!";
 
+    public static final String GROUP_NAME_ALREADY_TAKEN = "Nom du groupe est déja utilisé!";
+
     private Constants() {}
 
 }

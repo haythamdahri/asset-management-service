@@ -1,6 +1,7 @@
 package org.management.asset.controllers;
 
 import org.management.asset.bo.AssetFile;
+import org.management.asset.bo.Organization;
 import org.management.asset.bo.RoleType;
 import org.management.asset.bo.User;
 import org.management.asset.dto.*;
@@ -37,7 +38,7 @@ public class UserController {
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USERS_VIEW') or hasRole('ROLE_SUPER_USER')")
     @GetMapping(path = "/")
     public ResponseEntity<Page<User>> getUsers(@RequestParam(value = "search", required = false, defaultValue = "") String search, @RequestParam(value = "page", required = false, defaultValue = "0") int page, @RequestParam(value = "size", required = false, defaultValue = "${page.default-size}") int size) {
-        return ResponseEntity.ok(this.userService.getUsers(search, this.authenticationFacade.getAuthentication().getName(), page, size));
+        return ResponseEntity.ok(this.userService.getUsers(search, page, size));
     }
 
     @GetMapping(path = "/search/organizations/{organizationId}")
@@ -96,7 +97,21 @@ public class UserController {
     }
 
     /**
-     * Get authenticated user details
+     * Get authenticated user assigned organization
+     *
+     * @return
+     */
+    @GetMapping(path = "/profile/organization")
+    public ResponseEntity<Organization> getProfileOrganization() {
+        User user = this.userService.getUserByEmail(this.authenticationFacade.getAuthentication().getName());
+        if( user != null ) {
+            return ResponseEntity.ok(user.getOrganization());
+        }
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * Save current authenticated user profile
      *
      * @return
      */

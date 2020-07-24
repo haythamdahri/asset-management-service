@@ -1,5 +1,6 @@
 package org.management.asset.bo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,6 +9,7 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -37,5 +39,19 @@ public class Process implements Serializable {
      */
     @DBRef
     private Set<Asset> assets;
+
+    @DBRef
+    private Organization organization;
+
+    /**
+     * Convenient method to add a new asset to the organization
+     * @param asset
+     */
+    public void addAsset(Asset asset) {
+        if( this.assets == null ) {
+            this.assets = new HashSet<>();
+        }
+        this.assets.add(asset);
+    }
 
 }

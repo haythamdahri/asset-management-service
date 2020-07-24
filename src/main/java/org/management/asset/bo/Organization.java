@@ -35,11 +35,11 @@ public class Organization implements Serializable {
 
     @DBRef
     @CascadeSave
+    @JsonIgnore
     private Set<Process> processes;
 
     @DBRef
     @CascadeSave
-    @JsonIgnore
     private Set<User> users;
 
     /**

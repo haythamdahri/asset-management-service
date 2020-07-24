@@ -11,6 +11,7 @@ import org.management.asset.exceptions.BusinessException;
 import org.management.asset.exceptions.TechnicalException;
 import org.management.asset.helpers.OrganizationHelper;
 import org.management.asset.services.OrganizationService;
+import org.management.asset.utils.ApplicationUtils;
 import org.management.asset.utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -52,7 +53,8 @@ public class OrganizationServiceImpl implements OrganizationService {
                     StringUtils.equals(organizationRequest.getId(), "undefined");
             // Set ID to null if empty
             Organization organization = this.organizationRepository.findById(organizationRequest.getId()).orElse(new Organization());
-            if (organizationIdNotExists && this.organizationRepository.findByNameIgnoreCase(organizationRequest.getName()).isPresent()) {
+            if ((organizationIdNotExists && this.organizationRepository.findByNameIgnoreCase(organizationRequest.getName()).isPresent()) ||
+                    (!organizationIdNotExists && !StringUtils.equals(organizationRequest.getName(), organization.getName()) && this.organizationRepository.findByNameIgnoreCase(organizationRequest.getName()).isPresent())) {
                 throw new BusinessException(Constants.ORGANIZATION_NAME_ALREADY_USER);
             }
             // Set organization data
@@ -123,7 +125,7 @@ public class OrganizationServiceImpl implements OrganizationService {
         if (StringUtils.isEmpty(search)) {
             return this.organizationRepository.findAll(PageRequest.of(page, size, Sort.Direction.ASC, "id"));
         } else {
-            return this.organizationRepository.findByNameContainingIgnoreCase(search, PageRequest.of(page, size, Sort.Direction.ASC, "id"));
+            return this.organizationRepository.findByNameContainingIgnoreCase(ApplicationUtils.escapeSpecialRegexChars(search.toLowerCase().trim()), PageRequest.of(page, size, Sort.Direction.ASC, "id"));
         }
     }
 
