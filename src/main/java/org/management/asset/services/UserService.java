@@ -44,6 +44,8 @@ public interface UserService {
 
     List<UserDTO> getCustomUsers();
 
+    List<User> getOrganizationUsers(String organizationId);
+
     Page<User> getUsers(String search, String excludedUserEmail, int page, int size);
 
     User updateUserImage(MultipartFile file, String email) ;

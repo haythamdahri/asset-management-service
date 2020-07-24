@@ -1,5 +1,6 @@
 package org.management.asset.bo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -33,10 +34,12 @@ public class Organization implements Serializable {
     private AssetFile image;
 
     @DBRef
+    @CascadeSave
     private Set<Process> processes;
 
     @DBRef
     @CascadeSave
+    @JsonIgnore
     private Set<User> users;
 
     /**

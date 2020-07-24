@@ -3,6 +3,7 @@ package org.management.asset.services.impl;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.bson.types.ObjectId;
 import org.management.asset.bo.AssetFile;
 import org.management.asset.bo.User;
 import org.management.asset.dao.*;
@@ -17,13 +18,14 @@ import org.management.asset.services.EmailService;
 import org.management.asset.services.UserService;
 import org.management.asset.utils.ApplicationUtils;
 import org.management.asset.utils.Constants;
-import org.mapstruct.Mapping;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -33,7 +35,6 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -78,6 +79,9 @@ public class UserServiceImpl implements UserService {
 
     @Value("${token.expiration}")
     private Long tokenExpiration;
+
+    @Autowired
+    private MongoOperations mongoOperations;
 
     @Override
     public User saveUser(User user) {
@@ -241,7 +245,7 @@ public class UserServiceImpl implements UserService {
         // Set Language
         this.languageRepository.findById(profileRequest.getLanguage()).ifPresent(user::setLanguage);
         // Set encrypted password
-        if( profileRequest.isUpdatePassword() ) {
+        if (profileRequest.isUpdatePassword()) {
             user.setPassword(this.passwordEncoder.encode(profileRequest.getPassword()));
         }
     }
@@ -340,6 +344,14 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<User> getUsers() {
         return this.userRepository.findAll();
+    }
+
+
+    @Override
+    public List<User> getOrganizationUsers(String organizationId) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where("organization.$id").is(new ObjectId(organizationId)));
+        return this.mongoOperations.find(query, User.class);
     }
 
     @Override

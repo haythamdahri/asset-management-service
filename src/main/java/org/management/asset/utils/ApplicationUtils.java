@@ -1,10 +1,16 @@
 package org.management.asset.utils;
 
 import org.apache.commons.io.FilenameUtils;
+import org.management.asset.bo.Role;
+import org.management.asset.bo.RoleType;
+import org.management.asset.bo.User;
+import org.management.asset.dto.RolesCheckResponseDTO;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.MimeMessageHelper;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import java.util.List;
 import java.util.regex.Pattern;
 
 /**
@@ -52,6 +58,21 @@ public class ApplicationUtils {
 
     public static String escapeSpecialRegexChars(String str) {
         return SPECIAL_REGEX_CHARS.matcher(str).replaceAll("\\\\$0");
+    }
+
+    public static RolesCheckResponseDTO checkUserHasRoles(List<RoleType> roleTypes, User user) {
+        RolesCheckResponseDTO rolesCheckResponse = new RolesCheckResponseDTO();
+        rolesCheckResponse.setHasRole(false);
+        rolesCheckResponse.setMessage("Role not found");
+        for( RoleType roleType : roleTypes ) {
+            // Check if user has the role
+            if( user.hasRole(roleType) ) {
+                rolesCheckResponse.setHasRole(true);
+                rolesCheckResponse.setMessage("Role found");
+                break;
+            }
+        }
+        return rolesCheckResponse;
     }
 
 }

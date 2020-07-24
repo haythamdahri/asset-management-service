@@ -1,7 +1,9 @@
 package org.management.asset.bo;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
+import org.management.asset.listeners.CascadeSave;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.DBRef;
@@ -39,10 +41,12 @@ public class User implements Serializable {
     private String email;
 
     @DBRef
+    @CascadeSave
     @EqualsAndHashCode.Exclude
     private Organization organization;
 
     @DBRef
+    @CascadeSave
     private Language language;
 
     @Indexed(name="employeeNumber", unique=true)
@@ -50,12 +54,15 @@ public class User implements Serializable {
     private String title;
 
     @DBRef
+    @CascadeSave
     private User manager;
 
     @DBRef
+    @CascadeSave
     private Entity entity;
 
     @DBRef
+    @CascadeSave
     private Location location;
     private String phone;
     private String website;
@@ -81,10 +88,12 @@ public class User implements Serializable {
     private String notes;
 
     @DBRef
+    @CascadeSave
     @EqualsAndHashCode.Exclude
     private Set<Group> groups;
 
     @DBRef
+    @CascadeSave
     private Set<Role> roles;
 
     /**

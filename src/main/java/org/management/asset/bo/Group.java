@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.management.asset.listeners.CascadeSave;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.DBRef;
@@ -34,11 +35,13 @@ public class Group implements Serializable {
 
     @DBRef
     @EqualsAndHashCode.Exclude
+    @CascadeSave
     private Set<Role> roles;
 
     @DBRef
     @JsonIgnore
     @EqualsAndHashCode.Exclude
+    @CascadeSave
     private Set<User> users;
 
     /**

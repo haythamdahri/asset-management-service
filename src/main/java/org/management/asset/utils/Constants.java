@@ -25,6 +25,9 @@ public class Constants {
     public static final String PASSWORD_CHANGED_SUCCESSFULLY = "Mot de passe est mis à jour avec succés";
     public static final String VALID_TOKEN = "Token est invalid!";
 
+    public static final String ORGANIZATION_NAME_ALREADY_USER = "Le nom d'organisme est déja utilisé!";
+    public static final String INVALID_ORGANIZATION_IMAGE = "Image d'organisme non valide!";
+
     private Constants() {}
 
 }

@@ -69,4 +69,7 @@ public interface UserRepository extends MongoRepository<User, String> {
     @Query(value = "{}", count = true)
     Long countUsers();
 
+    @Query(value = "{'organizations' :{'$ref' : 'organizations' , '$id' : ?0}}", fields = "{id: 1, username: 1, firstName: 1, lastName: 1, email: 1}")
+    List<UserDTO> findByOrganizationId(final String organizationId);
+
 }

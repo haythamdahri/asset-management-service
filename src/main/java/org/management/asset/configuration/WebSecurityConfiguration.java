@@ -63,19 +63,15 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 // Allow POST for authentication
                 .antMatchers(HttpMethod.POST,
-                        "/api/v1/auth/**",
-                        "/api/v1/users/"
+                        "/api/v1/auth/**"
                 ).permitAll()
-                .antMatchers(HttpMethod.GET, "/api/v1/assetfiles/3/file").permitAll()
                 // Deny retrieving all users only for employees and admins
                 .antMatchers(HttpMethod.GET, "/api/v1/users/").authenticated()
                 // Dont authenticate this particular endpoints for GET request only
                 .antMatchers(HttpMethod.GET,
-                        "/api/v1/assetfiles/**",
-                        "/api/roles/**",
                         "/api/users/search/existsByEmail",
-                        "/api/v1/main/**",
-                        "/api/v1/users/**").permitAll()
+                        "/api/v1/users/{id}/avatar/file",
+                        "/api/v1/organizations/{id}/image/file").permitAll()
                 // Allow POST request for password request
                 .antMatchers(HttpMethod.PUT, "/api/v1/users/passwordsreset").permitAll()
                 .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
