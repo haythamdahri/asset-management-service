@@ -50,9 +50,6 @@ public class ProcessRequestDTO implements Serializable {
     @JsonProperty("traceability")
     private int traceability;
 
-    @JsonProperty("updateClassificationStatus")
-    private boolean updateClassificationStatus;
-
 
 
 }

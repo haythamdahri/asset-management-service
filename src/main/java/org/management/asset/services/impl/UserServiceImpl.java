@@ -5,6 +5,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.management.asset.bo.AssetFile;
+import org.management.asset.bo.Entity;
 import org.management.asset.bo.User;
 import org.management.asset.dao.*;
 import org.management.asset.dto.ProfileRequestDTO;
@@ -210,7 +211,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User saveUser(ProfileRequestDTO profileRequest, String email) {
-        System.out.println(profileRequest);
         try {
             // Retrieve user
             User user = this.userRepository.findByEmail(email).orElseThrow(BusinessException::new);

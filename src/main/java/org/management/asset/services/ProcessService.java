@@ -25,6 +25,8 @@ public interface ProcessService {
 
     Process getProcess(String id);
 
+    List<Process> getOrganizationProcesses(String id);
+
     List<Process> getProcesses();
 
     List<ProcessDTO> getCustomProcesses(String excludedProcessId);

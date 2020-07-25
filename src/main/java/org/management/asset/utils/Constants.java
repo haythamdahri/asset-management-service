@@ -30,7 +30,7 @@ public class Constants {
 
     public static final String GROUP_NAME_ALREADY_TAKEN = "Nom du groupe est déja utilisé!";
 
-    public static final String PROCESS_NAME_ALREADY_TAKEN = "Nom du processus est déja utilisé pour cette le même organisme!";
+    public static final String PROCESS_NAME_ALREADY_TAKEN = "Nom du processus est déja utilisé pour l'organisme selectionné!";
 
     private Constants() {}
 

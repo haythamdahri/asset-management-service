@@ -2,6 +2,7 @@ package org.management.asset.services;
 
 import org.management.asset.bo.AssetFile;
 import org.management.asset.bo.Organization;
+import org.management.asset.bo.Process;
 import org.management.asset.dto.OrganizationRequestDTO;
 import org.springframework.data.domain.Page;
 

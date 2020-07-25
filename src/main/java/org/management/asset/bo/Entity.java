@@ -2,6 +2,7 @@ package org.management.asset.bo;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
@@ -28,14 +29,16 @@ public class Entity implements Serializable {
     private String name;
 
     @DBRef
+    @EqualsAndHashCode.Exclude
     private Set<User> users;
 
     /**
      * Convenient method to add a user to an entity
+     *
      * @param user: User
      */
     public void addUser(User user) {
-        if( this.users == null ) {
+        if (this.users == null) {
             this.users = new HashSet<>();
         }
         this.users.add(user);

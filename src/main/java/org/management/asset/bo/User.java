@@ -44,7 +44,6 @@ public class User implements Serializable {
     @DBRef
     @CascadeSave
     @EqualsAndHashCode.Exclude
-    @JsonIgnore
     private Organization organization;
 
     @DBRef

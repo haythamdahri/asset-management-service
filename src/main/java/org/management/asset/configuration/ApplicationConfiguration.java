@@ -55,7 +55,7 @@ public class ApplicationConfiguration {
         Group basicUsers = null;
         // Add roles to the system
         if (this.roleService.getRoles().isEmpty()) {
-            Stream.of(RoleType.values()).forEach(role -> this.roleService.saveRole(new Role(null, role, null, null)));
+            Stream.of(RoleType.values()).forEach(role -> this.roleService.saveRole(new Role(null, role, null)));
         }
         // Add SuperAdmin Group
         if (this.groupService.getGroups().isEmpty()) {
@@ -68,8 +68,8 @@ public class ApplicationConfiguration {
             // Add ADMIN User For Dev
             byte[] bytes = Files.readAllBytes(Paths.get("/home/haytham/Downloads/profile.jpg"));
             AssetFile avatar = new AssetFile("Database.png", "png", MediaType.IMAGE_PNG_VALUE, bytes, LocalDateTime.now(), LocalDateTime.now());
-            Organization acerOrganization = this.organizationService.saveOrganization(new Organization(null, "ACER", "Description", avatar, null, null));
-            Organization dellOrganization = this.organizationService.saveOrganization(new Organization(null, "DELL", "Description", avatar, null, null));
+            Organization acerOrganization = this.organizationService.saveOrganization(new Organization(null, "ACER", "Description", avatar));
+            Organization dellOrganization = this.organizationService.saveOrganization(new Organization(null, "DELL", "Description", avatar));
             Language language = this.languageService.saveLanguage(new Language(null, "Francais"));
             Entity entity = this.entityService.saveEntity(
                     new Entity(null, "Système d'information", null));
@@ -116,7 +116,7 @@ public class ApplicationConfiguration {
             basicUser.setUsername("basic");
             basicUser.setPassword(this.passwordEncoder.encode("toortoor"));
             basicUser.setEmail("basic.user@gmail.com");
-            user.setOrganization(acerOrganization);
+            basicUser.setOrganization(acerOrganization);
             basicUser.setLanguage(language);
             basicUser.setEmployeeNumber("EMP5000");
             basicUser.setTitle("Mr");
@@ -140,8 +140,11 @@ public class ApplicationConfiguration {
             basicUser.setNotes("");
             basicUser.addRole(this.roleService.getRole(RoleType.ROLE_USERS_VIEW));
             basicUser.addGroup(basicUsers);
+
+            this.userService.saveUser(user);
             this.userService.saveUser(basicUser);
-            // =============== Generate Users ===============
+
+//             =============== Generate Users ===============
             for(int i=0; i<650; i++) {
                 basicUser = new User();
                 basicUser.setCreationDate(LocalDateTime.now());

@@ -32,11 +32,6 @@ public class Role implements Serializable {
     @DBRef
     @JsonIgnore
     @EqualsAndHashCode.Exclude
-    private Set<User> users;
-
-    @DBRef
-    @JsonIgnore
-    @EqualsAndHashCode.Exclude
     private Set<Group> groups;
 
     /**

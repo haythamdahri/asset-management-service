@@ -1,6 +1,7 @@
 package org.management.asset.services.impl;
 
 import org.apache.commons.lang3.StringUtils;
+import org.bson.types.ObjectId;
 import org.management.asset.bo.ClassificationDICT;
 import org.management.asset.bo.Process;
 import org.management.asset.dao.OrganizationRepository;
@@ -16,6 +17,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -34,6 +38,9 @@ public class ProcessServiceImpl implements ProcessService {
     @Autowired
     private OrganizationRepository organizationRepository;
 
+    @Autowired
+    private MongoOperations mongoOperations;
+
     @Override
     public Process saveProcess(Process process) {
         return this.processRepository.save(process);
@@ -48,7 +55,10 @@ public class ProcessServiceImpl implements ProcessService {
                     StringUtils.equals(processRequest.getId(), "null") ||
                     StringUtils.equals(processRequest.getId(), "undefined");
             processRequest.setId(processRequestIdNotExists ? null : processRequest.getId());
-            Process process = this.processRepository.findById(processRequest.getId()).orElse(new Process());
+            Process process = new Process();
+            if( processRequest.getId() != null ) {
+                process = this.processRepository.findById(processRequest.getId()).orElse(new Process());
+            }
             // Check name if assigned to an other process
             if (processRequestIdNotExists) {
                 if (this.processRepository.findProcessByNameAndOrganization_Id(processRequest.getName(), processRequest.getOrganization()).isPresent()) {
@@ -62,10 +72,13 @@ public class ProcessServiceImpl implements ProcessService {
             process.setName(processRequest.getName());
             // Set data
             process.setDescription(processRequest.getDescription());
+            process.setStatus(processRequest.isStatus());
             // Set organization
             process.setOrganization(this.organizationRepository.findById(processRequest.getOrganization()).orElseThrow(BusinessException::new));
             // Set parent process
-            process.setParentProcess(this.processRepository.findById(processRequest.getParentProcess()).orElse(null));
+            if( !StringUtils.isEmpty(processRequest.getParentProcess()) ) {
+                process.setParentProcess(this.processRepository.findById(processRequest.getParentProcess()).orElse(null));
+            }
             // Set classificationDICT
             ClassificationDICT classification = new ClassificationDICT(processRequest.getConfidentiality(), processRequest.getAvailability(), processRequest.getIntegrity(), processRequest.getTraceability(), processRequest.isClassificationStatus());
             if( process.getClassification() == null ) {;
@@ -110,6 +123,13 @@ public class ProcessServiceImpl implements ProcessService {
             process.getClassification().postConstruct();
         }
         return process;
+    }
+
+    @Override
+    public List<Process> getOrganizationProcesses(String id) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where("organization.$id").is(new ObjectId(id)));
+        return this.mongoOperations.find(query, Process.class);
     }
 
     @Override

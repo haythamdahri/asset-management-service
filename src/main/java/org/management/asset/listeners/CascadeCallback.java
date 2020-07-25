@@ -15,7 +15,6 @@ import java.lang.reflect.Field;
  */
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 public class CascadeCallback implements ReflectionUtils.FieldCallback {
 
     @Autowired
@@ -24,21 +23,26 @@ public class CascadeCallback implements ReflectionUtils.FieldCallback {
     @Autowired
     private MongoOperations mongoOperations;
 
+    CascadeCallback(final Object source, final MongoOperations mongoOperations) {
+        this.source = source;
+        this.setMongoOperations(mongoOperations);
+    }
+
     @Override
     public void doWith(final Field field) throws IllegalArgumentException, IllegalAccessException {
         ReflectionUtils.makeAccessible(field);
 
         if (field.isAnnotationPresent(DBRef.class) && field.isAnnotationPresent(CascadeSave.class)) {
-            final Object fieldValue = field.get(this.source);
+            final Object fieldValue = field.get(getSource());
 
-            boolean insta = !(fieldValue instanceof String);
-            boolean instanull = fieldValue != null;
-
-            if ( instanull && insta ) {
+            if (fieldValue != null) {
                 final FieldCallback callback = new FieldCallback();
+
                 ReflectionUtils.doWithFields(fieldValue.getClass(), callback);
-                this.mongoOperations.save(fieldValue);
+
+                getMongoOperations().save(fieldValue);
             }
         }
+
     }
 }

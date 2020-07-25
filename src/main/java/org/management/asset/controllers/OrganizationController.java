@@ -3,8 +3,11 @@ package org.management.asset.controllers;
 import org.management.asset.bo.AssetFile;
 import org.management.asset.bo.Organization;
 import org.management.asset.bo.Process;
+import org.management.asset.bo.User;
 import org.management.asset.dto.OrganizationRequestDTO;
 import org.management.asset.services.OrganizationService;
+import org.management.asset.services.ProcessService;
+import org.management.asset.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
@@ -15,7 +18,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * @author Haytham DAHRI
@@ -26,6 +28,12 @@ public class OrganizationController {
 
     @Autowired
     private OrganizationService organizationService;
+
+    @Autowired
+    private ProcessService processService;
+
+    @Autowired
+    private UserService userService;
 
     @GetMapping(path = "/")
     public ResponseEntity<List<Organization>> getOrganizations() {
@@ -51,12 +59,14 @@ public class OrganizationController {
 
     @PreAuthorize(value = "hasRole('ROLE_ADMIN') or hasRole('ROLE_PROCESSES_VIEW') or hasRole('ROLE_SUPER_USER')")
     @GetMapping(path = "/{id}/processes")
-    public ResponseEntity<Set<Process>> listOrganizationProcesses(@PathVariable(name = "id") String id) {
-        Organization organization = this.organizationService.getOrganization(id);
-        if( organization != null ) {
-            return ResponseEntity.ok(organization.getProcesses());
-        }
-        return ResponseEntity.ok().build();
+    public ResponseEntity<List<Process>> listOrganizationProcesses(@PathVariable(name = "id") String id) {
+        return ResponseEntity.ok(this.processService.getOrganizationProcesses(id));
+    }
+
+    @PreAuthorize(value = "hasRole('ROLE_ADMIN') or hasRole('ROLE_USERS_VIEW') or hasRole('ROLE_SUPER_USER')")
+    @GetMapping(path = "/{id}/users")
+    public ResponseEntity<List<User>> listOrganizationUsers(@PathVariable(name = "id") String id) {
+        return ResponseEntity.ok(this.userService.getOrganizationUsers(id));
     }
 
     @PreAuthorize(value = "hasRole('ROLE_ADMIN') or hasRole('ROLE_ORGANIZATIONS_VIEW') or hasRole('ROLE_SUPER_USER')")
