@@ -8,6 +8,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import javax.annotation.PostConstruct;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.List;
@@ -32,7 +33,7 @@ public class Process implements Serializable {
 
     @DBRef
     private Process parentProcess;
-    private ClassificationDICT classificationDICT;
+    private ClassificationDICT classification;
 
     /**
      * Actifs

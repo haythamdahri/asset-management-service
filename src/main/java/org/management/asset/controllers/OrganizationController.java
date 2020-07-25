@@ -2,6 +2,7 @@ package org.management.asset.controllers;
 
 import org.management.asset.bo.AssetFile;
 import org.management.asset.bo.Organization;
+import org.management.asset.bo.Process;
 import org.management.asset.dto.OrganizationRequestDTO;
 import org.management.asset.services.OrganizationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Haytham DAHRI
@@ -45,6 +47,16 @@ public class OrganizationController {
     @GetMapping(path = "/page")
     public ResponseEntity<Page<Organization>> listOrganizations(@RequestParam(value = "search", required = false, defaultValue = "") String search, @RequestParam(value = "page", required = false, defaultValue = "0") int page, @RequestParam(value = "size", required = false, defaultValue = "${page.default-size}") int size) {
         return ResponseEntity.ok(this.organizationService.getOrganizations(search, page, size));
+    }
+
+    @PreAuthorize(value = "hasRole('ROLE_ADMIN') or hasRole('ROLE_PROCESSES_VIEW') or hasRole('ROLE_SUPER_USER')")
+    @GetMapping(path = "/{id}/processes")
+    public ResponseEntity<Set<Process>> listOrganizationProcesses(@PathVariable(name = "id") String id) {
+        Organization organization = this.organizationService.getOrganization(id);
+        if( organization != null ) {
+            return ResponseEntity.ok(organization.getProcesses());
+        }
+        return ResponseEntity.ok().build();
     }
 
     @PreAuthorize(value = "hasRole('ROLE_ADMIN') or hasRole('ROLE_ORGANIZATIONS_VIEW') or hasRole('ROLE_SUPER_USER')")

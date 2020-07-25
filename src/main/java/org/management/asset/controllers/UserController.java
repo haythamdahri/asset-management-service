@@ -168,6 +168,20 @@ public class UserController {
     }
 
     /**
+     * Check user privileges to add or edit a process
+     *
+     * @return ResponseEntity<RolesCheckResponseDTO>
+     */
+    @GetMapping(path = "/roles/checking/processes")
+    public ResponseEntity<RolesCheckResponseDTO> checkUserEditProcessForCurrentUser() {
+        User user = this.userService.getUserByEmail(this.authenticationFacade.getAuthentication().getName());
+        List<RoleType> roleTypes = Stream.of(RoleType.ROLE_ADMIN, RoleType.ROLE_SUPER_USER,
+                RoleType.ROLE_PROCESSES_CREATE, RoleType.ROLE_PROCESSES_EDIT).collect(Collectors.toList());
+        // Return response
+        return ResponseEntity.ok(ApplicationUtils.checkUserHasRoles(roleTypes, user));
+    }
+
+    /**
      * Check user privileges to add or edit an organization
      *
      * @return ResponseEntity<RolesCheckResponseDTO>

@@ -20,7 +20,6 @@ public class ClassificationDICT implements Serializable {
 
     private static final long serialVersionUID = -1459913926470809020L;
 
-    private String id = UUID.randomUUID().toString();
     // Confidentialité
     private int confidentiality;
     // Disponibilité
@@ -35,8 +34,15 @@ public class ClassificationDICT implements Serializable {
     private boolean status;
     private LocalDateTime identificationDate;
 
-    @PostConstruct
-    private void postConstruct() {
+    public ClassificationDICT(int confidentiality, int availability, int integrity, int traceability, boolean status) {
+        this.confidentiality = confidentiality;
+        this.availability = availability;
+        this.integrity = integrity;
+        this.traceability = traceability;
+        this.status = status;
+    }
+
+    public void postConstruct() {
         // Calculate score
         this.score = this.confidentiality + this.availability + this.traceability + this.integrity;
     }
