@@ -23,6 +23,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 
 /**
@@ -56,7 +57,7 @@ public class ProcessServiceImpl implements ProcessService {
                     StringUtils.equals(processRequest.getId(), "undefined");
             processRequest.setId(processRequestIdNotExists ? null : processRequest.getId());
             Process process = new Process();
-            if( processRequest.getId() != null ) {
+            if (processRequest.getId() != null) {
                 process = this.processRepository.findById(processRequest.getId()).orElse(new Process());
             }
             // Check name if assigned to an other process
@@ -69,6 +70,13 @@ public class ProcessServiceImpl implements ProcessService {
                     throw new BusinessException(Constants.PROCESS_NAME_ALREADY_TAKEN);
                 }
             }
+            // Check parent process
+            if (StringUtils.isEmpty(processRequest.getParentProcess())) {
+                Process parentProcess = this.processRepository.findById(processRequest.getParentProcess()).orElseThrow(BusinessException::new);
+                if (StringUtils.equals(parentProcess.getId(), processRequest.getId())) {
+                    throw new BusinessException(Constants.PARENT_PROCESS_IS_ALREADY_ASSIGNED_TO_SAME_PROCESS);
+                }
+            }
             process.setName(processRequest.getName());
             // Set data
             process.setDescription(processRequest.getDescription());
@@ -76,13 +84,15 @@ public class ProcessServiceImpl implements ProcessService {
             // Set organization
             process.setOrganization(this.organizationRepository.findById(processRequest.getOrganization()).orElseThrow(BusinessException::new));
             // Set parent process
-            if( !StringUtils.isEmpty(processRequest.getParentProcess()) ) {
+            if (!StringUtils.isEmpty(processRequest.getParentProcess())) {
                 process.setParentProcess(this.processRepository.findById(processRequest.getParentProcess()).orElse(null));
             }
             // Set classificationDICT
             ClassificationDICT classification = new ClassificationDICT(processRequest.getConfidentiality(), processRequest.getAvailability(), processRequest.getIntegrity(), processRequest.getTraceability(), processRequest.isClassificationStatus());
-            if( process.getClassification() == null ) {;
-                classification.setIdentificationDate(LocalDateTime.now());
+            if (process.getClassification() == null) {
+                classification.setIdentificationDate(LocalDateTime.now(ZoneId.of("UTC")));
+            } else {
+                classification.setIdentificationDate(process.getClassification().getIdentificationDate());
             }
             process.setClassification(classification);
             // Return classification

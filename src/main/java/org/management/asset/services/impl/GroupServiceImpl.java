@@ -18,6 +18,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author Haytham DAHRI
@@ -59,6 +60,12 @@ public class GroupServiceImpl implements GroupService {
             if (groupIdNotExists || groupDTO.isUpdatePermissions()) {
                 group.setRoles(null);
                 groupDTO.getRoles().forEach(roleId -> this.roleRepository.findById(roleId).ifPresent(group::addRole));
+            } else {
+                Optional<Group> localGroupOptional = this.groupRepository.findById(groupDTO.getId());
+                if( localGroupOptional.isPresent() ) {
+                    group.setRoles(localGroupOptional.get().getRoles());
+                    group.setUsers(localGroupOptional.get().getUsers());
+                }
             }
             // Save group
             return this.groupRepository.save(group);
