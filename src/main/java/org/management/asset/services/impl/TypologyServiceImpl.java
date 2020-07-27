@@ -6,7 +6,9 @@ import org.management.asset.bo.Threat;
 import org.management.asset.bo.Typology;
 import org.management.asset.bo.Vulnerability;
 import org.management.asset.dao.TypologyRepository;
+import org.management.asset.dto.ThreatResponseDTO;
 import org.management.asset.dto.TypologyRequestDTO;
+import org.management.asset.dto.TypologyResponseDTO;
 import org.management.asset.exceptions.BusinessException;
 import org.management.asset.exceptions.TechnicalException;
 import org.management.asset.services.TypologyService;
@@ -15,9 +17,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
@@ -107,6 +112,27 @@ public class TypologyServiceImpl implements TypologyService {
     }
 
     @Override
+    public ThreatResponseDTO getTypologyThreatStatus(String typologyId, String threatId) {
+        try {
+            // Get typology
+            Typology typology = this.typologyRepository.findById(typologyId).orElseThrow(BusinessException::new);
+            // Update threat status
+            Optional<Threat> optionalThreat = typology.getThreats().stream().filter(threat -> threat.getId().equals(threatId)).findFirst();
+            if( optionalThreat.isPresent() ) {
+                return new ThreatResponseDTO(typologyId, typology.getName(), optionalThreat.get());
+            }
+            // Throw BusinessException if not threat found
+            throw new BusinessException(Constants.NO_THREAT_FOUND);
+        } catch(BusinessException ex) {
+            ex.printStackTrace();
+            throw ex;
+        } catch(Exception ex) {
+            ex.printStackTrace();
+            throw new TechnicalException(ex.getMessage());
+        }
+    }
+
+    @Override
     public Vulnerability updateTypologyVulnerabilityStatus(String typologyId, String vulnerabilityId, boolean status) {
         try {
             AtomicReference<Vulnerability> vulnerability = new AtomicReference<>(null);
@@ -165,8 +191,30 @@ public class TypologyServiceImpl implements TypologyService {
     }
 
     @Override
+    public boolean deleteTypologyThreatStatus(String typologyId, String threatId) {
+        try {
+            // Get typology
+            Typology typology = this.typologyRepository.findById(typologyId).orElseThrow(BusinessException::new);
+            typology.setThreats(typology.getThreats().stream().filter(threat -> !threat.getId().equals(threatId)).collect(Collectors.toList()));
+            this.typologyRepository.save(typology);
+            return true;
+        } catch(BusinessException ex) {
+            ex.printStackTrace();
+            throw ex;
+        } catch(Exception ex) {
+            ex.printStackTrace();
+            throw new TechnicalException(ex.getMessage());
+        }
+    }
+
+    @Override
     public List<Typology> getTypologies() {
         return this.typologyRepository.findAll();
+    }
+
+    @Override
+    public List<TypologyResponseDTO> getCustomTypologies() {
+        return this.typologyRepository.findCustomTypologies();
     }
 
     @Override

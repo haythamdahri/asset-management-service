@@ -4,7 +4,9 @@ import org.management.asset.bo.RiskScenario;
 import org.management.asset.bo.Threat;
 import org.management.asset.bo.Typology;
 import org.management.asset.bo.Vulnerability;
+import org.management.asset.dto.ThreatResponseDTO;
 import org.management.asset.dto.TypologyRequestDTO;
+import org.management.asset.dto.TypologyResponseDTO;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -25,7 +27,13 @@ public interface TypologyService {
 
     List<Typology> getTypologies();
 
+    List<TypologyResponseDTO> getCustomTypologies();
+
     Threat updateTypologyThreatStatus(String typologyId, String threatId, boolean status);
+
+    ThreatResponseDTO getTypologyThreatStatus(String typologyId, String threatId);
+
+    boolean deleteTypologyThreatStatus(String typologyId, String threatId);
 
     Vulnerability updateTypologyVulnerabilityStatus(String typologyId, String vulnerabilityId, boolean status);
 
