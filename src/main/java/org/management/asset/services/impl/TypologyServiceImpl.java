@@ -6,9 +6,7 @@ import org.management.asset.bo.Threat;
 import org.management.asset.bo.Typology;
 import org.management.asset.bo.Vulnerability;
 import org.management.asset.dao.TypologyRepository;
-import org.management.asset.dto.ThreatResponseDTO;
-import org.management.asset.dto.TypologyRequestDTO;
-import org.management.asset.dto.TypologyResponseDTO;
+import org.management.asset.dto.*;
 import org.management.asset.exceptions.BusinessException;
 import org.management.asset.exceptions.TechnicalException;
 import org.management.asset.services.TypologyService;
@@ -112,7 +110,7 @@ public class TypologyServiceImpl implements TypologyService {
     }
 
     @Override
-    public ThreatResponseDTO getTypologyThreatStatus(String typologyId, String threatId) {
+    public ThreatResponseDTO getTypologyThreat(String typologyId, String threatId) {
         try {
             // Get typology
             Typology typology = this.typologyRepository.findById(typologyId).orElseThrow(BusinessException::new);
@@ -191,12 +189,90 @@ public class TypologyServiceImpl implements TypologyService {
     }
 
     @Override
-    public boolean deleteTypologyThreatStatus(String typologyId, String threatId) {
+    public VulnerabilityResponseDTO getTypologyVulnerability(String typologyId, String vulnerabilityId) {
+        try {
+            // Get typology
+            Typology typology = this.typologyRepository.findById(typologyId).orElseThrow(BusinessException::new);
+            // Update threat status
+            Optional<Vulnerability> optionalVulnerability = typology.getVulnerabilities().stream().filter(vulnerability -> vulnerability.getId().equals(vulnerabilityId)).findFirst();
+            if( optionalVulnerability.isPresent() ) {
+                return new VulnerabilityResponseDTO(typologyId, typology.getName(), optionalVulnerability.get());
+            }
+            // Throw BusinessException if not threat found
+            throw new BusinessException(Constants.NO_THREAT_FOUND);
+        } catch(BusinessException ex) {
+            ex.printStackTrace();
+            throw ex;
+        } catch(Exception ex) {
+            ex.printStackTrace();
+            throw new TechnicalException(ex.getMessage());
+        }
+    }
+
+    @Override
+    public RiskScenarioResponseDTO getTypologyRiskScenario(String typologyId, String riskScenarioId) {
+        try {
+            // Get typology
+            Typology typology = this.typologyRepository.findById(typologyId).orElseThrow(BusinessException::new);
+            // Update threat status
+            Optional<RiskScenario> optionalRiskScenario = typology.getRiskScenarios().stream().filter(riskScenario -> riskScenario.getId().equals(riskScenarioId)).findFirst();
+            if( optionalRiskScenario.isPresent() ) {
+                return new RiskScenarioResponseDTO(typologyId, typology.getName(), optionalRiskScenario.get());
+            }
+            // Throw BusinessException if not threat found
+            throw new BusinessException(Constants.NO_THREAT_FOUND);
+        } catch(BusinessException ex) {
+            ex.printStackTrace();
+            throw ex;
+        } catch(Exception ex) {
+            ex.printStackTrace();
+            throw new TechnicalException(ex.getMessage());
+        }
+    }
+
+    @Override
+    public boolean deleteTypologyThreat(String typologyId, String threatId) {
         try {
             // Get typology
             Typology typology = this.typologyRepository.findById(typologyId).orElseThrow(BusinessException::new);
             typology.setThreats(typology.getThreats().stream().filter(threat -> !threat.getId().equals(threatId)).collect(Collectors.toList()));
             this.typologyRepository.save(typology);
+            return true;
+        } catch(BusinessException ex) {
+            ex.printStackTrace();
+            throw ex;
+        } catch(Exception ex) {
+            ex.printStackTrace();
+            throw new TechnicalException(ex.getMessage());
+        }
+    }
+
+    @Override
+    public boolean deleteTypologyVulnerability(String typologyId, String vulnerabilityId) {
+        try {
+            // Get typology
+            Typology typology = this.typologyRepository.findById(typologyId).orElseThrow(BusinessException::new);
+            typology.setVulnerabilities(typology.getVulnerabilities().stream().filter(vulnerability -> !vulnerability.getId().equals(vulnerabilityId)).collect(Collectors.toList()));
+            this.typologyRepository.save(typology);
+            return true;
+        } catch(BusinessException ex) {
+            ex.printStackTrace();
+            throw ex;
+        } catch(Exception ex) {
+            ex.printStackTrace();
+            throw new TechnicalException(ex.getMessage());
+        }
+    }
+
+    @Override
+    public boolean deleteTypologyRiskScenario(String typologyId, String riskScenarioId) {
+        try {
+            // Get typology
+            Typology typology = this.typologyRepository.findById(typologyId).orElseThrow(BusinessException::new);
+            typology.setRiskScenarios(typology.getRiskScenarios().stream().filter(riskScenario -> !riskScenario.getId().equals(riskScenarioId)).collect(Collectors.toList()));
+            this.typologyRepository.save(typology);
+            // Set null on RiskAnalysis
+
             return true;
         } catch(BusinessException ex) {
             ex.printStackTrace();

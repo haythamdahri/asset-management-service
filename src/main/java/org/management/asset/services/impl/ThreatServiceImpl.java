@@ -10,6 +10,7 @@ import org.management.asset.dto.ThreatResponseDTO;
 import org.management.asset.exceptions.BusinessException;
 import org.management.asset.exceptions.TechnicalException;
 import org.management.asset.helpers.PaginationHelper;
+import org.management.asset.services.RiskAnalysisService;
 import org.management.asset.services.ThreatService;
 import org.management.asset.services.TypologyService;
 import org.management.asset.utils.Constants;
@@ -30,6 +31,9 @@ public class ThreatServiceImpl implements ThreatService {
 
     @Autowired
     private TypologyService typologyService;
+
+    @Autowired
+    private RiskAnalysisService riskAnalysisService;
 
     @Autowired
     private TypologyRepository typologyRepository;
@@ -61,77 +65,74 @@ public class ThreatServiceImpl implements ThreatService {
     @Override
     public ThreatResponseDTO saveThreat(ThreatRequestDTO threatRequest) {
         try {
-            try {
-                final boolean threatRequestIdNotExists = StringUtils.isEmpty(threatRequest.getThreat()) ||
-                        threatRequest.getThreat() == null ||
-                        StringUtils.equals(threatRequest.getThreat(), "null") ||
-                        StringUtils.equals(threatRequest.getThreat(), "undefined");
-                threatRequest.setThreat(threatRequestIdNotExists ? null : threatRequest.getThreat());
-                AtomicReference<Threat> threatAtomicReference = new AtomicReference<>(null);
-                // Get typology
-                Typology typology = this.typologyRepository.findById(threatRequest.getTypology()).orElseThrow(BusinessException::new);
-                // Check if name is already used in same typology of threats
-                if( typology.getThreats() != null && typology.getThreats().stream().anyMatch(threat ->
-                        threat.getName().equalsIgnoreCase(threatRequest.getName()) && !StringUtils.equals(threat.getId(), threatRequest.getThreat()) )) {
-                    throw new BusinessException(Constants.THREAT_NAME_ALREADY_TAKEN);
-                }
-                // Check if new threat
-                if( threatRequestIdNotExists ) {
-                    // Create new Threat and push it
-                    Threat threat = new Threat();
-                    threat.setName(threatRequest.getName());
-                    threat.setDescription(threatRequest.getDescription());
-                    threat.setStatus(threatRequest.isStatus());
-                    threat.setIdentificationDate(LocalDateTime.now());
-                    // Add threat to typology
-                    typology.addThreat(threat);
-                    // Save typology
-                    this.typologyRepository.save(typology);
-                    return new ThreatResponseDTO(typology.getId(), typology.getName(), threat);
-                }
-                // Check if typology is not changed
-                if( StringUtils.equals(threatRequest.getTypology(), threatRequest.getCurrentTypology()) ) {
-                    // Update Vulnerability status
-                    typology.setThreats(typology.getThreats().stream().peek(threat -> {
-                        if (StringUtils.equals(threatRequest.getThreat(), threat.getId())) {
-                            threat.setName(threatRequest.getName());
-                            threat.setDescription(threatRequest.getDescription());
-                            threat.setStatus(threatRequest.isStatus());
-                            threatAtomicReference.set(threat);
-                        }
-                    }).collect(Collectors.toList()));
-                } else {
-                    // Remove threat from old typology
-                    Typology currentTypology = this.typologyRepository.findById(threatRequest.getCurrentTypology()).orElseThrow(BusinessException::new);
-                    currentTypology.setThreats(currentTypology.getThreats().stream().filter(threat -> !StringUtils.equals(threat.getId(), threatRequest.getThreat())).collect(Collectors.toList()));
-                    this.typologyRepository.save(currentTypology);
-                    // Create new Threat and push it
-                    Threat threat = new Threat();
-                    threat.setName(threatRequest.getName());
-                    threat.setDescription(threatRequest.getDescription());
-                    threat.setStatus(threatRequest.isStatus());
-                    threat.setIdentificationDate(LocalDateTime.now());
-                    // Add threat to typology
-                    typology.addThreat(threat);
-                    this.typologyRepository.save(typology);
-                    return new ThreatResponseDTO(typology.getId(), typology.getName(), threat);
-                }
-                // Save typology if threat found
-                if (threatAtomicReference.get() != null) {
-                    this.typologyRepository.save(typology);
-                    return new ThreatResponseDTO(typology.getId(), typology.getName(), threatAtomicReference.get());
-                }
-                throw new BusinessException(Constants.ERROR);
-            } catch (BusinessException ex) {
-                ex.printStackTrace();
-                throw ex;
-            } catch (Exception ex) {
-                ex.printStackTrace();
-                throw new TechnicalException(ex.getMessage());
+            final boolean threatRequestIdNotExists = StringUtils.isEmpty(threatRequest.getThreat()) ||
+                    threatRequest.getThreat() == null ||
+                    StringUtils.equals(threatRequest.getThreat(), "null") ||
+                    StringUtils.equals(threatRequest.getThreat(), "undefined");
+            threatRequest.setThreat(threatRequestIdNotExists ? null : threatRequest.getThreat());
+            AtomicReference<Threat> threatAtomicReference = new AtomicReference<>(null);
+            // Get typology
+            Typology typology = this.typologyRepository.findById(threatRequest.getTypology()).orElseThrow(BusinessException::new);
+            // Check if name is already used in same typology of threats
+            if (typology.getThreats() != null && typology.getThreats().stream().anyMatch(threat ->
+                    threat.getName().equalsIgnoreCase(threatRequest.getName()) && !StringUtils.equals(threat.getId(), threatRequest.getThreat()))) {
+                throw new BusinessException(Constants.THREAT_NAME_ALREADY_TAKEN);
             }
+            // Check if new threat
+            if (threatRequestIdNotExists) {
+                // Create new Threat and push it
+                Threat threat = new Threat();
+                threat.setName(threatRequest.getName());
+                threat.setDescription(threatRequest.getDescription());
+                threat.setStatus(threatRequest.isStatus());
+                threat.setIdentificationDate(LocalDateTime.now());
+                // Add threat to typology
+                typology.addThreat(threat);
+                // Save typology
+                this.typologyRepository.save(typology);
+                return new ThreatResponseDTO(typology.getId(), typology.getName(), threat);
+            }
+            // Check if typology is not changed
+            if (StringUtils.equals(threatRequest.getTypology(), threatRequest.getCurrentTypology())) {
+                // Update Vulnerability status
+                typology.setThreats(typology.getThreats().stream().peek(threat -> {
+                    if (StringUtils.equals(threatRequest.getThreat(), threat.getId())) {
+                        threat.setName(threatRequest.getName());
+                        threat.setDescription(threatRequest.getDescription());
+                        threat.setStatus(threatRequest.isStatus());
+                        threatAtomicReference.set(threat);
+                    }
+                }).collect(Collectors.toList()));
+            } else {
+                // Remove threat from old typology
+                Typology currentTypology = this.typologyRepository.findById(threatRequest.getCurrentTypology()).orElseThrow(BusinessException::new);
+                currentTypology.setThreats(currentTypology.getThreats().stream().filter(threat -> !StringUtils.equals(threat.getId(), threatRequest.getThreat())).collect(Collectors.toList()));
+                this.typologyRepository.save(currentTypology);
+                // Create new Threat and push it
+                Threat threat = new Threat();
+                threat.setName(threatRequest.getName());
+                threat.setDescription(threatRequest.getDescription());
+                threat.setStatus(threatRequest.isStatus());
+                threat.setIdentificationDate(LocalDateTime.now());
+                // Add threat to typology
+                typology.addThreat(threat);
+                this.typologyRepository.save(typology);
+                return new ThreatResponseDTO(typology.getId(), typology.getName(), threat);
+            }
+            // Save typology if threat found
+            if (threatAtomicReference.get() != null) {
+                this.typologyRepository.save(typology);
+                // Update RiskAnalysis threat
+                this.riskAnalysisService.updateRiskAnalysisThreat(typology.getId(), threatAtomicReference.get());
+                // Return response
+                return new ThreatResponseDTO(typology.getId(), typology.getName(), threatAtomicReference.get());
+            }
+            throw new BusinessException(Constants.ERROR);
         } catch (BusinessException ex) {
+            ex.printStackTrace();
             throw ex;
         } catch (Exception ex) {
+            ex.printStackTrace();
             throw new TechnicalException(ex.getMessage());
         }
     }
