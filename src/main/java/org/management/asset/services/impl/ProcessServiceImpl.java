@@ -151,7 +151,7 @@ public class ProcessServiceImpl implements ProcessService {
     @Override
     public List<ProcessDTO> getCustomProcesses(String excludedProcessId) {
         if (excludedProcessId != null) {
-            return this.processRepository.findCustomProcessesAndExlude(excludedProcessId);
+            return this.processRepository.findCustomProcessesAndExclude(excludedProcessId);
         }
         return this.processRepository.findCustomProcesses();
     }

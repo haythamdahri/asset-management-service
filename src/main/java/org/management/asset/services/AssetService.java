@@ -2,6 +2,7 @@ package org.management.asset.services;
 
 import org.management.asset.bo.Asset;
 import org.management.asset.bo.RiskAnalysis;
+import org.management.asset.dto.AssetRequestDTO;
 import org.management.asset.dto.RiskAnalysisResponseDTO;
 import org.springframework.data.domain.Page;
 
@@ -14,6 +15,8 @@ import java.util.List;
 public interface AssetService {
 
     Asset saveAsset(Asset asset);
+
+    Asset saveAsset(AssetRequestDTO assetRequest);
 
     boolean deleteAsset(String id);
 
