@@ -48,18 +48,23 @@ public class RiskScenarioServiceImpl implements RiskScenarioService {
 
     @Override
     public PageDTO<RiskScenarioResponseDTO> getRiskScenarios(String name, int page, int size) {
-        List<RiskScenarioResponseDTO> riskScenarioResponses = new ArrayList<>();
-        this.typologyService.getTypologies().forEach(typology -> {
-            if (typology.getThreats() != null) {
-                typology.getRiskScenarios().forEach(riskScenario -> {
-                    if (riskScenario.getName().toLowerCase().contains(name.toLowerCase())) {
-                        riskScenarioResponses.add(new RiskScenarioResponseDTO(typology.getId(), typology.getName(), riskScenario));
-                    }
-                });
-            }
-        });
-        // Pagination
-        return this.paginationHelper.buildPage(page, size, riskScenarioResponses);
+        try {
+            List<RiskScenarioResponseDTO> riskScenarioResponses = new ArrayList<>();
+            this.typologyService.getTypologies().forEach(typology -> {
+                if (typology.getRiskScenarios() != null) {
+                    typology.getRiskScenarios().forEach(riskScenario -> {
+                        if (riskScenario.getName().toLowerCase().contains(name.toLowerCase())) {
+                            riskScenarioResponses.add(new RiskScenarioResponseDTO(typology.getId(), typology.getName(), riskScenario));
+                        }
+                    });
+                }
+            });
+            // Pagination
+            return this.paginationHelper.buildPage(page, size, riskScenarioResponses);
+        } catch(Exception ex) {
+            ex.printStackTrace();
+            throw ex;
+        }
     }
 
     @Override
@@ -74,7 +79,7 @@ public class RiskScenarioServiceImpl implements RiskScenarioService {
             // Get typology
             Typology typology = this.typologyRepository.findById(riskScenarioRequest.getTypology()).orElseThrow(BusinessException::new);
             // Check if name is already used in same typology of threats
-            if (typology.getThreats() != null && typology.getRiskScenarios().stream().anyMatch(riskScenario ->
+            if (typology.getRiskScenarios() != null && typology.getRiskScenarios().stream().anyMatch(riskScenario ->
                     riskScenario.getName().equalsIgnoreCase(riskScenarioRequest.getName()) && !StringUtils.equals(riskScenario.getId(), riskScenarioRequest.getRiskScenario()))) {
                 throw new BusinessException(Constants.RISK_SCENARIO_NAME_ALREADY_TAKEN);
             }
@@ -106,7 +111,7 @@ public class RiskScenarioServiceImpl implements RiskScenarioService {
             } else {
                 // Remove threat from old typology
                 Typology currentTypology = this.typologyRepository.findById(riskScenarioRequest.getCurrentTypology()).orElseThrow(BusinessException::new);
-                currentTypology.setThreats(currentTypology.getThreats().stream().filter(threat -> !StringUtils.equals(threat.getId(), riskScenarioRequest.getRiskScenario())).collect(Collectors.toList()));
+                currentTypology.setRiskScenarios(currentTypology.getRiskScenarios().stream().filter(riskScenario -> !StringUtils.equals(riskScenario.getId(), riskScenarioRequest.getRiskScenario())).collect(Collectors.toList()));
                 this.typologyRepository.save(currentTypology);
                 // Create new RiskScenario and push it
                 RiskScenario riskScenario = new RiskScenario();

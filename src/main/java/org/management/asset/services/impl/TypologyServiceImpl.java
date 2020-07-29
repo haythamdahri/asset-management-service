@@ -116,11 +116,7 @@ public class TypologyServiceImpl implements TypologyService {
             Typology typology = this.typologyRepository.findById(typologyId).orElseThrow(BusinessException::new);
             // Update threat status
             Optional<Threat> optionalThreat = typology.getThreats().stream().filter(threat -> threat.getId().equals(threatId)).findFirst();
-            if( optionalThreat.isPresent() ) {
-                return new ThreatResponseDTO(typologyId, typology.getName(), optionalThreat.get());
-            }
-            // Throw BusinessException if not threat found
-            throw new BusinessException(Constants.NO_THREAT_FOUND);
+            return optionalThreat.map(threat -> new ThreatResponseDTO(typologyId, typology.getName(), threat)).orElse(null);
         } catch(BusinessException ex) {
             ex.printStackTrace();
             throw ex;
@@ -195,11 +191,7 @@ public class TypologyServiceImpl implements TypologyService {
             Typology typology = this.typologyRepository.findById(typologyId).orElseThrow(BusinessException::new);
             // Update threat status
             Optional<Vulnerability> optionalVulnerability = typology.getVulnerabilities().stream().filter(vulnerability -> vulnerability.getId().equals(vulnerabilityId)).findFirst();
-            if( optionalVulnerability.isPresent() ) {
-                return new VulnerabilityResponseDTO(typologyId, typology.getName(), optionalVulnerability.get());
-            }
-            // Throw BusinessException if not threat found
-            throw new BusinessException(Constants.NO_THREAT_FOUND);
+            return optionalVulnerability.map(vulnerability -> new VulnerabilityResponseDTO(typologyId, typology.getName(), vulnerability)).orElse(null);
         } catch(BusinessException ex) {
             ex.printStackTrace();
             throw ex;
@@ -216,11 +208,7 @@ public class TypologyServiceImpl implements TypologyService {
             Typology typology = this.typologyRepository.findById(typologyId).orElseThrow(BusinessException::new);
             // Update threat status
             Optional<RiskScenario> optionalRiskScenario = typology.getRiskScenarios().stream().filter(riskScenario -> riskScenario.getId().equals(riskScenarioId)).findFirst();
-            if( optionalRiskScenario.isPresent() ) {
-                return new RiskScenarioResponseDTO(typologyId, typology.getName(), optionalRiskScenario.get());
-            }
-            // Throw BusinessException if not threat found
-            throw new BusinessException(Constants.NO_THREAT_FOUND);
+            return optionalRiskScenario.map(riskScenario -> new RiskScenarioResponseDTO(typologyId, typology.getName(), riskScenario)).orElse(null);
         } catch(BusinessException ex) {
             ex.printStackTrace();
             throw ex;

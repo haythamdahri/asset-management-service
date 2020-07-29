@@ -1,16 +1,20 @@
 package org.management.asset.services.impl;
 
+import org.apache.commons.lang3.StringUtils;
 import org.management.asset.bo.*;
 import org.management.asset.dao.AssetRepository;
 import org.management.asset.dto.PageDTO;
+import org.management.asset.helpers.PaginationHelper;
 import org.management.asset.services.RiskAnalysisService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 /**
  * @author Haytham DAHRI
@@ -21,10 +25,29 @@ public class RiskAnalysisServiceImpl implements RiskAnalysisService {
     @Autowired
     private AssetRepository assetRepository;
 
+    @Autowired
+    private PaginationHelper paginationHelper;
 
     @Override
-    public PageDTO<RiskAnalysis> getRiskAnalysis(String name, int page, int size) {
-        return null;
+    public PageDTO<RiskAnalysis> getRiskAnalysis(String assetId, int page, int size) {
+        List<RiskAnalysis> riskAnalyzes = new ArrayList<>();
+        this.assetRepository.findAll().forEach(asset -> {
+            if( asset.getRiskAnalyzes() != null ) {
+                if(StringUtils.isNotEmpty(assetId) && asset.getId().equals(assetId)) {
+                    asset.setRiskAnalyzes(asset.getRiskAnalyzes().stream().peek(riskAnalysis -> {
+                        riskAnalysis.calculateGeneratedValues(asset);
+                    }).collect(Collectors.toSet()));
+                    riskAnalyzes.addAll(asset.getRiskAnalyzes());
+                } else if( StringUtils.isEmpty(assetId) ) {
+                    asset.setRiskAnalyzes(asset.getRiskAnalyzes().stream().peek(riskAnalysis -> {
+                        riskAnalysis.calculateGeneratedValues(asset);
+                    }).collect(Collectors.toSet()));
+                    riskAnalyzes.addAll(asset.getRiskAnalyzes());
+                }
+            }
+        });
+        // Pagination
+        return this.paginationHelper.buildPage(page, size, riskAnalyzes);
     }
 
     @Override
@@ -34,8 +57,8 @@ public class RiskAnalysisServiceImpl implements RiskAnalysisService {
         if( assets != null ) {
             assets.forEach(asset -> {
                 AtomicReference<RiskAnalysis> riskAnalysisAtomicReference = new AtomicReference<>(null);
-                if( asset != null && asset.getRiskAnalyses() != null ) {
-                    asset.getRiskAnalyses().forEach(riskAnalysis -> {
+                if( asset != null && asset.getRiskAnalyzes() != null ) {
+                    asset.getRiskAnalyzes().forEach(riskAnalysis -> {
                         if( riskAnalysis.getThreat().getId().equals(threat.getId()) ) {
                             riskAnalysis.setThreat(threat);
                             riskAnalysisAtomicReference.set(riskAnalysis);
@@ -58,8 +81,8 @@ public class RiskAnalysisServiceImpl implements RiskAnalysisService {
         if( assets != null ) {
             assets.forEach(asset -> {
                 AtomicReference<RiskAnalysis> riskAnalysisAtomicReference = new AtomicReference<>(null);
-                if( asset != null && asset.getRiskAnalyses() != null ) {
-                    asset.getRiskAnalyses().forEach(riskAnalysis -> {
+                if( asset != null && asset.getRiskAnalyzes() != null ) {
+                    asset.getRiskAnalyzes().forEach(riskAnalysis -> {
                         if( riskAnalysis.getRiskScenario().getId().equals(riskScenario.getId()) ) {
                             riskAnalysis.setRiskScenario(riskScenario);
                             riskAnalysisAtomicReference.set(riskAnalysis);
@@ -82,8 +105,8 @@ public class RiskAnalysisServiceImpl implements RiskAnalysisService {
         if( assets != null ) {
             assets.forEach(asset -> {
                 AtomicReference<RiskAnalysis> riskAnalysisAtomicReference = new AtomicReference<>(null);
-                if( asset != null && asset.getRiskAnalyses() != null ) {
-                    asset.getRiskAnalyses().forEach(riskAnalysis -> {
+                if( asset != null && asset.getRiskAnalyzes() != null ) {
+                    asset.getRiskAnalyzes().forEach(riskAnalysis -> {
                         if( riskAnalysis.getVulnerability().getId().equals(vulnerability.getId()) ) {
                             riskAnalysis.setVulnerability(vulnerability);
                             riskAnalysisAtomicReference.set(riskAnalysis);
@@ -105,8 +128,8 @@ public class RiskAnalysisServiceImpl implements RiskAnalysisService {
         if( assets != null ) {
             assets.forEach(asset -> {
                 AtomicReference<RiskAnalysis> riskAnalysisAtomicReference = new AtomicReference<>(null);
-                if( asset != null && asset.getRiskAnalyses() != null ) {
-                    asset.getRiskAnalyses().forEach(riskAnalysis -> {
+                if( asset != null && asset.getRiskAnalyzes() != null ) {
+                    asset.getRiskAnalyzes().forEach(riskAnalysis -> {
                         if( riskAnalysis.getThreat().getId().equals(threat.getId()) ) {
                             riskAnalysis.setThreat(null);
                             riskAnalysisAtomicReference.set(riskAnalysis);
@@ -128,8 +151,8 @@ public class RiskAnalysisServiceImpl implements RiskAnalysisService {
         if( assets != null ) {
             assets.forEach(asset -> {
                 AtomicReference<RiskAnalysis> riskAnalysisAtomicReference = new AtomicReference<>(null);
-                if( asset != null && asset.getRiskAnalyses() != null ) {
-                    asset.getRiskAnalyses().forEach(riskAnalysis -> {
+                if( asset != null && asset.getRiskAnalyzes() != null ) {
+                    asset.getRiskAnalyzes().forEach(riskAnalysis -> {
                         if( riskAnalysis.getRiskScenario().getId().equals(riskScenario.getId()) ) {
                             riskAnalysis.setRiskScenario(null);
                             riskAnalysisAtomicReference.set(riskAnalysis);
@@ -151,8 +174,8 @@ public class RiskAnalysisServiceImpl implements RiskAnalysisService {
         if( assets != null ) {
             assets.forEach(asset -> {
                 AtomicReference<RiskAnalysis> riskAnalysisAtomicReference = new AtomicReference<>(null);
-                if( asset != null && asset.getRiskAnalyses() != null ) {
-                    asset.getRiskAnalyses().forEach(riskAnalysis -> {
+                if( asset != null && asset.getRiskAnalyzes() != null ) {
+                    asset.getRiskAnalyzes().forEach(riskAnalysis -> {
                         if( riskAnalysis.getVulnerability().getId().equals(vulnerability.getId()) ) {
                             riskAnalysis.setVulnerability(null);
                             riskAnalysisAtomicReference.set(riskAnalysis);

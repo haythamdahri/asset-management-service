@@ -13,6 +13,7 @@ import java.util.concurrent.CompletableFuture;
  */
 public interface RiskAnalysisService {
 
+
     PageDTO<RiskAnalysis> getRiskAnalysis(String name, int page, int size);
 
     CompletableFuture<Void> updateRiskAnalysisThreat(String typologyId, Threat threat);

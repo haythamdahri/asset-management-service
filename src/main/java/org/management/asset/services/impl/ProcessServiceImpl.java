@@ -71,7 +71,7 @@ public class ProcessServiceImpl implements ProcessService {
                 }
             }
             // Check parent process
-            if (StringUtils.isEmpty(processRequest.getParentProcess())) {
+            if (StringUtils.isNotEmpty(processRequest.getParentProcess())) {
                 Process parentProcess = this.processRepository.findById(processRequest.getParentProcess()).orElseThrow(BusinessException::new);
                 if (StringUtils.equals(parentProcess.getId(), processRequest.getId())) {
                     throw new BusinessException(Constants.PARENT_PROCESS_IS_ALREADY_ASSIGNED_TO_SAME_PROCESS);
@@ -90,7 +90,7 @@ public class ProcessServiceImpl implements ProcessService {
             // Set classificationDICT
             ClassificationDICT classification = new ClassificationDICT(processRequest.getConfidentiality(), processRequest.getAvailability(), processRequest.getIntegrity(), processRequest.getTraceability(), processRequest.isClassificationStatus());
             if (process.getClassification() == null) {
-                classification.setIdentificationDate(LocalDateTime.now(ZoneId.of("UTC")));
+                classification.setIdentificationDate(LocalDateTime.now(ZoneId.of("UTC+1")));
             } else {
                 classification.setIdentificationDate(process.getClassification().getIdentificationDate());
             }
@@ -98,6 +98,7 @@ public class ProcessServiceImpl implements ProcessService {
             // Return classification
             return this.processRepository.save(process);
         } catch (BusinessException ex) {
+            ex.printStackTrace();
             throw ex;
         } catch (Exception ex) {
             throw new TechnicalException(ex.getMessage());
