@@ -9,14 +9,13 @@ import org.management.asset.dao.TypologyRepository;
 import org.management.asset.dto.*;
 import org.management.asset.exceptions.BusinessException;
 import org.management.asset.exceptions.TechnicalException;
+import org.management.asset.services.RiskAnalysisService;
 import org.management.asset.services.TypologyService;
 import org.management.asset.utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -34,6 +33,9 @@ public class TypologyServiceImpl implements TypologyService {
     @Autowired
     private TypologyRepository typologyRepository;
 
+    @Autowired
+    private RiskAnalysisService riskAnalysisService;
+
     @Override
     public Typology saveTypology(Typology typology) {
         return this.typologyRepository.save(typology);
@@ -49,12 +51,12 @@ public class TypologyServiceImpl implements TypologyService {
                     StringUtils.equals(typologyRequest.getId(), "undefined");
             typologyRequest.setId(typologyRequestIdNotExists ? null : typologyRequest.getId());
             Typology typology = new Typology();
-            if( !typologyRequestIdNotExists ) {
+            if (!typologyRequestIdNotExists) {
                 typology = this.typologyRepository.findById(typologyRequest.getId()).orElse(new Typology());
             }
-            if( (typologyRequestIdNotExists && this.typologyRepository.findByName(typologyRequest.getName()).isPresent()) || (
+            if ((typologyRequestIdNotExists && this.typologyRepository.findByName(typologyRequest.getName()).isPresent()) || (
                     !typologyRequestIdNotExists && !StringUtils.equals(typology.getName(), typologyRequest.getName()) && this.typologyRepository.findByName(typologyRequest.getName()).isPresent()
-                    ) ) {
+            )) {
                 throw new BusinessException(Constants.TYPOLOGY_NAME_ALREADY_TAKEN);
             }
             // set name and description
@@ -62,9 +64,9 @@ public class TypologyServiceImpl implements TypologyService {
             typology.setDescription(typologyRequest.getDescription());
             // Save typology and return data
             return this.typologyRepository.save(typology);
-        } catch(BusinessException ex) {
+        } catch (BusinessException ex) {
             throw ex;
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw new TechnicalException(ex);
         }
     }
@@ -88,22 +90,24 @@ public class TypologyServiceImpl implements TypologyService {
             Typology typology = this.typologyRepository.findById(typologyId).orElseThrow(BusinessException::new);
             // Update threat status
             typology.setThreats(typology.getThreats().stream().peek(localThreat -> {
-                if( StringUtils.equals(threatId, localThreat.getId()) ) {
+                if (StringUtils.equals(threatId, localThreat.getId())) {
                     localThreat.setStatus(status);
                     threat.set(localThreat);
                 }
             }).collect(Collectors.toList()));
             // Save typology if threat found
-            if( threat.get() != null ) {
+            if (threat.get() != null) {
                 this.typologyRepository.save(typology);
+                // Update risk analysis
+                this.riskAnalysisService.updateRiskAnalysisThreat(typologyId, threat.get());
                 return threat.get();
             }
             // Throw BusinessException if not threat found
             throw new BusinessException(Constants.NO_THREAT_FOUND);
-        } catch(BusinessException ex) {
+        } catch (BusinessException ex) {
             ex.printStackTrace();
             throw ex;
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
             throw new TechnicalException(ex.getMessage());
         }
@@ -117,10 +121,10 @@ public class TypologyServiceImpl implements TypologyService {
             // Update threat status
             Optional<Threat> optionalThreat = typology.getThreats().stream().filter(threat -> threat.getId().equals(threatId)).findFirst();
             return optionalThreat.map(threat -> new ThreatResponseDTO(typologyId, typology.getName(), threat)).orElse(null);
-        } catch(BusinessException ex) {
+        } catch (BusinessException ex) {
             ex.printStackTrace();
             throw ex;
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
             throw new TechnicalException(ex.getMessage());
         }
@@ -134,22 +138,24 @@ public class TypologyServiceImpl implements TypologyService {
             Typology typology = this.typologyRepository.findById(typologyId).orElseThrow(BusinessException::new);
             // Update Vulnerability status
             typology.setVulnerabilities(typology.getVulnerabilities().stream().peek(localVulnerabilityId -> {
-                if( StringUtils.equals(vulnerabilityId, localVulnerabilityId.getId()) ) {
+                if (StringUtils.equals(vulnerabilityId, localVulnerabilityId.getId())) {
                     localVulnerabilityId.setStatus(status);
                     vulnerability.set(localVulnerabilityId);
                 }
             }).collect(Collectors.toList()));
             // Save typology if threat found
-            if( vulnerability.get() != null ) {
+            if (vulnerability.get() != null) {
                 this.typologyRepository.save(typology);
+                // Update risk analysis
+                this.riskAnalysisService.updateRiskAnalysisVulnerability(typologyId, vulnerability.get());
                 return vulnerability.get();
             }
             // Throw BusinessException if not threat found
             throw new BusinessException(Constants.NO_VULENRABILITY_FOUND);
-        } catch(BusinessException ex) {
+        } catch (BusinessException ex) {
             ex.printStackTrace();
             throw ex;
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
             throw new TechnicalException(ex.getMessage());
         }
@@ -163,22 +169,24 @@ public class TypologyServiceImpl implements TypologyService {
             Typology typology = this.typologyRepository.findById(typologyId).orElseThrow(BusinessException::new);
             // Update Vulnerability status
             typology.setRiskScenarios(typology.getRiskScenarios().stream().peek(localRiskScenario -> {
-                if( StringUtils.equals(riskScenarioId, localRiskScenario.getId()) ) {
+                if (StringUtils.equals(riskScenarioId, localRiskScenario.getId())) {
                     localRiskScenario.setStatus(status);
                     riskScenario.set(localRiskScenario);
                 }
             }).collect(Collectors.toList()));
             // Save typology if threat found
-            if( riskScenario.get() != null ) {
+            if (riskScenario.get() != null) {
                 this.typologyRepository.save(typology);
+                // Update risk analysis
+                this.riskAnalysisService.updateRiskAnalysisRiskScenario(typologyId, riskScenario.get());
                 return riskScenario.get();
             }
             // Throw BusinessException if not threat found
             throw new BusinessException(Constants.NO_RISK_SCENARIO_FOUND);
-        } catch(BusinessException ex) {
+        } catch (BusinessException ex) {
             ex.printStackTrace();
             throw ex;
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
             throw new TechnicalException(ex.getMessage());
         }
@@ -192,10 +200,10 @@ public class TypologyServiceImpl implements TypologyService {
             // Update threat status
             Optional<Vulnerability> optionalVulnerability = typology.getVulnerabilities().stream().filter(vulnerability -> vulnerability.getId().equals(vulnerabilityId)).findFirst();
             return optionalVulnerability.map(vulnerability -> new VulnerabilityResponseDTO(typologyId, typology.getName(), vulnerability)).orElse(null);
-        } catch(BusinessException ex) {
+        } catch (BusinessException ex) {
             ex.printStackTrace();
             throw ex;
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
             throw new TechnicalException(ex.getMessage());
         }
@@ -209,10 +217,10 @@ public class TypologyServiceImpl implements TypologyService {
             // Update threat status
             Optional<RiskScenario> optionalRiskScenario = typology.getRiskScenarios().stream().filter(riskScenario -> riskScenario.getId().equals(riskScenarioId)).findFirst();
             return optionalRiskScenario.map(riskScenario -> new RiskScenarioResponseDTO(typologyId, typology.getName(), riskScenario)).orElse(null);
-        } catch(BusinessException ex) {
+        } catch (BusinessException ex) {
             ex.printStackTrace();
             throw ex;
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
             throw new TechnicalException(ex.getMessage());
         }
@@ -226,10 +234,10 @@ public class TypologyServiceImpl implements TypologyService {
             typology.setThreats(typology.getThreats().stream().filter(threat -> !threat.getId().equals(threatId)).collect(Collectors.toList()));
             this.typologyRepository.save(typology);
             return true;
-        } catch(BusinessException ex) {
+        } catch (BusinessException ex) {
             ex.printStackTrace();
             throw ex;
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
             throw new TechnicalException(ex.getMessage());
         }
@@ -243,10 +251,10 @@ public class TypologyServiceImpl implements TypologyService {
             typology.setVulnerabilities(typology.getVulnerabilities().stream().filter(vulnerability -> !vulnerability.getId().equals(vulnerabilityId)).collect(Collectors.toList()));
             this.typologyRepository.save(typology);
             return true;
-        } catch(BusinessException ex) {
+        } catch (BusinessException ex) {
             ex.printStackTrace();
             throw ex;
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
             throw new TechnicalException(ex.getMessage());
         }
@@ -262,10 +270,10 @@ public class TypologyServiceImpl implements TypologyService {
             // Set null on RiskAnalysis
 
             return true;
-        } catch(BusinessException ex) {
+        } catch (BusinessException ex) {
             ex.printStackTrace();
             throw ex;
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
             throw new TechnicalException(ex.getMessage());
         }

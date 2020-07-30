@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.management.asset.bo.*;
 import org.management.asset.dao.AssetRepository;
 import org.management.asset.dto.PageDTO;
+import org.management.asset.dto.RiskAnalysisResponseDTO;
 import org.management.asset.helpers.PaginationHelper;
 import org.management.asset.services.RiskAnalysisService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,20 +30,21 @@ public class RiskAnalysisServiceImpl implements RiskAnalysisService {
     private PaginationHelper paginationHelper;
 
     @Override
-    public PageDTO<RiskAnalysis> getRiskAnalysis(String assetId, int page, int size) {
-        List<RiskAnalysis> riskAnalyzes = new ArrayList<>();
+    public PageDTO<RiskAnalysisResponseDTO> getRiskAnalyzes(String assetId, int page, int size) {
+        List<RiskAnalysisResponseDTO> riskAnalyzes = new ArrayList<>();
         this.assetRepository.findAll().forEach(asset -> {
             if( asset.getRiskAnalyzes() != null ) {
                 if(StringUtils.isNotEmpty(assetId) && asset.getId().equals(assetId)) {
                     asset.setRiskAnalyzes(asset.getRiskAnalyzes().stream().peek(riskAnalysis -> {
                         riskAnalysis.calculateGeneratedValues(asset);
+                        RiskAnalysisResponseDTO riskAnalysisResponse = new RiskAnalysisResponseDTO(asset.getId(), asset.getName(), riskAnalysis);
+                        riskAnalyzes.add(riskAnalysisResponse);
                     }).collect(Collectors.toSet()));
-                    riskAnalyzes.addAll(asset.getRiskAnalyzes());
                 } else if( StringUtils.isEmpty(assetId) ) {
                     asset.setRiskAnalyzes(asset.getRiskAnalyzes().stream().peek(riskAnalysis -> {
-                        riskAnalysis.calculateGeneratedValues(asset);
+                        RiskAnalysisResponseDTO riskAnalysisResponse = new RiskAnalysisResponseDTO(asset.getId(), asset.getName(), riskAnalysis);
+                        riskAnalyzes.add(riskAnalysisResponse);
                     }).collect(Collectors.toSet()));
-                    riskAnalyzes.addAll(asset.getRiskAnalyzes());
                 }
             }
         });

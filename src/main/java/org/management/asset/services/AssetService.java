@@ -2,6 +2,7 @@ package org.management.asset.services;
 
 import org.management.asset.bo.Asset;
 import org.management.asset.bo.RiskAnalysis;
+import org.management.asset.dto.AssetDTO;
 import org.management.asset.dto.AssetRequestDTO;
 import org.management.asset.dto.RiskAnalysisResponseDTO;
 import org.springframework.data.domain.Page;
@@ -20,6 +21,8 @@ public interface AssetService {
 
     boolean deleteAsset(String id);
 
+    boolean deleteAssetRiskAnalysis(String assetId, String riskAnalysisId);
+
     Asset getAsset(String id);
 
     RiskAnalysisResponseDTO getAssetRiskAnalysis(String assetId, String riskAnalysisId);
@@ -31,6 +34,8 @@ public interface AssetService {
     Asset updateAssetClassificationStatus(String id, boolean status);
 
     List<Asset> getAssets();
+
+    List<AssetDTO> getCustomAssets();
 
     Long getAssetsCounter();
 

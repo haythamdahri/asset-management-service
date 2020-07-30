@@ -2,11 +2,9 @@ package org.management.asset.services.impl;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.management.asset.bo.Asset;
-import org.management.asset.bo.AssetFile;
-import org.management.asset.bo.ClassificationDICT;
-import org.management.asset.bo.RiskAnalysis;
+import org.management.asset.bo.*;
 import org.management.asset.dao.*;
+import org.management.asset.dto.AssetDTO;
 import org.management.asset.dto.AssetRequestDTO;
 import org.management.asset.dto.RiskAnalysisResponseDTO;
 import org.management.asset.exceptions.BusinessException;
@@ -139,6 +137,23 @@ public class AssetServiceImpl implements AssetService {
     }
 
     @Override
+    public boolean deleteAssetRiskAnalysis(String assetId, String riskAnalysisId) {
+        try {
+            // Get asset
+            Asset asset = this.assetRepository.findById(assetId).orElseThrow(BusinessException::new);
+            asset.setRiskAnalyzes(asset.getRiskAnalyzes().stream().filter(riskAnalysis -> !riskAnalysis.getId().equals(riskAnalysisId)).collect(Collectors.toSet()));
+            this.assetRepository.save(asset);
+            return true;
+        } catch (BusinessException ex) {
+            ex.printStackTrace();
+            throw ex;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            throw new TechnicalException(ex.getMessage());
+        }
+    }
+
+    @Override
     public Asset getAsset(String id) {
         Asset asset = this.assetRepository.findById(id).orElse(null);
         if (asset != null) {
@@ -161,7 +176,10 @@ public class AssetServiceImpl implements AssetService {
             Asset asset = this.assetRepository.findById(assetId).orElseThrow(BusinessException::new);
             // Get RiskAnalysis
             Optional<RiskAnalysis> optionalRiskAnalysis = asset.getRiskAnalyzes().stream().filter(riskAnalysis -> riskAnalysis.getId().equals(riskAnalysisId)).findFirst();
-            return optionalRiskAnalysis.map(riskAnalysis -> new RiskAnalysisResponseDTO(assetId, asset.getName(), riskAnalysis)).orElse(null);
+            return optionalRiskAnalysis.map(riskAnalysis -> {
+                riskAnalysis.calculateGeneratedValues(asset);
+                return new RiskAnalysisResponseDTO(assetId, asset.getName(), riskAnalysis);
+            }).orElse(null);
         } catch (BusinessException ex) {
             ex.printStackTrace();
             throw ex;
@@ -227,6 +245,11 @@ public class AssetServiceImpl implements AssetService {
     @Override
     public Page<Asset> getAssets(String name, int page, int size) {
         return this.assetRepository.findByNameContainingIgnoreCase(name, PageRequest.of(page, size, Sort.Direction.ASC, "id"));
+    }
+
+    @Override
+    public List<AssetDTO> getCustomAssets() {
+        return this.assetRepository.findCustomAssets();
     }
 
     @Override
