@@ -5,6 +5,7 @@ import org.management.asset.bo.RiskScenario;
 import org.management.asset.bo.Threat;
 import org.management.asset.bo.Vulnerability;
 import org.management.asset.dto.PageDTO;
+import org.management.asset.dto.RiskAnalysisRequestDTO;
 import org.management.asset.dto.RiskAnalysisResponseDTO;
 
 import java.util.concurrent.CompletableFuture;
@@ -16,6 +17,8 @@ public interface RiskAnalysisService {
 
 
     PageDTO<RiskAnalysisResponseDTO> getRiskAnalyzes(String name, int page, int size);
+
+    RiskAnalysisResponseDTO saveRiskAnalysis(RiskAnalysisRequestDTO riskAnalysisRequest);
 
     CompletableFuture<Void> updateRiskAnalysisThreat(String typologyId, Threat threat);
 

@@ -3,16 +3,24 @@ package org.management.asset.services.impl;
 import org.apache.commons.lang3.StringUtils;
 import org.management.asset.bo.*;
 import org.management.asset.dao.AssetRepository;
+import org.management.asset.dao.TypologyRepository;
 import org.management.asset.dto.PageDTO;
+import org.management.asset.dto.RiskAnalysisRequestDTO;
 import org.management.asset.dto.RiskAnalysisResponseDTO;
+import org.management.asset.exceptions.BusinessException;
+import org.management.asset.exceptions.TechnicalException;
 import org.management.asset.helpers.PaginationHelper;
 import org.management.asset.services.RiskAnalysisService;
+import org.management.asset.utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
@@ -25,6 +33,9 @@ public class RiskAnalysisServiceImpl implements RiskAnalysisService {
 
     @Autowired
     private AssetRepository assetRepository;
+
+    @Autowired
+    private TypologyRepository typologyRepository;
 
     @Autowired
     private PaginationHelper paginationHelper;
@@ -50,6 +61,73 @@ public class RiskAnalysisServiceImpl implements RiskAnalysisService {
         });
         // Pagination
         return this.paginationHelper.buildPage(page, size, riskAnalyzes);
+    }
+
+    /**
+     * Save riskAnalysis for an asset
+     * @param riskAnalysisRequest
+     * @return RiskAnalysisResponseDTO
+     */
+    @Override
+    public RiskAnalysisResponseDTO saveRiskAnalysis(RiskAnalysisRequestDTO riskAnalysisRequest) {
+        System.out.println(riskAnalysisRequest);
+        try {
+            final boolean riskAnalysisRequestIdNotExists = StringUtils.isEmpty(riskAnalysisRequest.getId()) ||
+                    riskAnalysisRequest.getId() == null ||
+                    StringUtils.equals(riskAnalysisRequest.getId(), "null") ||
+                    StringUtils.equals(riskAnalysisRequest.getId(), "undefined");
+            riskAnalysisRequest.setId(riskAnalysisRequestIdNotExists ? null : riskAnalysisRequest.getId());
+            // Check if asset is changed
+            if( riskAnalysisRequest.getId() != null && !riskAnalysisRequest.getAsset().equals(riskAnalysisRequest.getCurrentAsset()) ) {
+                throw new BusinessException(Constants.CANNOT_UPDATE_RISK_ANALYSIS_ASSET);
+            }
+            // Get asset
+            Asset asset = this.assetRepository.findById(riskAnalysisRequest.getAsset()).orElseThrow(BusinessException::new);
+            // Get or create riskAnalysis
+            Optional<RiskAnalysis> optionalRiskAnalysis = asset.getRiskAnalyzes().stream().filter(ra -> ra.getId().equals(riskAnalysisRequest.getId())).findFirst();
+            RiskAnalysis riskAnalysis;
+            if( !optionalRiskAnalysis.isPresent() ) {
+                riskAnalysis = new RiskAnalysis();
+                riskAnalysis.setIdentificationDate(LocalDateTime.now(ZoneId.of("UTC+1")));
+            } else {
+                riskAnalysis = optionalRiskAnalysis.get();
+            }
+            // Set data
+            riskAnalysis.setProbability(riskAnalysisRequest.getProbability());
+            riskAnalysis.setFinancialImpact(riskAnalysisRequest.getFinancialImpact());
+            riskAnalysis.setOperationalImpact(riskAnalysisRequest.getOperationalImpact());
+            riskAnalysis.setReputationalImpact(riskAnalysisRequest.getReputationalImpact());
+            riskAnalysis.setRiskTreatmentStrategy(riskAnalysisRequest.getRiskTreatmentStrategyType());
+            riskAnalysis.setRiskTreatmentPlan(riskAnalysisRequest.getRiskTreatmentPlan());
+            riskAnalysis.setTargetFinancialImpact(riskAnalysisRequest.getTargetFinancialImpact());
+            riskAnalysis.setTargetOperationalImpact(riskAnalysisRequest.getTargetOperationalImpact());
+            riskAnalysis.setTargetReputationalImpact(riskAnalysisRequest.getTargetReputationalImpact());
+            riskAnalysis.setTargetProbability(riskAnalysisRequest.getTargetProbability());
+            riskAnalysis.setAcceptableResidualRisk(riskAnalysisRequest.getAcceptableResidualRisk());
+            riskAnalysis.setStatus(riskAnalysisRequest.isStatus());
+            // Get typology
+            Typology typology = this.typologyRepository.findById(riskAnalysisRequest.getTypology()).orElseThrow(BusinessException::new);
+            // Set Threat
+            Optional<Threat> optionalThreat = typology.getThreats().stream().filter(threat -> threat.getId().equals(riskAnalysisRequest.getThreat())).findFirst();
+            optionalThreat.ifPresent(riskAnalysis::setThreat);
+            // Set Vulnerability
+            Optional<Vulnerability> optionalVulnerability = typology.getVulnerabilities().stream().filter(vulnerability -> vulnerability.getId().equals(riskAnalysisRequest.getVulnerability())).findFirst();
+            optionalVulnerability.ifPresent(riskAnalysis::setVulnerability);
+            // Set RiskScenario
+            Optional<RiskScenario> optionalRiskScenario = typology.getRiskScenarios().stream().filter(riskScenario -> riskScenario.getId().equals(riskAnalysisRequest.getRiskScenario())).findFirst();
+            optionalRiskScenario.ifPresent(riskAnalysis::setRiskScenario);
+            // Add riskAnalysis to the asset and Save
+            asset.addRiskAnalysis(riskAnalysis);
+            this.assetRepository.save(asset);
+            // Return RiskAnalysisResponse
+            return new RiskAnalysisResponseDTO(asset.getId(), asset.getName(), riskAnalysis);
+        } catch (BusinessException ex) {
+            ex.printStackTrace();
+            throw ex;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            throw new TechnicalException(ex.getMessage());
+        }
     }
 
     @Override
