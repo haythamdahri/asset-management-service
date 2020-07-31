@@ -70,7 +70,6 @@ public class RiskAnalysisServiceImpl implements RiskAnalysisService {
      */
     @Override
     public RiskAnalysisResponseDTO saveRiskAnalysis(RiskAnalysisRequestDTO riskAnalysisRequest) {
-        System.out.println(riskAnalysisRequest);
         try {
             final boolean riskAnalysisRequestIdNotExists = StringUtils.isEmpty(riskAnalysisRequest.getId()) ||
                     riskAnalysisRequest.getId() == null ||
@@ -84,7 +83,10 @@ public class RiskAnalysisServiceImpl implements RiskAnalysisService {
             // Get asset
             Asset asset = this.assetRepository.findById(riskAnalysisRequest.getAsset()).orElseThrow(BusinessException::new);
             // Get or create riskAnalysis
-            Optional<RiskAnalysis> optionalRiskAnalysis = asset.getRiskAnalyzes().stream().filter(ra -> ra.getId().equals(riskAnalysisRequest.getId())).findFirst();
+            Optional<RiskAnalysis> optionalRiskAnalysis = Optional.empty();
+            if( riskAnalysisRequest.getId() != null ) {
+                optionalRiskAnalysis = asset.getRiskAnalyzes().stream().filter(ra -> ra.getId().equals(riskAnalysisRequest.getId())).findFirst();
+            }
             RiskAnalysis riskAnalysis;
             if( !optionalRiskAnalysis.isPresent() ) {
                 riskAnalysis = new RiskAnalysis();
@@ -106,16 +108,18 @@ public class RiskAnalysisServiceImpl implements RiskAnalysisService {
             riskAnalysis.setAcceptableResidualRisk(riskAnalysisRequest.getAcceptableResidualRisk());
             riskAnalysis.setStatus(riskAnalysisRequest.isStatus());
             // Get typology
-            Typology typology = this.typologyRepository.findById(riskAnalysisRequest.getTypology()).orElseThrow(BusinessException::new);
-            // Set Threat
-            Optional<Threat> optionalThreat = typology.getThreats().stream().filter(threat -> threat.getId().equals(riskAnalysisRequest.getThreat())).findFirst();
-            optionalThreat.ifPresent(riskAnalysis::setThreat);
-            // Set Vulnerability
-            Optional<Vulnerability> optionalVulnerability = typology.getVulnerabilities().stream().filter(vulnerability -> vulnerability.getId().equals(riskAnalysisRequest.getVulnerability())).findFirst();
-            optionalVulnerability.ifPresent(riskAnalysis::setVulnerability);
-            // Set RiskScenario
-            Optional<RiskScenario> optionalRiskScenario = typology.getRiskScenarios().stream().filter(riskScenario -> riskScenario.getId().equals(riskAnalysisRequest.getRiskScenario())).findFirst();
-            optionalRiskScenario.ifPresent(riskAnalysis::setRiskScenario);
+            if( riskAnalysisRequest.getTypology() != null ) {
+                Typology typology = this.typologyRepository.findById(riskAnalysisRequest.getTypology()).orElseThrow(BusinessException::new);
+                // Set Threat
+                Optional<Threat> optionalThreat = typology.getThreats().stream().filter(threat -> threat.getId().equals(riskAnalysisRequest.getThreat())).findFirst();
+                optionalThreat.ifPresent(riskAnalysis::setThreat);
+                // Set Vulnerability
+                Optional<Vulnerability> optionalVulnerability = typology.getVulnerabilities().stream().filter(vulnerability -> vulnerability.getId().equals(riskAnalysisRequest.getVulnerability())).findFirst();
+                optionalVulnerability.ifPresent(riskAnalysis::setVulnerability);
+                // Set RiskScenario
+                Optional<RiskScenario> optionalRiskScenario = typology.getRiskScenarios().stream().filter(riskScenario -> riskScenario.getId().equals(riskAnalysisRequest.getRiskScenario())).findFirst();
+                optionalRiskScenario.ifPresent(riskAnalysis::setRiskScenario);
+            }
             // Add riskAnalysis to the asset and Save
             asset.addRiskAnalysis(riskAnalysis);
             this.assetRepository.save(asset);
@@ -203,6 +207,7 @@ public class RiskAnalysisServiceImpl implements RiskAnalysisService {
     }
 
     @Override
+    @Async
     public CompletableFuture<Void> setNullRiskAnalysisThreat(String typologyId, Threat threat) {
         List<Asset> assets = this.assetRepository.findAssetsByTypology_Id(typologyId);
         if( assets != null ) {
@@ -210,7 +215,7 @@ public class RiskAnalysisServiceImpl implements RiskAnalysisService {
                 AtomicReference<RiskAnalysis> riskAnalysisAtomicReference = new AtomicReference<>(null);
                 if( asset != null && asset.getRiskAnalyzes() != null ) {
                     asset.getRiskAnalyzes().forEach(riskAnalysis -> {
-                        if( riskAnalysis.getThreat().getId().equals(threat.getId()) ) {
+                        if( riskAnalysis.getThreat() != null && riskAnalysis.getThreat().getId().equals(threat.getId()) ) {
                             riskAnalysis.setThreat(null);
                             riskAnalysisAtomicReference.set(riskAnalysis);
                         }
@@ -226,6 +231,7 @@ public class RiskAnalysisServiceImpl implements RiskAnalysisService {
     }
 
     @Override
+    @Async
     public CompletableFuture<Void> setNullRiskAnalysisRiskScenario(String typologyId, RiskScenario riskScenario) {
         List<Asset> assets = this.assetRepository.findAssetsByTypology_Id(typologyId);
         if( assets != null ) {
@@ -233,7 +239,7 @@ public class RiskAnalysisServiceImpl implements RiskAnalysisService {
                 AtomicReference<RiskAnalysis> riskAnalysisAtomicReference = new AtomicReference<>(null);
                 if( asset != null && asset.getRiskAnalyzes() != null ) {
                     asset.getRiskAnalyzes().forEach(riskAnalysis -> {
-                        if( riskAnalysis.getRiskScenario().getId().equals(riskScenario.getId()) ) {
+                        if( riskAnalysis.getRiskScenario() != null && riskAnalysis.getRiskScenario().getId().equals(riskScenario.getId()) ) {
                             riskAnalysis.setRiskScenario(null);
                             riskAnalysisAtomicReference.set(riskAnalysis);
                         }
@@ -249,6 +255,7 @@ public class RiskAnalysisServiceImpl implements RiskAnalysisService {
     }
 
     @Override
+    @Async
     public CompletableFuture<Void> setNullRiskAnalysisVulnerability(String typologyId, Vulnerability vulnerability) {
         List<Asset> assets = this.assetRepository.findAssetsByTypology_Id(typologyId);
         if( assets != null ) {
@@ -256,7 +263,7 @@ public class RiskAnalysisServiceImpl implements RiskAnalysisService {
                 AtomicReference<RiskAnalysis> riskAnalysisAtomicReference = new AtomicReference<>(null);
                 if( asset != null && asset.getRiskAnalyzes() != null ) {
                     asset.getRiskAnalyzes().forEach(riskAnalysis -> {
-                        if( riskAnalysis.getVulnerability().getId().equals(vulnerability.getId()) ) {
+                        if( riskAnalysis.getVulnerability() != null && riskAnalysis.getVulnerability().getId().equals(vulnerability.getId()) ) {
                             riskAnalysis.setVulnerability(null);
                             riskAnalysisAtomicReference.set(riskAnalysis);
                         }

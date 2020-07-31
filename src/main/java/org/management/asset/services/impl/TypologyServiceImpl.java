@@ -167,7 +167,7 @@ public class TypologyServiceImpl implements TypologyService {
             AtomicReference<RiskScenario> riskScenario = new AtomicReference<>(null);
             // Get typology
             Typology typology = this.typologyRepository.findById(typologyId).orElseThrow(BusinessException::new);
-            // Update Vulnerability status
+            // Update RiskScenario status
             typology.setRiskScenarios(typology.getRiskScenarios().stream().peek(localRiskScenario -> {
                 if (StringUtils.equals(riskScenarioId, localRiskScenario.getId())) {
                     localRiskScenario.setStatus(status);
@@ -231,8 +231,12 @@ public class TypologyServiceImpl implements TypologyService {
         try {
             // Get typology
             Typology typology = this.typologyRepository.findById(typologyId).orElseThrow(BusinessException::new);
-            typology.setThreats(typology.getThreats().stream().filter(threat -> !threat.getId().equals(threatId)).collect(Collectors.toList()));
-            this.typologyRepository.save(typology);
+            Optional<Threat> optionalThreat = typology.getThreats().stream().filter(t -> t.getId().equals(threatId)).findFirst();
+            if( optionalThreat.isPresent() ) {
+                typology.setThreats(typology.getThreats().stream().filter(t -> !t.getId().equals(threatId)).collect(Collectors.toList()));
+                this.typologyRepository.save(typology);
+                this.riskAnalysisService.setNullRiskAnalysisThreat(typologyId, optionalThreat.get());
+            }
             return true;
         } catch (BusinessException ex) {
             ex.printStackTrace();
@@ -248,8 +252,12 @@ public class TypologyServiceImpl implements TypologyService {
         try {
             // Get typology
             Typology typology = this.typologyRepository.findById(typologyId).orElseThrow(BusinessException::new);
-            typology.setVulnerabilities(typology.getVulnerabilities().stream().filter(vulnerability -> !vulnerability.getId().equals(vulnerabilityId)).collect(Collectors.toList()));
-            this.typologyRepository.save(typology);
+            Optional<Vulnerability> optionalVulnerability = typology.getVulnerabilities().stream().filter(v -> v.getId().equals(vulnerabilityId)).findFirst();
+            if( optionalVulnerability.isPresent() ) {
+                typology.setVulnerabilities(typology.getVulnerabilities().stream().filter(vulnerability -> !vulnerability.getId().equals(vulnerabilityId)).collect(Collectors.toList()));
+                this.typologyRepository.save(typology);
+                this.riskAnalysisService.setNullRiskAnalysisVulnerability(typologyId, optionalVulnerability.get());
+            }
             return true;
         } catch (BusinessException ex) {
             ex.printStackTrace();
@@ -265,10 +273,14 @@ public class TypologyServiceImpl implements TypologyService {
         try {
             // Get typology
             Typology typology = this.typologyRepository.findById(typologyId).orElseThrow(BusinessException::new);
-            typology.setRiskScenarios(typology.getRiskScenarios().stream().filter(riskScenario -> !riskScenario.getId().equals(riskScenarioId)).collect(Collectors.toList()));
+            Optional<RiskScenario> optionalRiskScenario = typology.getRiskScenarios().stream().filter(r -> r.getId().equals(riskScenarioId)).findFirst();
+            if( optionalRiskScenario.isPresent() ) {
+                typology.setRiskScenarios(typology.getRiskScenarios().stream().filter(riskScenario -> !riskScenario.getId().equals(riskScenarioId)).collect(Collectors.toList()));
+                this.typologyRepository.save(typology);
+                this.riskAnalysisService.setNullRiskAnalysisRiskScenario(typologyId, optionalRiskScenario.get());
+            }
             this.typologyRepository.save(typology);
             // Set null on RiskAnalysis
-
             return true;
         } catch (BusinessException ex) {
             ex.printStackTrace();
