@@ -73,7 +73,7 @@ public class ProcessServiceImpl implements ProcessService {
             // Check parent process
             if (StringUtils.isNotEmpty(processRequest.getParentProcess())) {
                 Process parentProcess = this.processRepository.findById(processRequest.getParentProcess()).orElseThrow(BusinessException::new);
-                if (StringUtils.equals(parentProcess.getId(), processRequest.getId())) {
+                if (parentProcess.getParentProcess() != null && StringUtils.equals(parentProcess.getParentProcess().getId(), processRequest.getId())) {
                     throw new BusinessException(Constants.PARENT_PROCESS_IS_ALREADY_ASSIGNED_TO_SAME_PROCESS);
                 }
             }
