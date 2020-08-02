@@ -2,6 +2,7 @@ package org.management.asset.services.impl;
 
 import org.apache.commons.lang3.StringUtils;
 import org.management.asset.bo.Entity;
+import org.management.asset.bo.Organization;
 import org.management.asset.dao.EntityRepository;
 import org.management.asset.dao.OrganizationRepository;
 import org.management.asset.dto.EntityRequestDTO;
@@ -18,7 +19,9 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Haytham DAHRI
@@ -102,5 +105,12 @@ public class EntityServiceImpl implements EntityService {
             return this.entityRepository.findAll(PageRequest.of(page, size, Sort.Direction.ASC, "id"));
         }
         return this.entityRepository.findByNameContainingIgnoreCase(name, PageRequest.of(page, size, Sort.Direction.ASC, "id"));
+    }
+
+    @Override
+    public List<Entity> getOrganizationEntities(String organizationId) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where("organization.id").is(organizationId));
+        return this.mongoOperations.find(query, Entity.class);
     }
 }
