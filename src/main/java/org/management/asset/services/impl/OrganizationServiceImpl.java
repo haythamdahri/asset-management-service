@@ -7,6 +7,7 @@ import org.management.asset.bo.Organization;
 import org.management.asset.dao.OrganizationRepository;
 import org.management.asset.dao.UserRepository;
 import org.management.asset.dto.OrganizationRequestDTO;
+import org.management.asset.dto.OrganizationResponseDTO;
 import org.management.asset.exceptions.BusinessException;
 import org.management.asset.exceptions.TechnicalException;
 import org.management.asset.helpers.OrganizationHelper;
@@ -118,6 +119,11 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Override
     public List<Organization> getOrganizations() {
         return this.organizationRepository.findAll();
+    }
+
+    @Override
+    public List<OrganizationResponseDTO> getCustomOrganizations() {
+        return this.organizationRepository.findCustomOrganizations();
     }
 
     @Override

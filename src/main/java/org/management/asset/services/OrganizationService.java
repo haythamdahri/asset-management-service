@@ -4,6 +4,7 @@ import org.management.asset.bo.AssetFile;
 import org.management.asset.bo.Organization;
 import org.management.asset.bo.Process;
 import org.management.asset.dto.OrganizationRequestDTO;
+import org.management.asset.dto.OrganizationResponseDTO;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -26,6 +27,8 @@ public interface OrganizationService {
     Organization getOrganizationByName(String name);
 
     List<Organization> getOrganizations();
+
+    List<OrganizationResponseDTO> getCustomOrganizations();
 
     Page<Organization> getOrganizations(String search, int page, int size);
 
