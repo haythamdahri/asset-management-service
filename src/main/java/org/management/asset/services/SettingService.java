@@ -12,6 +12,8 @@ public interface SettingService {
 
     Setting getSetting(String id);
 
+    Setting getActiveSetting();
+
     List<Setting> getSettings();
 
 }
