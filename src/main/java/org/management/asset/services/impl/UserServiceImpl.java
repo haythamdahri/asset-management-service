@@ -368,18 +368,18 @@ public class UserServiceImpl implements UserService {
     public Page<User> getUsers(String search, int page, int size) {
         // Check if search is required
         if (StringUtils.isEmpty(search)) {
-            return this.userRepository.findAll(PageRequest.of(page, size, Sort.Direction.ASC, "id"));
+            return this.userRepository.findAll(PageRequest.of(page, size, Sort.Direction.DESC, "id"));
         }
-        return this.userRepository.findBySearch(ApplicationUtils.escapeSpecialRegexChars(search.toLowerCase().trim()), PageRequest.of(page, size, Sort.Direction.ASC, "id"));
+        return this.userRepository.findBySearch(ApplicationUtils.escapeSpecialRegexChars(search.toLowerCase().trim()), PageRequest.of(page, size, Sort.Direction.DESC, "id"));
     }
 
     @Override
     public Page<User> getUsers(String search, String excludedUserEmail, int page, int size) {
         // Check if search is required
         if (StringUtils.isEmpty(search)) {
-            return this.userRepository.findAllWithUserExclusion(excludedUserEmail, PageRequest.of(page, size, Sort.Direction.ASC, "id"));
+            return this.userRepository.findAllWithUserExclusion(excludedUserEmail, PageRequest.of(page, size, Sort.Direction.DESC, "id"));
         }
-        return this.userRepository.findBySearch(ApplicationUtils.escapeSpecialRegexChars(search.toLowerCase().trim()), excludedUserEmail, PageRequest.of(page, size, Sort.Direction.ASC, "id"));
+        return this.userRepository.findBySearch(ApplicationUtils.escapeSpecialRegexChars(search.toLowerCase().trim()), excludedUserEmail, PageRequest.of(page, size, Sort.Direction.DESC, "id"));
     }
 
     @Override

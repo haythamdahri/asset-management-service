@@ -19,4 +19,6 @@ public interface LanguageService {
 
     List<Language> getLanguages();
 
+    Integer getLanguagesCounter();
+
 }

@@ -23,6 +23,8 @@ public interface GroupService {
 
     List<Group> getGroups();
 
+    Integer getGroupsCounter();
+
     Page<Group> getGroups(String name, int page, int size);
 
 }

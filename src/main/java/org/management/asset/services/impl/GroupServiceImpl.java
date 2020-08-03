@@ -77,6 +77,11 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
+    public Integer getGroupsCounter() {
+        return this.groupRepository.findAll().size();
+    }
+
+    @Override
     public boolean deleteGroup(String id) {
         this.groupRepository.deleteById(id);
         return !this.groupRepository.findById(id).isPresent();
@@ -100,9 +105,9 @@ public class GroupServiceImpl implements GroupService {
     @Override
     public Page<Group> getGroups(String name, int page, int size) {
         if (StringUtils.isEmpty(name)) {
-            return this.groupRepository.findAll(PageRequest.of(page, size, Sort.Direction.ASC, "id"));
+            return this.groupRepository.findAll(PageRequest.of(page, size, Sort.Direction.DESC, "id"));
         } else {
-            return this.groupRepository.findByNameContainingIgnoreCase(ApplicationUtils.escapeSpecialRegexChars(name.toLowerCase().trim()), PageRequest.of(page, size, Sort.Direction.ASC, "id"));
+            return this.groupRepository.findByNameContainingIgnoreCase(ApplicationUtils.escapeSpecialRegexChars(name.toLowerCase().trim()), PageRequest.of(page, size, Sort.Direction.DESC, "id"));
         }
     }
 }

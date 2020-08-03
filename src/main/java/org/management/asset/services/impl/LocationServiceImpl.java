@@ -118,8 +118,8 @@ public class LocationServiceImpl implements LocationService {
     @Override
     public Page<Location> getLocations(String search, int page, int size) {
         if( search == null || StringUtils.isEmpty(search) ) {
-            return this.locationRepository.findAll(PageRequest.of(page, size, Sort.Direction.ASC, "id"));
+            return this.locationRepository.findAll(PageRequest.of(page, size, Sort.Direction.DESC, "id"));
         }
-        return this.locationRepository.searchLocation(ApplicationUtils.escapeSpecialRegexChars(search.trim()), PageRequest.of(page, size, Sort.Direction.ASC, "id"));
+        return this.locationRepository.searchLocation(ApplicationUtils.escapeSpecialRegexChars(search.trim()), PageRequest.of(page, size, Sort.Direction.DESC, "id"));
     }
 }

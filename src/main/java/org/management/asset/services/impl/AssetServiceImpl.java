@@ -239,12 +239,12 @@ public class AssetServiceImpl implements AssetService {
 
     @Override
     public Page<Asset> getAssets(int page, int size) {
-        return this.assetRepository.findAll(PageRequest.of(page, size, Sort.Direction.ASC, "id"));
+        return this.assetRepository.findAll(PageRequest.of(page, size, Sort.Direction.DESC, "id"));
     }
 
     @Override
     public Page<Asset> getAssets(String name, int page, int size) {
-        return this.assetRepository.findByNameContainingIgnoreCase(name, PageRequest.of(page, size, Sort.Direction.ASC, "id"));
+        return this.assetRepository.findByNameContainingIgnoreCase(name, PageRequest.of(page, size, Sort.Direction.DESC, "id"));
     }
 
     @Override

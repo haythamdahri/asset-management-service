@@ -44,6 +44,11 @@ public class EntityServiceImpl implements EntityService {
     }
 
     @Override
+    public Integer getEntitiesCounter() {
+        return this.entityRepository.findAll().size();
+    }
+
+    @Override
     public Entity saveEntity(EntityRequestDTO entityRequest) {
         try {
             final boolean entityIdNotExists = StringUtils.isEmpty(entityRequest.getId()) ||
@@ -102,9 +107,9 @@ public class EntityServiceImpl implements EntityService {
     @Override
     public Page<Entity> getEntities(String name, int page, int size) {
         if( name == null || StringUtils.isEmpty(name)) {
-            return this.entityRepository.findAll(PageRequest.of(page, size, Sort.Direction.ASC, "id"));
+            return this.entityRepository.findAll(PageRequest.of(page, size, Sort.Direction.DESC, "id"));
         }
-        return this.entityRepository.findByNameContainingIgnoreCase(name, PageRequest.of(page, size, Sort.Direction.ASC, "id"));
+        return this.entityRepository.findByNameContainingIgnoreCase(name, PageRequest.of(page, size, Sort.Direction.DESC, "id"));
     }
 
     @Override

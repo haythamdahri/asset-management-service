@@ -42,4 +42,9 @@ public class LanguageServiceImpl implements LanguageService {
     public List<Language> getLanguages() {
         return this.languageRepository.findAll();
     }
+
+    @Autowired
+    public Integer getLanguagesCounter() {
+        return this.languageRepository.findAll().size();
+    }
 }

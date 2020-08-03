@@ -129,9 +129,9 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Override
     public Page<Organization> getOrganizations(String search, int page, int size) {
         if (StringUtils.isEmpty(search)) {
-            return this.organizationRepository.findAll(PageRequest.of(page, size, Sort.Direction.ASC, "id"));
+            return this.organizationRepository.findAll(PageRequest.of(page, size, Sort.Direction.DESC, "id"));
         } else {
-            return this.organizationRepository.findByNameContainingIgnoreCase(ApplicationUtils.escapeSpecialRegexChars(search.toLowerCase().trim()), PageRequest.of(page, size, Sort.Direction.ASC, "id"));
+            return this.organizationRepository.findByNameContainingIgnoreCase(ApplicationUtils.escapeSpecialRegexChars(search.toLowerCase().trim()), PageRequest.of(page, size, Sort.Direction.DESC, "id"));
         }
     }
 

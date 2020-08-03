@@ -303,7 +303,7 @@ public class TypologyServiceImpl implements TypologyService {
 
     @Override
     public Page<Typology> getTypologies(int page, int size) {
-        return this.typologyRepository.findAll(PageRequest.of(page, size, Sort.Direction.ASC, "id"));
+        return this.typologyRepository.findAll(PageRequest.of(page, size, Sort.Direction.DESC, "id"));
     }
 
     @Override
@@ -311,6 +311,6 @@ public class TypologyServiceImpl implements TypologyService {
         if (StringUtils.isEmpty(name)) {
             return this.getTypologies(page, size);
         }
-        return this.typologyRepository.findByNameContainingIgnoreCase(name, PageRequest.of(page, size, Sort.Direction.ASC, "id"));
+        return this.typologyRepository.findByNameContainingIgnoreCase(name, PageRequest.of(page, size, Sort.Direction.DESC, "id"));
     }
 }

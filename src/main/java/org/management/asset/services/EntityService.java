@@ -1,7 +1,6 @@
 package org.management.asset.services;
 
 import org.management.asset.bo.Entity;
-import org.management.asset.bo.Organization;
 import org.management.asset.dto.EntityRequestDTO;
 import org.springframework.data.domain.Page;
 
@@ -23,6 +22,8 @@ public interface EntityService {
     Entity getEntityByName(String name);
 
     List<Entity> getEntities();
+
+    Integer getEntitiesCounter();
 
     List<Entity> getOrganizationEntities(String organizationId);
 

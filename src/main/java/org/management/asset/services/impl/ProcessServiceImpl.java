@@ -163,7 +163,7 @@ public class ProcessServiceImpl implements ProcessService {
 
     @Override
     public Page<Process> getProcesses(int page, int size) {
-        return this.processRepository.findAll(PageRequest.of(page, size, Sort.Direction.ASC, "id"));
+        return this.processRepository.findAll(PageRequest.of(page, size, Sort.Direction.DESC, "id"));
     }
 
     @Override
@@ -171,7 +171,7 @@ public class ProcessServiceImpl implements ProcessService {
         if (StringUtils.isEmpty(name)) {
             return this.getProcesses(page, size);
         } else {
-            return this.processRepository.findByNameContainingIgnoreCase(ApplicationUtils.escapeSpecialRegexChars(name.toLowerCase().trim()), PageRequest.of(page, size, Sort.Direction.ASC, "id"));
+            return this.processRepository.findByNameContainingIgnoreCase(ApplicationUtils.escapeSpecialRegexChars(name.toLowerCase().trim()), PageRequest.of(page, size, Sort.Direction.DESC, "id"));
         }
     }
 }
