@@ -45,6 +45,10 @@ public class ThreatServiceImpl implements ThreatService {
     public List<Threat> getThreats() {
         return this.typologyService.getTypologies().stream().map(Typology::getThreats).flatMap(List::stream).collect(Collectors.toList());
     }
+    @Override
+    public Long getThreatsCounter() {
+        return this.typologyService.getTypologies().stream().map(Typology::getThreats).flatMap(List::stream).count();
+    }
 
     @Override
     public PageDTO<ThreatResponseDTO> getThreats(String name, int page, int size) {

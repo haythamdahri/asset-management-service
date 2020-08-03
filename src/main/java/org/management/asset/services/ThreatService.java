@@ -14,6 +14,8 @@ public interface ThreatService {
 
     List<Threat> getThreats();
 
+    Long getThreatsCounter();
+
     ThreatResponseDTO saveThreat(ThreatRequestDTO threatRequest);
 
     PageDTO<ThreatResponseDTO> getThreats(String name, int page, int size);

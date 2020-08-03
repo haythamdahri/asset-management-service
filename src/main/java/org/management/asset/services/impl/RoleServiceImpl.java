@@ -29,6 +29,11 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
+    public Integer getRolesCounter() {
+        return this.roleRepository.findAll().size();
+    }
+
+    @Override
     public Role getRole(RoleType roleType) {
         return this.roleRepository.findByRoleName(roleType).orElse(null);
     }

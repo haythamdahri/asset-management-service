@@ -307,6 +307,11 @@ public class TypologyServiceImpl implements TypologyService {
     }
 
     @Override
+    public Integer getTypologiesCounter() {
+        return this.typologyRepository.findAll().size();
+    }
+
+    @Override
     public Page<Typology> getTypologies(String name, int page, int size) {
         if (StringUtils.isEmpty(name)) {
             return this.getTypologies(page, size);

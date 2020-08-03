@@ -15,6 +15,8 @@ public interface RoleService {
 
     Role getRole(String id);
 
+    Integer getRolesCounter();
+
     Role getRole(RoleType roleType);
 
     boolean deleteRole(String id);

@@ -1,6 +1,5 @@
 package org.management.asset.services;
 
-import org.management.asset.bo.RiskAnalysis;
 import org.management.asset.bo.RiskScenario;
 import org.management.asset.bo.Threat;
 import org.management.asset.bo.Vulnerability;
@@ -17,6 +16,8 @@ public interface RiskAnalysisService {
 
 
     PageDTO<RiskAnalysisResponseDTO> getRiskAnalyzes(String name, int page, int size);
+
+    Integer getRiskAnalyzesCounter();
 
     RiskAnalysisResponseDTO saveRiskAnalysis(RiskAnalysisRequestDTO riskAnalysisRequest);
 

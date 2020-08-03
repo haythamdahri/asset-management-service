@@ -44,14 +44,14 @@ public class RiskAnalysisServiceImpl implements RiskAnalysisService {
     public PageDTO<RiskAnalysisResponseDTO> getRiskAnalyzes(String assetId, int page, int size) {
         List<RiskAnalysisResponseDTO> riskAnalyzes = new ArrayList<>();
         this.assetRepository.findAll().forEach(asset -> {
-            if( asset.getRiskAnalyzes() != null ) {
-                if(StringUtils.isNotEmpty(assetId) && asset.getId().equals(assetId)) {
+            if (asset.getRiskAnalyzes() != null) {
+                if (StringUtils.isNotEmpty(assetId) && asset.getId().equals(assetId)) {
                     asset.setRiskAnalyzes(asset.getRiskAnalyzes().stream().peek(riskAnalysis -> {
                         riskAnalysis.calculateGeneratedValues(asset);
                         RiskAnalysisResponseDTO riskAnalysisResponse = new RiskAnalysisResponseDTO(asset.getId(), asset.getName(), riskAnalysis);
                         riskAnalyzes.add(riskAnalysisResponse);
                     }).collect(Collectors.toSet()));
-                } else if( StringUtils.isEmpty(assetId) ) {
+                } else if (StringUtils.isEmpty(assetId)) {
                     asset.setRiskAnalyzes(asset.getRiskAnalyzes().stream().peek(riskAnalysis -> {
                         RiskAnalysisResponseDTO riskAnalysisResponse = new RiskAnalysisResponseDTO(asset.getId(), asset.getName(), riskAnalysis);
                         riskAnalyzes.add(riskAnalysisResponse);
@@ -63,8 +63,14 @@ public class RiskAnalysisServiceImpl implements RiskAnalysisService {
         return this.paginationHelper.buildPage(page, size, riskAnalyzes);
     }
 
+    @Override
+    public Integer getRiskAnalyzesCounter() {
+        return this.assetRepository.findAll().stream().map(Asset::getRiskAnalyzes).collect(ArrayList::new, List::addAll, List::addAll).size();
+    }
+
     /**
      * Save riskAnalysis for an asset
+     *
      * @param riskAnalysisRequest
      * @return RiskAnalysisResponseDTO
      */
@@ -77,18 +83,18 @@ public class RiskAnalysisServiceImpl implements RiskAnalysisService {
                     StringUtils.equals(riskAnalysisRequest.getId(), "undefined");
             riskAnalysisRequest.setId(riskAnalysisRequestIdNotExists ? null : riskAnalysisRequest.getId());
             // Check if asset is changed
-            if( riskAnalysisRequest.getId() != null && !riskAnalysisRequest.getAsset().equals(riskAnalysisRequest.getCurrentAsset()) ) {
+            if (riskAnalysisRequest.getId() != null && !riskAnalysisRequest.getAsset().equals(riskAnalysisRequest.getCurrentAsset())) {
                 throw new BusinessException(Constants.CANNOT_UPDATE_RISK_ANALYSIS_ASSET);
             }
             // Get asset
             Asset asset = this.assetRepository.findById(riskAnalysisRequest.getAsset()).orElseThrow(BusinessException::new);
             // Get or create riskAnalysis
             Optional<RiskAnalysis> optionalRiskAnalysis = Optional.empty();
-            if( riskAnalysisRequest.getId() != null ) {
+            if (riskAnalysisRequest.getId() != null) {
                 optionalRiskAnalysis = asset.getRiskAnalyzes().stream().filter(ra -> ra.getId().equals(riskAnalysisRequest.getId())).findFirst();
             }
             RiskAnalysis riskAnalysis;
-            if( !optionalRiskAnalysis.isPresent() ) {
+            if (!optionalRiskAnalysis.isPresent()) {
                 riskAnalysis = new RiskAnalysis();
                 riskAnalysis.setIdentificationDate(LocalDateTime.now(ZoneId.of("UTC+1")));
             } else {
@@ -108,7 +114,7 @@ public class RiskAnalysisServiceImpl implements RiskAnalysisService {
             riskAnalysis.setAcceptableResidualRisk(riskAnalysisRequest.getAcceptableResidualRisk());
             riskAnalysis.setStatus(riskAnalysisRequest.isStatus());
             // Get typology
-            if( riskAnalysisRequest.getTypology() != null ) {
+            if (riskAnalysisRequest.getTypology() != null) {
                 Typology typology = this.typologyRepository.findById(riskAnalysisRequest.getTypology()).orElseThrow(BusinessException::new);
                 // Set Threat
                 Optional<Threat> optionalThreat = typology.getThreats().stream().filter(threat -> threat.getId().equals(riskAnalysisRequest.getThreat())).findFirst();
@@ -138,18 +144,18 @@ public class RiskAnalysisServiceImpl implements RiskAnalysisService {
     @Async
     public CompletableFuture<Void> updateRiskAnalysisThreat(String typologyId, Threat threat) {
         List<Asset> assets = this.assetRepository.findAssetsByTypology_Id(typologyId);
-        if( assets != null ) {
+        if (assets != null) {
             assets.forEach(asset -> {
                 AtomicReference<RiskAnalysis> riskAnalysisAtomicReference = new AtomicReference<>(null);
-                if( asset != null && asset.getRiskAnalyzes() != null ) {
+                if (asset != null && asset.getRiskAnalyzes() != null) {
                     asset.getRiskAnalyzes().forEach(riskAnalysis -> {
-                        if( riskAnalysis.getThreat().getId().equals(threat.getId()) ) {
+                        if (riskAnalysis.getThreat().getId().equals(threat.getId())) {
                             riskAnalysis.setThreat(threat);
                             riskAnalysisAtomicReference.set(riskAnalysis);
                         }
                     });
                     // Check if riskAnalysis is assigned
-                    if( riskAnalysisAtomicReference.get() != null) {
+                    if (riskAnalysisAtomicReference.get() != null) {
                         this.assetRepository.save(asset);
                     }
                 }
@@ -162,18 +168,18 @@ public class RiskAnalysisServiceImpl implements RiskAnalysisService {
     @Async
     public CompletableFuture<Void> updateRiskAnalysisRiskScenario(String typologyId, RiskScenario riskScenario) {
         List<Asset> assets = this.assetRepository.findAssetsByTypology_Id(typologyId);
-        if( assets != null ) {
+        if (assets != null) {
             assets.forEach(asset -> {
                 AtomicReference<RiskAnalysis> riskAnalysisAtomicReference = new AtomicReference<>(null);
-                if( asset != null && asset.getRiskAnalyzes() != null ) {
+                if (asset != null && asset.getRiskAnalyzes() != null) {
                     asset.getRiskAnalyzes().forEach(riskAnalysis -> {
-                        if( riskAnalysis.getRiskScenario().getId().equals(riskScenario.getId()) ) {
+                        if (riskAnalysis.getRiskScenario().getId().equals(riskScenario.getId())) {
                             riskAnalysis.setRiskScenario(riskScenario);
                             riskAnalysisAtomicReference.set(riskAnalysis);
                         }
                     });
                     // Check if riskAnalysis is assigned
-                    if( riskAnalysisAtomicReference.get() != null) {
+                    if (riskAnalysisAtomicReference.get() != null) {
                         this.assetRepository.save(asset);
                     }
                 }
@@ -186,18 +192,18 @@ public class RiskAnalysisServiceImpl implements RiskAnalysisService {
     @Async
     public CompletableFuture<Void> updateRiskAnalysisVulnerability(String typologyId, Vulnerability vulnerability) {
         List<Asset> assets = this.assetRepository.findAssetsByTypology_Id(typologyId);
-        if( assets != null ) {
+        if (assets != null) {
             assets.forEach(asset -> {
                 AtomicReference<RiskAnalysis> riskAnalysisAtomicReference = new AtomicReference<>(null);
-                if( asset != null && asset.getRiskAnalyzes() != null ) {
+                if (asset != null && asset.getRiskAnalyzes() != null) {
                     asset.getRiskAnalyzes().forEach(riskAnalysis -> {
-                        if( riskAnalysis.getVulnerability().getId().equals(vulnerability.getId()) ) {
+                        if (riskAnalysis.getVulnerability().getId().equals(vulnerability.getId())) {
                             riskAnalysis.setVulnerability(vulnerability);
                             riskAnalysisAtomicReference.set(riskAnalysis);
                         }
                     });
                     // Check if riskAnalysis is assigned
-                    if( riskAnalysisAtomicReference.get() != null) {
+                    if (riskAnalysisAtomicReference.get() != null) {
                         this.assetRepository.save(asset);
                     }
                 }
@@ -210,18 +216,18 @@ public class RiskAnalysisServiceImpl implements RiskAnalysisService {
     @Async
     public CompletableFuture<Void> setNullRiskAnalysisThreat(String typologyId, Threat threat) {
         List<Asset> assets = this.assetRepository.findAssetsByTypology_Id(typologyId);
-        if( assets != null ) {
+        if (assets != null) {
             assets.forEach(asset -> {
                 AtomicReference<RiskAnalysis> riskAnalysisAtomicReference = new AtomicReference<>(null);
-                if( asset != null && asset.getRiskAnalyzes() != null ) {
+                if (asset != null && asset.getRiskAnalyzes() != null) {
                     asset.getRiskAnalyzes().forEach(riskAnalysis -> {
-                        if( riskAnalysis.getThreat() != null && riskAnalysis.getThreat().getId().equals(threat.getId()) ) {
+                        if (riskAnalysis.getThreat() != null && riskAnalysis.getThreat().getId().equals(threat.getId())) {
                             riskAnalysis.setThreat(null);
                             riskAnalysisAtomicReference.set(riskAnalysis);
                         }
                     });
                     // Check if riskAnalysis is assigned
-                    if( riskAnalysisAtomicReference.get() != null) {
+                    if (riskAnalysisAtomicReference.get() != null) {
                         this.assetRepository.save(asset);
                     }
                 }
@@ -234,18 +240,18 @@ public class RiskAnalysisServiceImpl implements RiskAnalysisService {
     @Async
     public CompletableFuture<Void> setNullRiskAnalysisRiskScenario(String typologyId, RiskScenario riskScenario) {
         List<Asset> assets = this.assetRepository.findAssetsByTypology_Id(typologyId);
-        if( assets != null ) {
+        if (assets != null) {
             assets.forEach(asset -> {
                 AtomicReference<RiskAnalysis> riskAnalysisAtomicReference = new AtomicReference<>(null);
-                if( asset != null && asset.getRiskAnalyzes() != null ) {
+                if (asset != null && asset.getRiskAnalyzes() != null) {
                     asset.getRiskAnalyzes().forEach(riskAnalysis -> {
-                        if( riskAnalysis.getRiskScenario() != null && riskAnalysis.getRiskScenario().getId().equals(riskScenario.getId()) ) {
+                        if (riskAnalysis.getRiskScenario() != null && riskAnalysis.getRiskScenario().getId().equals(riskScenario.getId())) {
                             riskAnalysis.setRiskScenario(null);
                             riskAnalysisAtomicReference.set(riskAnalysis);
                         }
                     });
                     // Check if riskAnalysis is assigned
-                    if( riskAnalysisAtomicReference.get() != null) {
+                    if (riskAnalysisAtomicReference.get() != null) {
                         this.assetRepository.save(asset);
                     }
                 }
@@ -258,18 +264,18 @@ public class RiskAnalysisServiceImpl implements RiskAnalysisService {
     @Async
     public CompletableFuture<Void> setNullRiskAnalysisVulnerability(String typologyId, Vulnerability vulnerability) {
         List<Asset> assets = this.assetRepository.findAssetsByTypology_Id(typologyId);
-        if( assets != null ) {
+        if (assets != null) {
             assets.forEach(asset -> {
                 AtomicReference<RiskAnalysis> riskAnalysisAtomicReference = new AtomicReference<>(null);
-                if( asset != null && asset.getRiskAnalyzes() != null ) {
+                if (asset != null && asset.getRiskAnalyzes() != null) {
                     asset.getRiskAnalyzes().forEach(riskAnalysis -> {
-                        if( riskAnalysis.getVulnerability() != null && riskAnalysis.getVulnerability().getId().equals(vulnerability.getId()) ) {
+                        if (riskAnalysis.getVulnerability() != null && riskAnalysis.getVulnerability().getId().equals(vulnerability.getId())) {
                             riskAnalysis.setVulnerability(null);
                             riskAnalysisAtomicReference.set(riskAnalysis);
                         }
                     });
                     // Check if riskAnalysis is assigned
-                    if( riskAnalysisAtomicReference.get() != null) {
+                    if (riskAnalysisAtomicReference.get() != null) {
                         this.assetRepository.save(asset);
                     }
                 }

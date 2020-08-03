@@ -4,7 +4,6 @@ import org.management.asset.bo.RiskScenario;
 import org.management.asset.dto.PageDTO;
 import org.management.asset.dto.RiskScenarioRequestDTO;
 import org.management.asset.dto.RiskScenarioResponseDTO;
-import org.management.asset.dto.VulnerabilityRequestDTO;
 
 import java.util.List;
 
@@ -14,6 +13,8 @@ import java.util.List;
 public interface RiskScenarioService {
 
     List<RiskScenario> getRiskScenarios();
+
+    Long getRiskScenariosCounter();
 
     RiskScenarioResponseDTO saveRiskScenario(RiskScenarioRequestDTO riskScenarioRequest);
 
