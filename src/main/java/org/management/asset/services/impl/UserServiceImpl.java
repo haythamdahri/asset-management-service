@@ -5,7 +5,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.management.asset.bo.AssetFile;
-import org.management.asset.bo.Entity;
 import org.management.asset.bo.User;
 import org.management.asset.dao.*;
 import org.management.asset.dto.ProfileRequestDTO;
@@ -30,9 +29,13 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ResourceUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -90,7 +93,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User saveUser(UserRequestDTO userRequest) {
+    public User saveUser(UserRequestDTO userRequest, String authenticatedUserEmail) {
         try {
             // Set ID to null if empty
             final boolean userRequestIdNotExists = StringUtils.isEmpty(userRequest.getId()) ||
@@ -120,7 +123,7 @@ public class UserServiceImpl implements UserService {
                 user.setRoles(originalUser.getRoles());
             }
             // Set user data
-            this.setUserData(userRequest, user, originalUser);
+            this.setUserData(userRequest, user, originalUser, this.userRepository.findByEmail(authenticatedUserEmail).orElse(null));
             // Set columns
             this.setUnfilledColumns(originalUser, user);
             // Save User
@@ -134,12 +137,16 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    private void setUserData(UserRequestDTO userRequest, User user, User originalUser) throws IOException {
+    private void setUserData(UserRequestDTO userRequest, User user, User originalUser, User authenticatedUser) throws IOException {
         // Set Location
         if (userRequest.getLocation() != null && !StringUtils.isEmpty(userRequest.getLocation())) {
             user.setLocation(this.locationRepository.findById(userRequest.getLocation()).orElse(null));
         } else {
             user.setLocation(originalUser.getLocation());
+        }
+        // Set current user country if user request is not created yet
+        if (userRequest.getId() == null) {
+            user.setCountry(authenticatedUser.getCountry());
         }
         // Set Entity
         if (userRequest.getEntity() != null && !StringUtils.isEmpty(userRequest.getEntity())) {
@@ -156,10 +163,15 @@ public class UserServiceImpl implements UserService {
         // Set Manager
         user.setManager(this.userRepository.findById(userRequest.getManager()).orElse(null));
         // Set Organization
-        if (userRequest.getOrganization() != null && !StringUtils.isEmpty(userRequest.getOrganization())) {
-            user.setOrganization(this.organizationRepository.findById(userRequest.getOrganization()).orElse(null));
+        if (userRequest.getId() == null) {
+            // Set current user organization if user is not created yet
+            user.setOrganization(authenticatedUser.getOrganization());
         } else {
-            user.setOrganization(originalUser.getOrganization());
+            if (userRequest.getOrganization() != null && !StringUtils.isEmpty(userRequest.getOrganization())) {
+                user.setOrganization(this.organizationRepository.findById(userRequest.getOrganization()).orElse(null));
+            } else {
+                user.setOrganization(originalUser.getOrganization());
+            }
         }
         // Set Password
         if (userRequest.isUpdatePassword() || userRequest.getId() == null) {
@@ -186,22 +198,36 @@ public class UserServiceImpl implements UserService {
         target.setDeletionDate(source.getDeletionDate());
     }
 
-    private User updateLocalUserImage(MultipartFile file, User user) throws IOException {
+    /**
+     * Convenient method to update or set user image
+     *
+     * @param file
+     * @param user
+     * @throws IOException
+     */
+    private void updateLocalUserImage(MultipartFile file, User user) throws IOException {
         try {
             AssetFile avatar = new AssetFile();
-            // Retrieve user
-            if (file == null || file.isEmpty() || !Constants.IMAGE_CONTENT_TYPES.contains(file.getContentType())) {
+            // Check file correctness
+            if (file != null && !file.isEmpty() && !Constants.IMAGE_CONTENT_TYPES.contains(file.getContentType())) {
                 throw new BusinessException(Constants.INVALID_USER_IMAGE);
+            }
+            // Get user image file or create a default one
+            if (file == null || file.isEmpty()) {
+                Path path = Paths.get(ResourceUtils.getFile("classpath:static/images/user.png").getPath());
+                avatar.setName(FilenameUtils.removeExtension(path.getFileName().toString()));
+                avatar.setExtension(FilenameUtils.getExtension(path.getFileName().toString()));
+                avatar.setFile(Files.readAllBytes(path));
+                avatar.setMediaType(MediaType.valueOf(Objects.requireNonNull(Files.probeContentType(path))).toString());
             } else {
                 // Update user image file and link it with current user
                 avatar.setName(FilenameUtils.removeExtension(file.getOriginalFilename()));
                 avatar.setExtension(FilenameUtils.getExtension(file.getOriginalFilename()));
                 avatar.setFile(file.getBytes());
                 avatar.setMediaType(MediaType.valueOf(Objects.requireNonNull(file.getContentType())).toString());
-                user.setAvatar(avatar);
             }
-            // Return avatar
-            return user;
+            // Set user avatar
+            user.setAvatar(avatar);
         } catch (BusinessException ex) {
             throw ex;
         } catch (Exception ex) {
