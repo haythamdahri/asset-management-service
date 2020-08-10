@@ -45,7 +45,7 @@ public interface UserService {
 
     List<User> getOrganizationUsers(String organizationId);
 
-    Page<User> getUsers(String search, int page, int size);
+    Page<User> getUsers(String search, int page, int size, String direction, String... sort);
 
     Page<User> getUsers(String search, String excludedUserEmail, int page, int size);
 

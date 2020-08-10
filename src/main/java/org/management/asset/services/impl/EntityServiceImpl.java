@@ -105,9 +105,9 @@ public class EntityServiceImpl implements EntityService {
     }
 
     @Override
-    public Page<Entity> getEntities(String name, int page, int size) {
+    public Page<Entity> getEntities(String name, int page, int size, String direction, String... sort) {
         if( name == null || StringUtils.isEmpty(name)) {
-            return this.entityRepository.findAll(PageRequest.of(page, size, Sort.Direction.DESC, "id"));
+            return this.entityRepository.findAll(PageRequest.of(page, size, Sort.Direction.valueOf(direction), sort));
         }
         return this.entityRepository.findByNameContainingIgnoreCase(name, PageRequest.of(page, size, Sort.Direction.DESC, "id"));
     }

@@ -391,12 +391,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Page<User> getUsers(String search, int page, int size) {
+    public Page<User> getUsers(String search, int page, int size, String direction, String... sort) {
         // Check if search is required
         if (StringUtils.isEmpty(search)) {
-            return this.userRepository.findAll(PageRequest.of(page, size, Sort.Direction.DESC, "id"));
+            return this.userRepository.findAll(PageRequest.of(page, size, Sort.Direction.valueOf(direction), sort));
         }
-        return this.userRepository.findBySearch(ApplicationUtils.escapeSpecialRegexChars(search.toLowerCase().trim()), PageRequest.of(page, size, Sort.Direction.DESC, "id"));
+        return this.userRepository.findBySearch(ApplicationUtils.escapeSpecialRegexChars(search.toLowerCase().trim()), PageRequest.of(page, size, Sort.Direction.valueOf(direction), sort));
     }
 
     @Override

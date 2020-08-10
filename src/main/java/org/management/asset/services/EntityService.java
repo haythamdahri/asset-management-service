@@ -27,6 +27,6 @@ public interface EntityService {
 
     List<Entity> getOrganizationEntities(String organizationId);
 
-    Page<Entity> getEntities(String name, int page, int size);
+    Page<Entity> getEntities(String name, int page, int size, String direction, String... sort);
 
 }
