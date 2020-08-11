@@ -13,17 +13,18 @@ import org.management.asset.helpers.PaginationHelper;
 import org.management.asset.services.RiskAnalysisService;
 import org.management.asset.utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 
 /**
  * @author Haytham DAHRI
@@ -31,34 +32,61 @@ import java.util.stream.Collectors;
 @Service
 public class RiskAnalysisServiceImpl implements RiskAnalysisService {
 
+    private static final String[] SORT_FIELDS = {"probability", "financialImpact", "operationalImpact", "reputationalImpact", "impact", "status", "identificationDate"};
     @Autowired
     private AssetRepository assetRepository;
-
     @Autowired
     private TypologyRepository typologyRepository;
-
     @Autowired
     private PaginationHelper paginationHelper;
 
     @Override
     public PageDTO<RiskAnalysisResponseDTO> getRiskAnalyzes(String assetId, int page, int size, String direction, String... sort) {
         List<RiskAnalysisResponseDTO> riskAnalyzes = new ArrayList<>();
-        this.assetRepository.findAll().forEach(asset -> {
-            if (asset.getRiskAnalyzes() != null) {
-                if (StringUtils.isNotEmpty(assetId) && asset.getId().equals(assetId)) {
-                    asset.setRiskAnalyzes(asset.getRiskAnalyzes().stream().peek(riskAnalysis -> {
-                        riskAnalysis.calculateGeneratedValues(asset);
-                        RiskAnalysisResponseDTO riskAnalysisResponse = new RiskAnalysisResponseDTO(asset.getId(), asset.getName(), riskAnalysis);
-                        riskAnalyzes.add(riskAnalysisResponse);
-                    }).collect(Collectors.toSet()));
-                } else if (StringUtils.isEmpty(assetId)) {
-                    asset.setRiskAnalyzes(asset.getRiskAnalyzes().stream().peek(riskAnalysis -> {
-                        RiskAnalysisResponseDTO riskAnalysisResponse = new RiskAnalysisResponseDTO(asset.getId(), asset.getName(), riskAnalysis);
-                        riskAnalyzes.add(riskAnalysisResponse);
-                    }).collect(Collectors.toSet()));
-                }
+        List<Asset> assets = new ArrayList<>();
+        // Sort assets
+        if( sort[0].equals("asset") ) {
+            // Reverse Asset
+            if (direction.equals(Sort.Direction.ASC.name())) {
+                assets = this.assetRepository.findAll(Sort.by("name").descending());
+            } else {
+                assets = this.assetRepository.findAll(Sort.by("name").ascending());
             }
+        } else {
+            assets = this.assetRepository.findAll();
+        }
+        // Loop through assets
+        assets.forEach(asset -> {
+            asset.getRiskAnalyzes().stream().sorted((ra1, ra2) -> {
+                // Sort Based on Sort field
+                switch (sort[0]) {
+                    case "probability":
+                        return Integer.compare(ra1.getProbability(), ra2.getProbability());
+                    case "financialImpact":
+                        return Integer.compare(ra1.getFinancialImpact(), ra2.getFinancialImpact());
+                    case "operationalImpact":
+                        return Integer.compare(ra1.getOperationalImpact(), ra2.getOperationalImpact());
+                    case "reputationalImpact":
+                        return Integer.compare(ra1.getReputationalImpact(), ra2.getReputationalImpact());
+                    case "impact":
+                        return Integer.compare(ra1.getImpact(), ra2.getImpact());
+                    case "status":
+                        return ra1.getStatus().compareTo(ra2.getStatus());
+                    case "identificationDate":
+                        return ra1.getIdentificationDate().compareTo(ra2.getIdentificationDate());
+                    default:
+                        return ra1.getId().compareTo(ra2.getId());
+                }
+            }).forEach(riskAnalysis -> {
+                riskAnalysis.calculateGeneratedValues(asset);
+                RiskAnalysisResponseDTO riskAnalysisResponse = new RiskAnalysisResponseDTO(asset.getId(), asset.getName(), riskAnalysis);
+                riskAnalyzes.add(riskAnalysisResponse);
+            });
         });
+        // Reverse RiskAnalyzes based on direction
+        if (direction.equals(Sort.Direction.ASC.name())) {
+            Collections.reverse(riskAnalyzes);
+        }
         // Pagination
         return this.paginationHelper.buildPage(page, size, riskAnalyzes);
     }
