@@ -20,6 +20,11 @@ public class LanguageController {
     @Autowired
     private LanguageService languageService;
 
+    @GetMapping(path = "/counter")
+    public ResponseEntity<Integer> getLanguagesCounter() {
+        return ResponseEntity.ok(this.languageService.getLanguagesCounter());
+    }
+
     @GetMapping(path = "/")
     public ResponseEntity<List<Language>> listLanguages() {
         return ResponseEntity.ok(this.languageService.getLanguages());

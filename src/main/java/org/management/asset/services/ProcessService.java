@@ -35,6 +35,6 @@ public interface ProcessService {
 
     Page<Process> getProcesses(int page, int size);
 
-    Page<Process> getProcesses(String search, int page, int size);
+    Page<Process> getProcesses(String search, int page, int size, String direction, String... sort);
 
 }

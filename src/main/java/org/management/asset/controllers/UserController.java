@@ -37,8 +37,8 @@ public class UserController {
 
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USERS_VIEW') or hasRole('ROLE_SUPER_USER')")
     @GetMapping(path = "/")
-    public ResponseEntity<Page<User>> getUsers(@RequestParam(value = "search", required = false, defaultValue = "") String search, @RequestParam(value = "page", required = false, defaultValue = "0") int page, @RequestParam(value = "size", required = false, defaultValue = "${page.default-size}") int size) {
-        return ResponseEntity.ok(this.userService.getUsers(search, page, size));
+    public ResponseEntity<Page<User>> getUsers(@RequestParam(value = "search", required = false, defaultValue = "") String search, @RequestParam(value = "page", required = false, defaultValue = "0") int page, @RequestParam(value = "size", required = false, defaultValue = "${page.default-size}") int size, @RequestParam(name = "sort", defaultValue = "id") String[] sort, @RequestParam(name = "direction", defaultValue = "DESC") String direction) {
+        return ResponseEntity.ok(this.userService.getUsers(search, page, size, direction, sort));
     }
 
     @GetMapping(path = "/search/organizations/{organizationId}")
@@ -48,9 +48,10 @@ public class UserController {
 
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USERS_CREATE_USERS') or hasRole('ROLE_USERS_EDIT_USERS') or hasRole('ROLE_SUPER_USER')")
     @PutMapping(path = "/")
-    public ResponseEntity<User> updateUser(@ModelAttribute UserRequestDTO userRequest) {
+    public ResponseEntity<User> saveUser(@ModelAttribute UserRequestDTO userRequest) {
+        String authenticatedUserEmail = this.authenticationFacade.getAuthentication().getName();
         // Save user
-        return ResponseEntity.ok(this.userService.saveUser(userRequest));
+        return ResponseEntity.ok(this.userService.saveUser(userRequest, authenticatedUserEmail));
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USERS_VIEW') or hasRole('ROLE_SUPER_USER')")
@@ -191,6 +192,118 @@ public class UserController {
         User user = this.userService.getUserByEmail(this.authenticationFacade.getAuthentication().getName());
         List<RoleType> roleTypes = Stream.of(RoleType.ROLE_ADMIN, RoleType.ROLE_SUPER_USER,
                 RoleType.ROLE_ORGANIZATIONS_CREATE, RoleType.ROLE_ORGANIZATIONS_EDIT).collect(Collectors.toList());
+        // Return response
+        return ResponseEntity.ok(ApplicationUtils.checkUserHasRoles(roleTypes, user));
+    }
+
+    /**
+     * Check user privileges to add or edit a typology
+     *
+     * @return ResponseEntity<RolesCheckResponseDTO>
+     */
+    @GetMapping(path = "/roles/checking/typologies")
+    public ResponseEntity<RolesCheckResponseDTO> checkTypologyEditRoleForCurrentUser() {
+        User user = this.userService.getUserByEmail(this.authenticationFacade.getAuthentication().getName());
+        List<RoleType> roleTypes = Stream.of(RoleType.ROLE_ADMIN, RoleType.ROLE_SUPER_USER,
+                RoleType.ROLE_TYPOLOGIES_CREATE, RoleType.ROLE_TYPOLOGIES_EDIT).collect(Collectors.toList());
+        // Return response
+        return ResponseEntity.ok(ApplicationUtils.checkUserHasRoles(roleTypes, user));
+    }
+
+    /**
+     * Check user privileges to add or edit a threat
+     *
+     * @return ResponseEntity<RolesCheckResponseDTO>
+     */
+    @GetMapping(path = "/roles/checking/threats")
+    public ResponseEntity<RolesCheckResponseDTO> checkThreatEditRoleForCurrentUser() {
+        User user = this.userService.getUserByEmail(this.authenticationFacade.getAuthentication().getName());
+        List<RoleType> roleTypes = Stream.of(RoleType.ROLE_ADMIN, RoleType.ROLE_SUPER_USER,
+                RoleType.ROLE_THREATS_CREATE, RoleType.ROLE_THREATS_EDIT).collect(Collectors.toList());
+        // Return response
+        return ResponseEntity.ok(ApplicationUtils.checkUserHasRoles(roleTypes, user));
+    }
+
+    /**
+     * Check user privileges to add or edit a risk scenario
+     *
+     * @return ResponseEntity<RolesCheckResponseDTO>
+     */
+    @GetMapping(path = "/roles/checking/riskscenarios")
+    public ResponseEntity<RolesCheckResponseDTO> checkRiskScenarioEditRoleForCurrentUser() {
+        User user = this.userService.getUserByEmail(this.authenticationFacade.getAuthentication().getName());
+        List<RoleType> roleTypes = Stream.of(RoleType.ROLE_ADMIN, RoleType.ROLE_SUPER_USER,
+                RoleType.ROLE_RISKSCENARIOS_CREATE, RoleType.ROLE_RISKSCENARIOS_EDIT).collect(Collectors.toList());
+        // Return response
+        return ResponseEntity.ok(ApplicationUtils.checkUserHasRoles(roleTypes, user));
+    }
+
+    /**
+     * Check user privileges to add or edit a vulnerability
+     *
+     * @return ResponseEntity<RolesCheckResponseDTO>
+     */
+    @GetMapping(path = "/roles/checking/vulnerabilities")
+    public ResponseEntity<RolesCheckResponseDTO> checkVulnerabilityEditRoleForCurrentUser() {
+        User user = this.userService.getUserByEmail(this.authenticationFacade.getAuthentication().getName());
+        List<RoleType> roleTypes = Stream.of(RoleType.ROLE_ADMIN, RoleType.ROLE_SUPER_USER,
+                RoleType.ROLE_VULNERABILITIES_EDIT, RoleType.ROLE_VULNERABILITIES_CREATE).collect(Collectors.toList());
+        // Return response
+        return ResponseEntity.ok(ApplicationUtils.checkUserHasRoles(roleTypes, user));
+    }
+
+    /**
+     * Check user privileges to add or edit an asset
+     *
+     * @return ResponseEntity<RolesCheckResponseDTO>
+     */
+    @GetMapping(path = "/roles/checking/assets")
+    public ResponseEntity<RolesCheckResponseDTO> checkAssetEditRoleForCurrentUser() {
+        User user = this.userService.getUserByEmail(this.authenticationFacade.getAuthentication().getName());
+        List<RoleType> roleTypes = Stream.of(RoleType.ROLE_ADMIN, RoleType.ROLE_SUPER_USER,
+                RoleType.ROLE_ASSETS_EDIT, RoleType.ROLE_ASSETS_CREATE).collect(Collectors.toList());
+        // Return response
+        return ResponseEntity.ok(ApplicationUtils.checkUserHasRoles(roleTypes, user));
+    }
+
+    /**
+     * Check user privileges to add or edit a risk analysis
+     *
+     * @return ResponseEntity<RolesCheckResponseDTO>
+     */
+    @GetMapping(path = "/roles/checking/riskanalyzes")
+    public ResponseEntity<RolesCheckResponseDTO> checkRiskAnalysisEditRoleForCurrentUser() {
+        User user = this.userService.getUserByEmail(this.authenticationFacade.getAuthentication().getName());
+        List<RoleType> roleTypes = Stream.of(RoleType.ROLE_ADMIN, RoleType.ROLE_SUPER_USER,
+                RoleType.ROLE_RISKANALYZES_EDIT, RoleType.ROLE_RISKANALYZES_CREATE).collect(Collectors.toList());
+        // Return response
+        return ResponseEntity.ok(ApplicationUtils.checkUserHasRoles(roleTypes, user));
+    }
+
+    /**
+     * Check user privileges to add or edit a location
+     *
+     * @return ResponseEntity<RolesCheckResponseDTO>
+     */
+    @GetMapping(path = "/roles/checking/locations")
+    public ResponseEntity<RolesCheckResponseDTO> checkLocationEditRoleForCurrentUser() {
+        User user = this.userService.getUserByEmail(this.authenticationFacade.getAuthentication().getName());
+        List<RoleType> roleTypes = Stream.of(RoleType.ROLE_ADMIN, RoleType.ROLE_SUPER_USER,
+                RoleType.ROLE_LOCATIONS_EDIT, RoleType.ROLE_LOCATIONS_CREATE).collect(Collectors.toList());
+        // Return response
+        return ResponseEntity.ok(ApplicationUtils.checkUserHasRoles(roleTypes, user));
+    }
+
+    /**
+     * Check user privileges to add or edit an entity
+     *
+     * @return ResponseEntity<RolesCheckResponseDTO>
+     */
+    @GetMapping(path = "/roles/checking/entities")
+    public ResponseEntity<RolesCheckResponseDTO> checkEntityEditRoleForCurrentUser() {
+        User user = this.userService.getUserByEmail(this.authenticationFacade.getAuthentication().getName());
+        List<RoleType> roleTypes = Stream.of(RoleType.ROLE_ADMIN, RoleType.ROLE_SUPER_USER,
+                RoleType.ROLE_ENTITIES_EDIT, RoleType.ROLE_ENTITIES_CREATE).collect(Collectors.toList());
         // Return response
         return ResponseEntity.ok(ApplicationUtils.checkUserHasRoles(roleTypes, user));
     }

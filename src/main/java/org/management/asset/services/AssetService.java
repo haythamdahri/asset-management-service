@@ -41,6 +41,6 @@ public interface AssetService {
 
     Page<Asset> getAssets(int page, int size);
 
-    Page<Asset> getAssets(String name, int page, int size);
+    Page<Asset> getAssets(String name, int page, int size, String direction, String... sort);
 
 }

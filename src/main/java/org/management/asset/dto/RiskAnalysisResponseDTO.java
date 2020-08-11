@@ -3,10 +3,9 @@ package org.management.asset.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.management.asset.bo.Threat;
+import org.management.asset.bo.RiskAnalysis;
 
 import java.io.Serializable;
-import java.util.List;
 
 /**
  * @author Haytham DAHRI
@@ -14,13 +13,13 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ThreatResponseDTO implements Serializable {
+public class RiskAnalysisResponseDTO implements Serializable {
     private static final long serialVersionUID = -1706164743194545373L;
 
-    private String typologyId;
+    private String assetId;
 
-    private String typologyName;
+    private String assetName;
 
-    private Threat threat;
+    private RiskAnalysis riskAnalysis;
 
 }

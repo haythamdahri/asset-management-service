@@ -1,5 +1,6 @@
 package org.management.asset.dao;
 
+import org.management.asset.bo.Setting;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.stereotype.Repository;
@@ -9,5 +10,5 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 @RepositoryRestResource
-public interface ClassificationDictSettingsRepository extends MongoRepository<ClassificationDictSettings, String> {
+public interface SettingRepository extends MongoRepository<Setting, String> {
 }

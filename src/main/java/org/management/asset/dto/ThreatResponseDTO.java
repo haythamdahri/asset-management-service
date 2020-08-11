@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import org.management.asset.bo.Threat;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * @author Haytham DAHRI
@@ -20,6 +21,6 @@ public class ThreatResponseDTO implements Serializable {
 
     private String typologyName;
 
-    private List<Threat> threats;
+    private Threat threat;
 
 }

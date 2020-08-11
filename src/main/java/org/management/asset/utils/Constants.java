@@ -31,6 +31,23 @@ public class Constants {
     public static final String GROUP_NAME_ALREADY_TAKEN = "Nom du groupe est déja utilisé!";
 
     public static final String PROCESS_NAME_ALREADY_TAKEN = "Nom du processus est déja utilisé pour l'organisme selectionné!";
+    public static final String PARENT_PROCESS_IS_ALREADY_ASSIGNED_TO_SAME_PROCESS = "Le processus superieur à déja ce processus comme superieur!";
+
+    public static final String NO_THREAT_FOUND = "Aucune menace n'a été trouvée!";
+    public static final String NO_VULENRABILITY_FOUND = "Aucune vulnérabilité n'a été trouvée!";
+    public static final String NO_RISK_SCENARIO_FOUND = "Aucune scénario de risque n'a été trouvé!";
+
+    public static final String TYPOLOGY_NAME_ALREADY_TAKEN = "Nom de la typologie des actifs est déja utilisé!";
+    public static final String THREAT_NAME_ALREADY_TAKEN = "Nom de la menace est déja utilisé!";
+    public static final String VULNERABILITY_NAME_ALREADY_TAKEN = "Nom de la vulnérabilité est déja utilisé!";
+    public static final String RISK_SCENARIO_NAME_ALREADY_TAKEN = "Nom du scénrio de risque est déja utilisé!";
+
+    public static final String INVALID_ASSET_IMAGE = "Image d'actif non valide!";
+    public static final String INVALID_LOCATION_IMAGE = "Image de la localisation est non valide!";
+
+    public static final String CANNOT_UPDATE_RISK_ANALYSIS_ASSET = "Impossible d'affecter un scénario de risque pour un actif différent!";
+
+    public static final String ENTITY_NAME_ALREADY_TAKEN = "Nom de l'entité' est déja utilisé pour l'organisme selectionné!";
 
     private Constants() {}
 

@@ -167,11 +167,11 @@ public class ProcessServiceImpl implements ProcessService {
     }
 
     @Override
-    public Page<Process> getProcesses(String name, int page, int size) {
+    public Page<Process> getProcesses(String name, int page, int size, String direction, String... sort) {
         if (StringUtils.isEmpty(name)) {
-            return this.getProcesses(page, size);
+            return this.processRepository.findAll(PageRequest.of(page, size, Sort.Direction.valueOf(direction), sort));
         } else {
-            return this.processRepository.findByNameContainingIgnoreCase(ApplicationUtils.escapeSpecialRegexChars(name.toLowerCase().trim()), PageRequest.of(page, size, Sort.Direction.DESC, "id"));
+            return this.processRepository.findByNameContainingIgnoreCase(ApplicationUtils.escapeSpecialRegexChars(name.toLowerCase().trim()), PageRequest.of(page, size, Sort.Direction.valueOf(direction), sort));
         }
     }
 }

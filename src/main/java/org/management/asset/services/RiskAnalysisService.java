@@ -15,7 +15,7 @@ import java.util.concurrent.CompletableFuture;
 public interface RiskAnalysisService {
 
 
-    PageDTO<RiskAnalysisResponseDTO> getRiskAnalyzes(String name, int page, int size);
+    PageDTO<RiskAnalysisResponseDTO> getRiskAnalyzes(String assetId, int page, int size, String direction, String... sort);
 
     Integer getRiskAnalyzesCounter();
 

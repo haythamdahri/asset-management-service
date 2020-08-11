@@ -4,7 +4,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.mongodb.core.mapping.Field;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -21,17 +22,17 @@ public class AssetFile implements Serializable {
 
     private String name;
     private String extension;
-
-    @Field(name = "media_type")
     private String mediaType;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private byte[] file;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    @CreatedDate
     private LocalDateTime creationDate;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    @LastModifiedDate
     private LocalDateTime updateDate;
 
 }

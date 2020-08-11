@@ -103,11 +103,11 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
-    public Page<Group> getGroups(String name, int page, int size) {
+    public Page<Group> getGroups(String name, int page, int size, String direction, String... sort) {
         if (StringUtils.isEmpty(name)) {
-            return this.groupRepository.findAll(PageRequest.of(page, size, Sort.Direction.DESC, "id"));
+            return this.groupRepository.findAll(PageRequest.of(page, size, Sort.Direction.valueOf(direction), sort));
         } else {
-            return this.groupRepository.findByNameContainingIgnoreCase(ApplicationUtils.escapeSpecialRegexChars(name.toLowerCase().trim()), PageRequest.of(page, size, Sort.Direction.DESC, "id"));
+            return this.groupRepository.findByNameContainingIgnoreCase(ApplicationUtils.escapeSpecialRegexChars(name.toLowerCase().trim()), PageRequest.of(page, size, Sort.Direction.valueOf(direction), sort));
         }
     }
 }

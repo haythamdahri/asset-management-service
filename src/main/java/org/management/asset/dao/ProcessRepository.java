@@ -28,10 +28,10 @@ public interface ProcessRepository extends MongoRepository<Process, String> {
 
     Optional<Process> findProcessByNameAndOrganization_Id(final String name, final String id);
 
-    @Query(value = "{id}", fields = "{_id: 1, name: 1}")
+    @Query(value = "{}", fields = "{id: 1, name: 1, organization: 1}")
     List<ProcessDTO> findCustomProcesses();
 
-    @Query(value = "{id: {$ne: ?0}}", fields = "{id: 1, name: 1}")
-    List<ProcessDTO> findCustomProcessesAndExlude(String excludedProcessId);
+    @Query(value = "{id: {$ne: ?0}}", fields = "{id: 1, name: 1, organization: 1}")
+    List<ProcessDTO> findCustomProcessesAndExclude(String excludedProcessId);
 
 }

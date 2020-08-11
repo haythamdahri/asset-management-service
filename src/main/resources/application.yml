@@ -5,16 +5,6 @@ spring:
   ## APPLICATION NAME
   application:
     name: asset-management
-  ## DATABASE CONFIGURATION
-  datasource:
-    url: jdbc:mysql://localhost:3306/assetManagementDb?allowPublicKeyRetrieval=true&useSSL=false
-    username: root
-    password: toortoor
-    jpa:
-      repositories:
-        enabled: true
-    rest:
-      base-path: /api
   jpa:
     hibernate:
       ddl-auto: update
@@ -48,6 +38,7 @@ spring:
       max-file-size: 200MB
       # ========= Max Request Size =========
       max-request-size: 215MB
+  ## MONGODB CONFIGURATION
   data:
     mongodb:
       authentication-database: admin

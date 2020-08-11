@@ -25,6 +25,6 @@ public interface GroupService {
 
     Integer getGroupsCounter();
 
-    Page<Group> getGroups(String name, int page, int size);
+    Page<Group> getGroups(String name, int page, int size, String direction, String... sort);
 
 }

@@ -5,6 +5,7 @@ import org.management.asset.bo.Organization;
 import org.management.asset.bo.Process;
 import org.management.asset.bo.User;
 import org.management.asset.dto.OrganizationRequestDTO;
+import org.management.asset.dto.OrganizationResponseDTO;
 import org.management.asset.services.OrganizationService;
 import org.management.asset.services.ProcessService;
 import org.management.asset.services.UserService;
@@ -35,9 +36,15 @@ public class OrganizationController {
     @Autowired
     private UserService userService;
 
+    @PreAuthorize(value = "hasRole('ROLE_ADMIN') or hasRole('ROLE_ORGANIZATIONS_VIEW') or hasRole('ROLE_ORGANIZATIONS_UPDATE') or hasRole('ROLE_SUPER_USER')")
     @GetMapping(path = "/")
     public ResponseEntity<List<Organization>> getOrganizations() {
         return ResponseEntity.ok(this.organizationService.getOrganizations());
+    }
+
+    @GetMapping(path = "/custom")
+    public ResponseEntity<List<OrganizationResponseDTO>> getCustomOrganizations() {
+        return ResponseEntity.ok(this.organizationService.getCustomOrganizations());
     }
 
     @PreAuthorize(value = "hasRole('ROLE_ADMIN') or hasRole('ROLE_ORGANIZATIONS_CREATE') or hasRole('ROLE_ORGANIZATIONS_UPDATE') or hasRole('ROLE_SUPER_USER')")
@@ -53,8 +60,8 @@ public class OrganizationController {
 
     @PreAuthorize(value = "hasRole('ROLE_ADMIN') or hasRole('ROLE_ORGANIZATIONS_VIEW') or hasRole('ROLE_SUPER_USER')")
     @GetMapping(path = "/page")
-    public ResponseEntity<Page<Organization>> listOrganizations(@RequestParam(value = "search", required = false, defaultValue = "") String search, @RequestParam(value = "page", required = false, defaultValue = "0") int page, @RequestParam(value = "size", required = false, defaultValue = "${page.default-size}") int size) {
-        return ResponseEntity.ok(this.organizationService.getOrganizations(search, page, size));
+    public ResponseEntity<Page<Organization>> listOrganizations(@RequestParam(value = "search", required = false, defaultValue = "") String search, @RequestParam(value = "page", required = false, defaultValue = "0") int page, @RequestParam(value = "size", required = false, defaultValue = "${page.default-size}") int size, @RequestParam(name = "sort", defaultValue = "id") String[] sort, @RequestParam(name = "direction", defaultValue = "DESC") String direction) {
+        return ResponseEntity.ok(this.organizationService.getOrganizations(search, page, size, direction, sort));
     }
 
     @PreAuthorize(value = "hasRole('ROLE_ADMIN') or hasRole('ROLE_PROCESSES_VIEW') or hasRole('ROLE_SUPER_USER')")

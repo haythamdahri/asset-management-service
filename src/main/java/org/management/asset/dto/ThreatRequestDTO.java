@@ -1,7 +1,37 @@
 package org.management.asset.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.io.Serializable;
+
 /**
  * @author Haytham DAHRI
  */
-public class ThreatRequestDTO {
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class ThreatRequestDTO implements Serializable {
+    private static final long serialVersionUID = -5628330134351145289L;
+
+    @JsonProperty("currentTypology")
+    private String currentTypology;
+
+    @JsonProperty("typology")
+    private String typology;
+
+    @JsonProperty("threat")
+    private String threat;
+
+    @JsonProperty("name")
+    private String name;
+
+    @JsonProperty("description")
+    private String description;
+
+    @JsonProperty("status")
+    private boolean status;
+
 }

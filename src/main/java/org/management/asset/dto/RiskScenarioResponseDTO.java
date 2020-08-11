@@ -3,10 +3,10 @@ package org.management.asset.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.management.asset.bo.RiskScenario;
 import org.management.asset.bo.Threat;
 
 import java.io.Serializable;
-import java.util.List;
 
 /**
  * @author Haytham DAHRI
@@ -14,13 +14,13 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ThreatResponseDTO implements Serializable {
+public class RiskScenarioResponseDTO implements Serializable {
     private static final long serialVersionUID = -1706164743194545373L;
 
     private String typologyId;
 
     private String typologyName;
 
-    private Threat threat;
+    private RiskScenario riskScenario;
 
 }

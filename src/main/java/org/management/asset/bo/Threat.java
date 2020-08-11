@@ -3,8 +3,8 @@ package org.management.asset.bo;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
 
-import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -18,8 +18,11 @@ import java.util.UUID;
 public class Threat {
 
     private String id = UUID.randomUUID().toString();
+    private String name;
     private String description;
     private boolean status;
+
+    @CreatedDate
     private LocalDateTime identificationDate;
 
 }

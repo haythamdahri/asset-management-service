@@ -1,22 +1,16 @@
 package org.management.asset.mappers;
 
-import org.management.asset.bo.Group;
-import org.management.asset.dto.GroupDTO;
-import org.mapstruct.*;
+import org.management.asset.bo.Setting;
+import org.management.asset.dto.AnalysisOptionsResponseDTO;
+import org.mapstruct.Mapper;
+import org.mapstruct.ReportingPolicy;
 
 /**
  * @author Haytham DAHRI
  */
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
-public interface GroupMapper {
+public interface RiskAnalysisMapper {
 
-    @BeanMapping(ignoreByDefault = true)
-    @Mappings(
-            value = {
-                    @Mapping(source = "source.id", target = "id"),
-                    @Mapping(source = "source.name", target = "name"),
-                    @Mapping(source = "source.description", target = "description")
-            })
-    Group toModel(GroupDTO source);
+    AnalysisOptionsResponseDTO toDTO(Setting setting);
 
 }

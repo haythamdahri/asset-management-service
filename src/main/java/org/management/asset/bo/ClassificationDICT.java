@@ -3,12 +3,11 @@ package org.management.asset.bo;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Transient;
 
-import javax.annotation.PostConstruct;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 /**
  * @author Haytham DAHRI
@@ -32,6 +31,8 @@ public class ClassificationDICT implements Serializable {
     @Transient
     private int score;
     private boolean status;
+
+    @CreatedDate
     private LocalDateTime identificationDate;
 
     public ClassificationDICT(int confidentiality, int availability, int integrity, int traceability, boolean status) {
@@ -40,6 +41,10 @@ public class ClassificationDICT implements Serializable {
         this.integrity = integrity;
         this.traceability = traceability;
         this.status = status;
+    }
+
+    public ClassificationDICT(LocalDateTime identificationDate) {
+        this.identificationDate = identificationDate;
     }
 
     public void postConstruct() {

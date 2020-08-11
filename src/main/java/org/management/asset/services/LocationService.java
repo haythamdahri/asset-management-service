@@ -23,6 +23,6 @@ public interface LocationService {
 
     List<Location> getLocations();
 
-    Page<Location> getLocations(String search, int page, int size);
+    Page<Location> getLocations(String search, int page, int size, String direction, String... sort);
 
 }

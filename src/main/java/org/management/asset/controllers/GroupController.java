@@ -25,12 +25,15 @@ public class GroupController {
     @Autowired
     private GroupService groupService;
 
-    @Autowired
-    private RoleService roleService;
-
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_SUPER_USER')")
     @GetMapping(path = "/")
     public ResponseEntity<List<Group>> listGroups() {
         return ResponseEntity.ok(this.groupService.getGroups());
+    }
+
+    @GetMapping(path = "/counter")
+    public ResponseEntity<Integer> getGroupsCounter() {
+        return ResponseEntity.ok(this.groupService.getGroupsCounter());
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_SUPER_USER')")
@@ -41,8 +44,8 @@ public class GroupController {
 
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_SUPER_USER')")
     @GetMapping(path = "/pages")
-    public ResponseEntity<Page<Group>> getUsers(@RequestParam(value = "name", required = false, defaultValue = "") String name, @RequestParam(value = "page", required = false, defaultValue = "0") int page, @RequestParam(value = "size", required = false, defaultValue = "${page.default-size}") int size) {
-        return ResponseEntity.ok(this.groupService.getGroups(name, page, size));
+    public ResponseEntity<Page<Group>> getUsers(@RequestParam(value = "name", required = false, defaultValue = "") String name, @RequestParam(value = "page", required = false, defaultValue = "0") int page, @RequestParam(value = "size", required = false, defaultValue = "${page.default-size}") int size, @RequestParam(name = "sort", defaultValue = "id") String[] sort, @RequestParam(name = "direction", defaultValue = "DESC") String direction) {
+        return ResponseEntity.ok(this.groupService.getGroups(name, page, size, direction, sort));
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_SUPER_USER')")

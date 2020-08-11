@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import javax.annotation.PostConstruct;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -29,10 +30,15 @@ public class Asset implements Serializable {
     private String name;
     private String description;
     private boolean status;
+
+    @DBRef
     private Location location;
     private LocalDateTime identificationDate;
-    private ClassificationDICT classificationDICT;
-    private Set<RiskAnalysis> riskAnalyses;
+    private ClassificationDICT classification;
+    private Set<RiskAnalysis> riskAnalyzes;
+    private AssetFile image;
+
+    private Process process;
 
     @DBRef
     private User owner;
@@ -40,12 +46,11 @@ public class Asset implements Serializable {
     @DBRef
     private Typology typology;
 
-    @PostConstruct
-    private void postConstruct() {
-        // Loop through riskAnalyses and calculate generated values
-        if( this.riskAnalyses != null ) {
-            this.riskAnalyses.forEach(riskAnalysis -> riskAnalysis.calculateGeneratedValues(this));
+    public void addRiskAnalysis(RiskAnalysis riskAnalysis) {
+        if( this.riskAnalyzes == null ) {
+            this.riskAnalyzes = new HashSet<>();
         }
+        this.riskAnalyzes.add(riskAnalysis);
     }
 
 }

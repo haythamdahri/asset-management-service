@@ -13,7 +13,7 @@ import java.io.Serializable;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ThreatRequestDTO implements Serializable {
+public class RiskScenarioRequestDTO implements Serializable {
     private static final long serialVersionUID = -5628330134351145289L;
 
     @JsonProperty("currentTypology")
@@ -22,8 +22,8 @@ public class ThreatRequestDTO implements Serializable {
     @JsonProperty("typology")
     private String typology;
 
-    @JsonProperty("threat")
-    private String threat;
+    @JsonProperty("riskScenario")
+    private String riskScenario;
 
     @JsonProperty("name")
     private String name;

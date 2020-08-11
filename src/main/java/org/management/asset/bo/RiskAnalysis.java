@@ -3,6 +3,7 @@ package org.management.asset.bo;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Transient;
 
 import java.time.LocalDateTime;
@@ -39,18 +40,19 @@ public class RiskAnalysis {
     // Plan de traitement de risque
     private String riskTreatmentPlan;
     // Impact Financier Cible
-    private String targetFinancialImpact;
+    private int targetFinancialImpact;
     // Impact Operationnel Cible
-    private String tagetOperationalImpact;
+    private int targetOperationalImpact;
     // Impact Reputationnel Cible
-    private String targetReputationalImpact;
-    // Probabilité Cibe
+    private int targetReputationalImpact;
+    // Probabilité Cible
     private int targetProbability;
     // Risque Résiduel Acceptable
     private int acceptableResidualRisk;
     // Statut
     private boolean status;
     // Date d'identification
+    @CreatedDate
     private LocalDateTime identificationDate;
     /**
      * Champ a récuperer en se basant sur la typologie de l'actif
@@ -67,7 +69,8 @@ public class RiskAnalysis {
         // Set exposition value
         this.exposition = this.impact * this.probability;
         // Set grossValue
-        this.grossValue = this.exposition * asset.getClassificationDICT().getScore();
+        asset.getClassification().postConstruct();
+        this.grossValue = this.exposition * asset.getClassification().getScore();
         // Set riskAnalysis value
         if (this.grossValue < 14) {
             this.riskAnalysis = RiskType.VERY_LOW;

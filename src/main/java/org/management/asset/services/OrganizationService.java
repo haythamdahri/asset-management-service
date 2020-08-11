@@ -30,7 +30,7 @@ public interface OrganizationService {
 
     List<OrganizationResponseDTO> getCustomOrganizations();
 
-    Page<Organization> getOrganizations(String search, int page, int size);
+    Page<Organization> getOrganizations(String search, int page, int size, String direction, String... sort);
 
     Long getOrganizationsCounter();
 

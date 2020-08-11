@@ -2,6 +2,7 @@ package org.management.asset.configuration;
 
 import lombok.extern.log4j.Log4j2;
 import org.management.asset.bo.*;
+import org.management.asset.dao.AssetRepository;
 import org.management.asset.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -47,6 +48,9 @@ public class ApplicationConfiguration {
     private LocationService locationService;
 
     @Autowired
+    private AssetRepository assetRepository;
+
+    @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
     @EventListener(value = {ApplicationReadyEvent.class})
@@ -72,7 +76,7 @@ public class ApplicationConfiguration {
             Organization dellOrganization = this.organizationService.saveOrganization(new Organization(null, "DELL", "Description", avatar));
             Language language = this.languageService.saveLanguage(new Language(null, "Francais"));
             Entity entity = this.entityService.saveEntity(
-                    new Entity(null, "Système d'information", null));
+                    new Entity(null, "Système d'information", null, null));
             Location location = this.locationService.saveLocation(new Location(null, "Rabat, Morocco", "Address 2", "Address 2"
                     , "Rabat", "Rabat-Kénitra", "Morocco", "10010", avatar));
             User user = new User();
@@ -145,7 +149,7 @@ public class ApplicationConfiguration {
             this.userService.saveUser(basicUser);
 
 //             =============== Generate Users ===============
-            for(int i=0; i<650; i++) {
+            for (int i = 0; i < 650; i++) {
                 basicUser = new User();
                 basicUser.setCreationDate(LocalDateTime.now());
                 basicUser.setFirstName("Basic" + i);
@@ -155,7 +159,7 @@ public class ApplicationConfiguration {
                 basicUser.setEmail("basic.user" + i + "@gmail.com");
                 basicUser.setOrganization(dellOrganization);
                 basicUser.setLanguage(language);
-                basicUser.setEmployeeNumber("EMP5000"+ i);
+                basicUser.setEmployeeNumber("EMP5000" + i);
                 basicUser.setTitle("Mr");
                 basicUser.setManager(null);
                 basicUser.setEntity(entity);
@@ -180,6 +184,22 @@ public class ApplicationConfiguration {
                 this.userService.saveUser(basicUser);
             }
         }
+        // Create  new riskAnalysis for the asset
+//        Asset asset = this.assetRepository.findAll().stream().findFirst().get();
+//        if( asset.getRiskAnalyzes().isEmpty() ) {
+//            RiskAnalysis riskAnalysis = new RiskAnalysis();
+//            riskAnalysis.setStatus(true);
+//            riskAnalysis.setProbability(2);
+//            riskAnalysis.setFinancialImpact(2);
+//            riskAnalysis.setOperationalImpact(2);
+//            riskAnalysis.setReputationalImpact(2);
+//            riskAnalysis.setIdentificationDate(LocalDateTime.now(ZoneId.of("UTC+1")));
+//            if( asset.getRiskAnalyzes() == null ) {
+//                asset.setRiskAnalyzes(new HashSet<>());
+//            }
+//            asset.setRiskAnalyzes(new HashSet<>(Collections.singletonList(riskAnalysis)));
+//            this.assetRepository.save(asset);
+//        }
         // Logging Message
         log.info("SYSTEM HAS BEEN INITIALIZED SUCCESSFULLY");
     }

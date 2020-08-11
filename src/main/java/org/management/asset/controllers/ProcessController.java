@@ -29,8 +29,8 @@ public class ProcessController {
 
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_PROCESSES_VIEW') or hasRole('ROLE_SUPER_USER')")
     @GetMapping(path = "/")
-    public ResponseEntity<Page<Process>> getProcessesPage(@RequestParam(value = "name", required = false, defaultValue = "") String name, @RequestParam(value = "page", required = false, defaultValue = "0") int page, @RequestParam(value = "size", required = false, defaultValue = "${page.default-size}") int size) {
-        return ResponseEntity.ok(this.processService.getProcesses(name, page, size));
+    public ResponseEntity<Page<Process>> getProcessesPage(@RequestParam(value = "name", required = false, defaultValue = "") String name, @RequestParam(value = "page", required = false, defaultValue = "0") int page, @RequestParam(value = "size", required = false, defaultValue = "${page.default-size}") int size, @RequestParam(name = "sort", defaultValue = "id") String[] sort, @RequestParam(name = "direction", defaultValue = "DESC") String direction) {
+        return ResponseEntity.ok(this.processService.getProcesses(name, page, size, direction, sort));
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_PROCESSES_VIEW') or hasRole('ROLE_SUPER_USER')")
@@ -65,7 +65,7 @@ public class ProcessController {
     }
 
     @PreAuthorize(value = "hasRole('ROLE_ADMIN') or hasRole('ROLE_PROCESSES_VIEW') or hasRole('ROLE_SUPER_USER')")
-    @PutMapping(path = "/custom")
+    @GetMapping(path = "/custom")
     public ResponseEntity<List<ProcessDTO>> getProcesses(@RequestParam(name = "id", required = false) String excludedProcessId) {
         return ResponseEntity.ok(this.processService.getCustomProcesses(excludedProcessId));
     }

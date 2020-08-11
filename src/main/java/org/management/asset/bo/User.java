@@ -6,7 +6,9 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.management.asset.listeners.CascadeSave;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -81,7 +83,11 @@ public class User implements Serializable {
     @JsonIgnore
     private LocalDateTime expiryDate;
     private LocalDateTime activationDate;
+
+    @CreatedDate
     private LocalDateTime creationDate;
+
+    @LastModifiedDate
     private LocalDateTime updateDate;
     private LocalDateTime deletionDate;
     private LocalDateTime lastLogin;

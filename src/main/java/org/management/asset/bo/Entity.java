@@ -1,5 +1,6 @@
 package org.management.asset.bo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -29,7 +30,11 @@ public class Entity implements Serializable {
     private String name;
 
     @DBRef
+    private Organization organization;
+
+    @DBRef
     @EqualsAndHashCode.Exclude
+    @JsonIgnore
     private Set<User> users;
 
     /**

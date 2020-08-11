@@ -41,7 +41,7 @@ public class RiskAnalysisServiceImpl implements RiskAnalysisService {
     private PaginationHelper paginationHelper;
 
     @Override
-    public PageDTO<RiskAnalysisResponseDTO> getRiskAnalyzes(String assetId, int page, int size) {
+    public PageDTO<RiskAnalysisResponseDTO> getRiskAnalyzes(String assetId, int page, int size, String direction, String... sort) {
         List<RiskAnalysisResponseDTO> riskAnalyzes = new ArrayList<>();
         this.assetRepository.findAll().forEach(asset -> {
             if (asset.getRiskAnalyzes() != null) {
