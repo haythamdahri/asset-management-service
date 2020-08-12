@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author Haytham DAHRI
@@ -43,45 +45,41 @@ public class RiskAnalysisServiceImpl implements RiskAnalysisService {
     @Override
     public PageDTO<RiskAnalysisResponseDTO> getRiskAnalyzes(String assetId, int page, int size, String direction, String... sort) {
         List<RiskAnalysisResponseDTO> riskAnalyzes = new ArrayList<>();
-        List<Asset> assets = new ArrayList<>();
-        // Sort assets
-        if( sort[0].equals("asset") ) {
-            // Reverse Asset
-            if (direction.equals(Sort.Direction.ASC.name())) {
-                assets = this.assetRepository.findAll(Sort.by("name").descending());
-            } else {
-                assets = this.assetRepository.findAll(Sort.by("name").ascending());
-            }
-        } else {
+        List<Asset> assets;
+        if(StringUtils.isEmpty(assetId)) {
             assets = this.assetRepository.findAll();
+        } else {
+            assets = Stream.of(this.assetRepository.findById(assetId).orElseThrow(BusinessException::new)).collect(Collectors.toList());
         }
         // Loop through assets
-        assets.forEach(asset -> {
-            asset.getRiskAnalyzes().stream().sorted((ra1, ra2) -> {
-                // Sort Based on Sort field
-                switch (sort[0]) {
-                    case "probability":
-                        return Integer.compare(ra1.getProbability(), ra2.getProbability());
-                    case "financialImpact":
-                        return Integer.compare(ra1.getFinancialImpact(), ra2.getFinancialImpact());
-                    case "operationalImpact":
-                        return Integer.compare(ra1.getOperationalImpact(), ra2.getOperationalImpact());
-                    case "reputationalImpact":
-                        return Integer.compare(ra1.getReputationalImpact(), ra2.getReputationalImpact());
-                    case "impact":
-                        return Integer.compare(ra1.getImpact(), ra2.getImpact());
-                    case "status":
-                        return ra1.getStatus().compareTo(ra2.getStatus());
-                    case "identificationDate":
-                        return ra1.getIdentificationDate().compareTo(ra2.getIdentificationDate());
-                    default:
-                        return ra1.getId().compareTo(ra2.getId());
-                }
-            }).forEach(riskAnalysis -> {
-                riskAnalysis.calculateGeneratedValues(asset);
-                RiskAnalysisResponseDTO riskAnalysisResponse = new RiskAnalysisResponseDTO(asset.getId(), asset.getName(), riskAnalysis);
-                riskAnalyzes.add(riskAnalysisResponse);
-            });
+        assets.forEach(asset -> asset.getRiskAnalyzes().forEach(riskAnalysis -> {
+            riskAnalysis.calculateGeneratedValues(asset);
+            RiskAnalysisResponseDTO riskAnalysisResponse = new RiskAnalysisResponseDTO(asset.getId(), asset.getName(), riskAnalysis);
+            riskAnalyzes.add(riskAnalysisResponse);
+        }));
+        // Sort riskAnalyzes
+        riskAnalyzes.sort((ra1, ra2) -> {
+            // Sort Based on Sort field
+            switch (sort[0]) {
+                case "asset":
+                    return ra1.getAssetName().compareTo(ra2.getAssetName());
+                case "probability":
+                    return Integer.compare(ra1.getRiskAnalysis().getProbability(), ra2.getRiskAnalysis().getProbability());
+                case "financialImpact":
+                return Integer.compare(ra1.getRiskAnalysis().getFinancialImpact(), ra2.getRiskAnalysis().getFinancialImpact());
+                case "operationalImpact":
+                    return Integer.compare(ra1.getRiskAnalysis().getOperationalImpact(), ra2.getRiskAnalysis().getOperationalImpact());
+                case "reputationalImpact":
+                    return Integer.compare(ra1.getRiskAnalysis().getReputationalImpact(), ra2.getRiskAnalysis().getReputationalImpact());
+                case "impact":
+                    return Integer.compare(ra1.getRiskAnalysis().getImpact(), ra2.getRiskAnalysis().getImpact());
+                case "status":
+                    return ra1.getRiskAnalysis().getStatus().compareTo(ra2.getRiskAnalysis().getStatus());
+                case "identificationDate":
+                    return ra1.getRiskAnalysis().getIdentificationDate().compareTo(ra2.getRiskAnalysis().getIdentificationDate());
+                default:
+                    return ra2.getRiskAnalysis().getIdentificationDate().compareTo(ra1.getRiskAnalysis().getIdentificationDate());
+            }
         });
         // Reverse RiskAnalyzes based on direction
         if (direction.equals(Sort.Direction.ASC.name())) {

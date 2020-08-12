@@ -18,6 +18,6 @@ public interface ThreatService {
 
     ThreatResponseDTO saveThreat(ThreatRequestDTO threatRequest);
 
-    PageDTO<ThreatResponseDTO> getThreats(String name, int page, int size);
+    PageDTO<ThreatResponseDTO> getThreats(String name, int page, int size, String direction, String... sort);
 
 }

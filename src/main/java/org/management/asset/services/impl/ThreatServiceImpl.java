@@ -15,10 +15,12 @@ import org.management.asset.services.ThreatService;
 import org.management.asset.services.TypologyService;
 import org.management.asset.utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
@@ -51,9 +53,21 @@ public class ThreatServiceImpl implements ThreatService {
     }
 
     @Override
-    public PageDTO<ThreatResponseDTO> getThreats(String name, int page, int size) {
+    public PageDTO<ThreatResponseDTO> getThreats(String name, int page, int size, String direction, String... sort) {
         List<ThreatResponseDTO> threatResponses = new ArrayList<>();
-        this.typologyService.getTypologies().forEach(typology -> {
+        List<Typology> typologies;
+        // Sort by typology depending on sort
+        if( sort[0].equals("typology") ) {
+            // Reverse Asset
+            if (direction.equals(Sort.Direction.ASC.name())) {
+                typologies = this.typologyRepository.findAll(Sort.by("name").descending());
+            } else {
+                typologies = this.typologyRepository.findAll(Sort.by("name").ascending());
+            }
+        } else {
+            typologies = this.typologyRepository.findAll();
+        }
+        typologies.forEach(typology -> {
             if (typology.getThreats() != null) {
                 typology.getThreats().forEach(threat -> {
                     if (threat.getName().toLowerCase().contains(name.toLowerCase())) {
@@ -62,6 +76,23 @@ public class ThreatServiceImpl implements ThreatService {
                 });
             }
         });
+        // Sort ThreatResponses
+        threatResponses.sort((t1 ,t2) -> {
+                switch(sort[0]) {
+                    case "name":
+                        return t1.getThreat().getName().compareTo(t2.getThreat().getName());
+                    case "description":
+                        return t1.getThreat().getDescription().compareTo(t2.getThreat().getDescription());
+                    case "status":
+                        return t2.getThreat().getStatus().compareTo(t1.getThreat().getStatus());
+                    default:
+                        return t1.getThreat().getIdentificationDate().compareTo(t2.getThreat().getIdentificationDate());
+                }
+        });
+        // Reverse list if direction is DESC
+        if (direction.equals(Sort.Direction.DESC.name())) {
+            Collections.reverse(threatResponses);
+        }
         // Pagination
         return this.paginationHelper.buildPage(page, size, threatResponses);
     }
