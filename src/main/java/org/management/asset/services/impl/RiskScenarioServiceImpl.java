@@ -15,10 +15,12 @@ import org.management.asset.services.RiskScenarioService;
 import org.management.asset.services.TypologyService;
 import org.management.asset.utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
@@ -45,17 +47,30 @@ public class RiskScenarioServiceImpl implements RiskScenarioService {
     public List<RiskScenario> getRiskScenarios() {
         return this.typologyService.getTypologies().stream().map(Typology::getRiskScenarios).flatMap(List::stream).collect(Collectors.toList());
     }
+
     @Override
     public Long getRiskScenariosCounter() {
         return this.typologyService.getTypologies().stream().map(Typology::getRiskScenarios).flatMap(List::stream).count();
     }
 
     @Override
-    public PageDTO<RiskScenarioResponseDTO> getRiskScenarios(String name, int page, int size) {
+    public PageDTO<RiskScenarioResponseDTO> getRiskScenarios(String name, int page, int size, String direction, String... sort) {
         try {
             List<RiskScenarioResponseDTO> riskScenarioResponses = new ArrayList<>();
-            this.typologyService.getTypologies().forEach(typology -> {
-                if (typology.getRiskScenarios() != null) {
+            List<Typology> typologies;
+            // Sort by typology depending on sort
+            if (sort[0].equals("typology")) {
+                // Reverse Asset
+                if (direction.equals(Sort.Direction.ASC.name())) {
+                    typologies = this.typologyRepository.findAll(Sort.by("name").descending());
+                } else {
+                    typologies = this.typologyRepository.findAll(Sort.by("name").ascending());
+                }
+            } else {
+                typologies = this.typologyRepository.findAll();
+            }
+            typologies.forEach(typology -> {
+                if (typology.getVulnerabilities() != null) {
                     typology.getRiskScenarios().forEach(riskScenario -> {
                         if (riskScenario.getName().toLowerCase().contains(name.toLowerCase())) {
                             riskScenarioResponses.add(new RiskScenarioResponseDTO(typology.getId(), typology.getName(), riskScenario));
@@ -63,9 +78,26 @@ public class RiskScenarioServiceImpl implements RiskScenarioService {
                     });
                 }
             });
+            // Sort ThreatResponses
+            riskScenarioResponses.sort((t1, t2) -> {
+                switch (sort[0]) {
+                    case "name":
+                        return t1.getRiskScenario().getName().compareTo(t2.getRiskScenario().getName());
+                    case "description":
+                        return t1.getRiskScenario().getDescription().compareTo(t2.getRiskScenario().getDescription());
+                    case "status":
+                        return t2.getRiskScenario().getStatus().compareTo(t1.getRiskScenario().getStatus());
+                    default:
+                        return t1.getRiskScenario().getIdentificationDate().compareTo(t2.getRiskScenario().getIdentificationDate());
+                }
+            });
+            // Reverse list if direction is DESC
+            if (direction.equals(Sort.Direction.DESC.name())) {
+                Collections.reverse(riskScenarioResponses);
+            }
             // Pagination
             return this.paginationHelper.buildPage(page, size, riskScenarioResponses);
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
             throw ex;
         }

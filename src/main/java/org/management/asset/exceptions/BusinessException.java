@@ -9,23 +9,23 @@ import java.io.Serializable;
  * @author Haytham DAHRI
  */
 @ResponseStatus(code = HttpStatus.NOT_FOUND, reason = "Invalid Input Object")
-public class BusinessException extends RuntimeException implements Serializable {
-    public BusinessException() {
+public class TechnicalException extends RuntimeException implements Serializable {
+    public TechnicalException() {
     }
 
-    public BusinessException(String message) {
+    public TechnicalException(String message) {
         super(message);
     }
 
-    public BusinessException(String message, Throwable cause) {
+    public TechnicalException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public BusinessException(Throwable cause) {
+    public TechnicalException(Throwable cause) {
         super(cause);
     }
 
-    public BusinessException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+    public TechnicalException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 }

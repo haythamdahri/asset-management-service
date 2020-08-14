@@ -59,6 +59,7 @@ public class SettingServiceImpl implements SettingService {
             setting.setIntegrities(IntStream.range(settingRequest.getMinIntegrity(), settingRequest.getMaxIntegrity() + 1).boxed().collect(Collectors.toList()));
             setting.setTraceabilities(IntStream.range(settingRequest.getMinTraceability(), settingRequest.getMaxTraceability() + 1).boxed().collect(Collectors.toList()));
             setting.setIdentificationDate(LocalDateTime.now(ZoneId.of("UTC+1")));
+            setting.setMaxAttemptsWithoutCaptcha(settingRequest.getMaxAttemptsWithoutCaptcha());
             // Save and return setting
             return this.settingRepository.save(setting);
         } catch (BusinessException ex) {

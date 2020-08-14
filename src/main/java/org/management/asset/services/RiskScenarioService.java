@@ -18,6 +18,6 @@ public interface RiskScenarioService {
 
     RiskScenarioResponseDTO saveRiskScenario(RiskScenarioRequestDTO riskScenarioRequest);
 
-    PageDTO<RiskScenarioResponseDTO> getRiskScenarios(String name, int page, int size);
+    PageDTO<RiskScenarioResponseDTO> getRiskScenarios(String name, int page, int size, String direction, String... sort);
 
 }
