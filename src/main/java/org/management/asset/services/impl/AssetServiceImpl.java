@@ -105,8 +105,7 @@ public class AssetServiceImpl implements AssetService {
             }
             // Set Process
             if (StringUtils.isNotEmpty(assetRequest.getProcess())) {
-                Process process = this.processRepository.findById(assetRequest.getProcess()).orElseThrow(BusinessException::new);
-                process.addAsset(asset);
+                asset.setProcess(this.processRepository.findById(assetRequest.getProcess()).orElseThrow(BusinessException::new));
             }
             // Save asset
             return this.assetRepository.save(asset);

@@ -5,6 +5,7 @@ import org.bson.types.ObjectId;
 import org.management.asset.bo.Asset;
 import org.management.asset.bo.ClassificationDICT;
 import org.management.asset.bo.Process;
+import org.management.asset.dao.AssetRepository;
 import org.management.asset.dao.OrganizationRepository;
 import org.management.asset.dao.ProcessRepository;
 import org.management.asset.dto.ProcessDTO;
@@ -25,7 +26,11 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author Haytham DAHRI
@@ -36,6 +41,9 @@ public class ProcessServiceImpl implements ProcessService {
 
     @Autowired
     private ProcessRepository processRepository;
+
+    @Autowired
+    private AssetRepository assetRepository;
 
     @Autowired
     private OrganizationRepository organizationRepository;
@@ -140,6 +148,13 @@ public class ProcessServiceImpl implements ProcessService {
             process.getClassification().postConstruct();
         }
         return process;
+    }
+
+    @Override
+    public Set<Asset> getProcessAssets(String id) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where("process.id").is(id));
+        return new HashSet<>(this.mongoOperations.find(query, Asset.class));
     }
 
     @Override

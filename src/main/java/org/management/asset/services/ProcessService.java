@@ -1,11 +1,13 @@
 package org.management.asset.services;
 
+import org.management.asset.bo.Asset;
 import org.management.asset.bo.Process;
 import org.management.asset.dto.ProcessDTO;
 import org.management.asset.dto.ProcessRequestDTO;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Haytham DAHRI
@@ -24,6 +26,8 @@ public interface ProcessService {
     boolean deleteProcess(String id);
 
     Process getProcess(String id);
+
+    Set<Asset> getProcessAssets(String id);
 
     List<Process> getOrganizationProcesses(String id);
 
