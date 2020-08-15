@@ -3,6 +3,7 @@ package org.management.asset.services.impl;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.management.asset.bo.*;
+import org.management.asset.bo.Process;
 import org.management.asset.dao.*;
 import org.management.asset.dto.AssetDTO;
 import org.management.asset.dto.AssetRequestDTO;
@@ -101,11 +102,13 @@ public class AssetServiceImpl implements AssetService {
             // Set Location
             if (StringUtils.isNotEmpty(assetRequest.getTypology())) {
                 asset.setLocation(this.locationRepository.findById(assetRequest.getLocation()).orElseThrow(BusinessException::new));
-            }// Set Process
-            if (StringUtils.isNotEmpty(assetRequest.getProcess())) {
-                asset.setProcess(this.processRepository.findById(assetRequest.getProcess()).orElseThrow(BusinessException::new));
             }
-            // Save asset and return
+            // Set Process
+            if (StringUtils.isNotEmpty(assetRequest.getProcess())) {
+                Process process = this.processRepository.findById(assetRequest.getProcess()).orElseThrow(BusinessException::new);
+                process.addAsset(asset);
+            }
+            // Save asset
             return this.assetRepository.save(asset);
         } catch (BusinessException ex) {
             ex.printStackTrace();

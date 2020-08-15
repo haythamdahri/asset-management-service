@@ -2,6 +2,7 @@ package org.management.asset.services.impl;
 
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
+import org.management.asset.bo.Asset;
 import org.management.asset.bo.ClassificationDICT;
 import org.management.asset.bo.Process;
 import org.management.asset.dao.OrganizationRepository;
@@ -123,6 +124,11 @@ public class ProcessServiceImpl implements ProcessService {
 
     @Override
     public boolean deleteProcess(String id) {
+        // Set null on all assets
+        Process process = this.processRepository.findById(id).orElseThrow(BusinessException::new);
+        if( process.getAssets() != null ) {
+            process.getAssets().forEach(asset -> asset.setProcess(null));
+        }
         this.processRepository.deleteById(id);
         return !this.processRepository.findById(id).isPresent();
     }

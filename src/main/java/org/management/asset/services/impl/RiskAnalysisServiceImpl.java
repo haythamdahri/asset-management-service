@@ -46,17 +46,21 @@ public class RiskAnalysisServiceImpl implements RiskAnalysisService {
     public PageDTO<RiskAnalysisResponseDTO> getRiskAnalyzes(String assetId, int page, int size, String direction, String... sort) {
         List<RiskAnalysisResponseDTO> riskAnalyzes = new ArrayList<>();
         List<Asset> assets;
-        if(StringUtils.isEmpty(assetId)) {
+        if (StringUtils.isEmpty(assetId)) {
             assets = this.assetRepository.findAll();
         } else {
             assets = Stream.of(this.assetRepository.findById(assetId).orElseThrow(BusinessException::new)).collect(Collectors.toList());
         }
         // Loop through assets
-        assets.forEach(asset -> asset.getRiskAnalyzes().forEach(riskAnalysis -> {
-            riskAnalysis.calculateGeneratedValues(asset);
-            RiskAnalysisResponseDTO riskAnalysisResponse = new RiskAnalysisResponseDTO(asset.getId(), asset.getName(), riskAnalysis);
-            riskAnalyzes.add(riskAnalysisResponse);
-        }));
+        assets.forEach(asset -> {
+            if (asset.getRiskAnalyzes() != null) {
+                asset.getRiskAnalyzes().forEach(riskAnalysis -> {
+                    riskAnalysis.calculateGeneratedValues(asset);
+                    RiskAnalysisResponseDTO riskAnalysisResponse = new RiskAnalysisResponseDTO(asset.getId(), asset.getName(), riskAnalysis);
+                    riskAnalyzes.add(riskAnalysisResponse);
+                });
+            }
+        });
         // Sort riskAnalyzes
         riskAnalyzes.sort((ra1, ra2) -> {
             // Sort Based on Sort field
@@ -66,7 +70,7 @@ public class RiskAnalysisServiceImpl implements RiskAnalysisService {
                 case "probability":
                     return Integer.compare(ra1.getRiskAnalysis().getProbability(), ra2.getRiskAnalysis().getProbability());
                 case "financialImpact":
-                return Integer.compare(ra1.getRiskAnalysis().getFinancialImpact(), ra2.getRiskAnalysis().getFinancialImpact());
+                    return Integer.compare(ra1.getRiskAnalysis().getFinancialImpact(), ra2.getRiskAnalysis().getFinancialImpact());
                 case "operationalImpact":
                     return Integer.compare(ra1.getRiskAnalysis().getOperationalImpact(), ra2.getRiskAnalysis().getOperationalImpact());
                 case "reputationalImpact":

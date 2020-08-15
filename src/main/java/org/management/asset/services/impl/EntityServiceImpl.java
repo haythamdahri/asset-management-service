@@ -109,7 +109,7 @@ public class EntityServiceImpl implements EntityService {
         if( name == null || StringUtils.isEmpty(name)) {
             return this.entityRepository.findAll(PageRequest.of(page, size, Sort.Direction.valueOf(direction), sort));
         }
-        return this.entityRepository.findByNameContainingIgnoreCase(name, PageRequest.of(page, size, Sort.Direction.DESC, "id"));
+        return this.entityRepository.findByNameContainingIgnoreCase(name, PageRequest.of(page, size, Sort.Direction.valueOf(direction), sort));
     }
 
     @Override
