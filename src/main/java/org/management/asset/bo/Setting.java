@@ -41,5 +41,7 @@ public class Setting implements Serializable {
     private List<Integer> integrities;
     private List<Integer> traceabilities;
 
+    private Integer maxAttemptsWithoutCaptcha;
+
 
 }

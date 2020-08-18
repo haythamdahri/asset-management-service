@@ -37,7 +37,7 @@ public class ThreatController {
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_THREATS_VIEW') or hasRole('ROLE_SUPER_USER')")
     @GetMapping(path = "/page")
     public ResponseEntity<PageDTO<ThreatResponseDTO>> getThreatsPage(@RequestParam(value = "name", required = false, defaultValue = "") String name, @RequestParam(value = "page", required = false, defaultValue = "0") int page, @RequestParam(value = "size", required = false, defaultValue = "${page.default-size}") int size, @RequestParam(name = "sort", defaultValue = "id") String[] sort, @RequestParam(name = "direction", defaultValue = "DESC") String direction) {
-        return ResponseEntity.ok(this.threatService.getThreats(name, page, size));
+        return ResponseEntity.ok(this.threatService.getThreats(name, page, size, direction, sort));
     }
 
 

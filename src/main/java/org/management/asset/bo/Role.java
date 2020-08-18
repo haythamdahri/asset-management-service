@@ -26,8 +26,8 @@ public class Role implements Serializable {
 
     @Id
     private String id;
-
     private RoleType roleName;
+    private String description;
 
     @DBRef
     @JsonIgnore

@@ -36,8 +36,8 @@ public class RiskScenarioController {
 
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_RISKSCENARIOS_VIEW') or hasRole('ROLE_SUPER_USER')")
     @GetMapping(path = "/page")
-    public ResponseEntity<PageDTO<RiskScenarioResponseDTO>> getRiskScenariosPage(@RequestParam(value = "name", required = false, defaultValue = "") String name, @RequestParam(value = "page", required = false, defaultValue = "0") int page, @RequestParam(value = "size", required = false, defaultValue = "${page.default-size}") int size) {
-        return ResponseEntity.ok(this.riskScenarioService.getRiskScenarios(name, page, size));
+    public ResponseEntity<PageDTO<RiskScenarioResponseDTO>> getRiskScenariosPage(@RequestParam(value = "name", required = false, defaultValue = "") String name, @RequestParam(value = "page", required = false, defaultValue = "0") int page, @RequestParam(value = "size", required = false, defaultValue = "${page.default-size}") int size, @RequestParam(name = "sort", defaultValue = "id") String[] sort, @RequestParam(name = "direction", defaultValue = "DESC") String direction) {
+        return ResponseEntity.ok(this.riskScenarioService.getRiskScenarios(name, page, size, direction, sort));
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_RISKSCENARIOS_EDIT') or hasRole('ROLE_THREATS_CREATE') or hasRole('ROLE_SUPER_USER')")

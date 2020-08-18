@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * @author Haytham DAHRI
@@ -41,5 +42,6 @@ public class SettingRequestDTO implements Serializable {
     private Integer minIntegrity;
     private Integer maxTraceability;
     private Integer minTraceability;
+    private Integer maxAttemptsWithoutCaptcha;
 
 }

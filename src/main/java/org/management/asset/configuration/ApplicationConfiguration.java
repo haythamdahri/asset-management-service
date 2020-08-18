@@ -3,6 +3,7 @@ package org.management.asset.configuration;
 import lombok.extern.log4j.Log4j2;
 import org.management.asset.bo.*;
 import org.management.asset.dao.AssetRepository;
+import org.management.asset.dao.SettingRepository;
 import org.management.asset.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -15,8 +16,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.HashSet;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /**
@@ -48,7 +51,7 @@ public class ApplicationConfiguration {
     private LocationService locationService;
 
     @Autowired
-    private AssetRepository assetRepository;
+    private SettingRepository settingRepository;
 
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
@@ -59,7 +62,7 @@ public class ApplicationConfiguration {
         Group basicUsers = null;
         // Add roles to the system
         if (this.roleService.getRoles().isEmpty()) {
-            Stream.of(RoleType.values()).forEach(role -> this.roleService.saveRole(new Role(null, role, null)));
+            Stream.of(RoleType.values()).forEach(role -> this.roleService.saveRole(new Role(null, role, role.name(), null)));
         }
         // Add SuperAdmin Group
         if (this.groupService.getGroups().isEmpty()) {
@@ -200,6 +203,27 @@ public class ApplicationConfiguration {
 //            asset.setRiskAnalyzes(new HashSet<>(Collections.singletonList(riskAnalysis)));
 //            this.assetRepository.save(asset);
 //        }
+
+        // Set Default Application Configuration
+        if( !this.settingRepository.findAll().isEmpty() ) {
+            Setting setting = new Setting();
+            setting.setProbabilities(Stream.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).collect(Collectors.toList()));
+            setting.setFinancialImpacts(Stream.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).collect(Collectors.toList()));
+            setting.setOperationalImpacts(Stream.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).collect(Collectors.toList()));
+            setting.setReputationalImpacts(Stream.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).collect(Collectors.toList()));
+            setting.setTargetFinancialImpacts(Stream.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).collect(Collectors.toList()));
+            setting.setTargetOperationalImpacts(Stream.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).collect(Collectors.toList()));
+            setting.setTargetReputationalImpacts(Stream.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).collect(Collectors.toList()));
+            setting.setTargetProbabilities(Stream.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).collect(Collectors.toList()));
+            setting.setAcceptableResidualRisks(Stream.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).collect(Collectors.toList()));
+            setting.setConfidentialities(Stream.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).collect(Collectors.toList()));
+            setting.setAvailabilities(Stream.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).collect(Collectors.toList()));
+            setting.setIntegrities(Stream.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).collect(Collectors.toList()));
+            setting.setTraceabilities(Stream.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).collect(Collectors.toList()));
+            setting.setIdentificationDate(LocalDateTime.now(ZoneId.of("UTC+1")));
+            setting.setMaxAttemptsWithoutCaptcha(5);
+            this.settingRepository.save(setting);
+        }
         // Logging Message
         log.info("SYSTEM HAS BEEN INITIALIZED SUCCESSFULLY");
     }

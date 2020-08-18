@@ -3,6 +3,7 @@ package org.management.asset.bo;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import net.minidev.json.annotate.JsonIgnore;
 import org.management.asset.listeners.CascadeSave;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
@@ -38,6 +39,7 @@ public class Process implements Serializable {
      */
     @DBRef
     @CascadeSave
+    @JsonIgnore
     private Set<Asset> assets;
 
     @DBRef

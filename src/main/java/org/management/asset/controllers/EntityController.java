@@ -1,13 +1,10 @@
 package org.management.asset.controllers;
 
 import org.management.asset.bo.Entity;
-import org.management.asset.bo.Organization;
 import org.management.asset.dto.EntityRequestDTO;
-import org.management.asset.dto.OrganizationRequestDTO;
 import org.management.asset.services.EntityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;

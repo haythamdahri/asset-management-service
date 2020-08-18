@@ -65,13 +65,19 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST,
                         "/api/v1/auth/**"
                 ).permitAll()
+                // Allow PUT for password reset
+                .antMatchers(HttpMethod.PUT, "/api/v1/users/passwordsreset").permitAll()
                 // Dont authenticate this particular endpoints for GET request only
                 .antMatchers(HttpMethod.GET,
+                        "/api/v1/users/passwordsreset",
+                        "/api/v1/users/passwordsreset/tokensvalidity/{token}",
                         "/api/v1/assets/{id}/image/file",
                         "/api/v1/locations/{id}/image/file",
                         "/api/users/search/existsByEmail",
                         "/api/v1/users/{id}/avatar/file",
-                        "/api/v1/organizations/{id}/image/file").permitAll()
+                        "/api/v1/organizations/{id}/image/file",
+                        "/api/v1/settings/active/captcha",
+                        "/api/v1/captcha/**").permitAll()
                 // Allow POST request for password request
                 .antMatchers(HttpMethod.PUT, "/api/v1/users/passwordsreset").permitAll()
                 .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()

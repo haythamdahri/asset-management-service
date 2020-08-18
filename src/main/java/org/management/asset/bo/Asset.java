@@ -38,6 +38,7 @@ public class Asset implements Serializable {
     private Set<RiskAnalysis> riskAnalyzes;
     private AssetFile image;
 
+    @DBRef
     private Process process;
 
     @DBRef

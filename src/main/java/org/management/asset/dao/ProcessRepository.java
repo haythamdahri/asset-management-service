@@ -1,5 +1,6 @@
 package org.management.asset.dao;
 
+import org.management.asset.bo.Asset;
 import org.management.asset.bo.Process;
 import org.management.asset.dto.ProcessDTO;
 import org.springframework.data.domain.Page;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * @author Haytham DAHRI

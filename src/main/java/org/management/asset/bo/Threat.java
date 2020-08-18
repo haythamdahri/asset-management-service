@@ -20,7 +20,7 @@ public class Threat {
     private String id = UUID.randomUUID().toString();
     private String name;
     private String description;
-    private boolean status;
+    private Boolean status;
 
     @CreatedDate
     private LocalDateTime identificationDate;

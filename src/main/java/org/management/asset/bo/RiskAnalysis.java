@@ -50,7 +50,7 @@ public class RiskAnalysis {
     // Risque Résiduel Acceptable
     private int acceptableResidualRisk;
     // Statut
-    private boolean status;
+    private Boolean status;
     // Date d'identification
     @CreatedDate
     private LocalDateTime identificationDate;

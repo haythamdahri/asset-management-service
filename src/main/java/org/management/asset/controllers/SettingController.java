@@ -36,6 +36,11 @@ public class SettingController {
         return ResponseEntity.ok(this.settingService.getActiveSettingRiskAnalysisOptions());
     }
 
+    @GetMapping(path = "/active/captcha")
+    public ResponseEntity<Integer> getActiveSettingMaxAttemptsWithoutCaptcha() {
+        return ResponseEntity.ok(this.settingService.getActiveSetting().getMaxAttemptsWithoutCaptcha());
+    }
+
     @PreAuthorize(value = "hasRole('ROLE_ADMIN') or hasRole('ROLE_SUPER_USER')")
     @PostMapping(path = "/")
     public ResponseEntity<Setting> saveSetting(@RequestBody SettingRequestDTO settingRequest) {

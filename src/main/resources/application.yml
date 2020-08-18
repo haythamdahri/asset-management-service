@@ -41,12 +41,13 @@ spring:
   ## MONGODB CONFIGURATION
   data:
     mongodb:
-      authentication-database: admin
-      host: localhost
-      username: root
-      password: toortoor
-      port: 27017
-      database: assetmanagement
+#      authentication-database: admin
+#      host: localhost
+#      username: root
+#      password: toortoor
+#      port: 27017
+#      database: assetmanagement
+      uri: ${SCALINGO_MONGO_URL}
 
 ## JWT CONFIGURATION
 jwt:
@@ -70,3 +71,10 @@ HOSTNAME: http://localhost
 ## PAGINATION CONFIGURATION
 page:
   default-size: 20
+
+## RECAPTCHA KEY
+google:
+  recaptcha:
+    url: https://www.google.com/recaptcha/api/siteverify
+    secret-key: 6Lfit74ZAAAAAICcWlmd69FZRT8r_18O7VG4UrpA
+    site-key: 6Lfit74ZAAAAALJMmqIj1gI5h-CS0-dKhKwildCr

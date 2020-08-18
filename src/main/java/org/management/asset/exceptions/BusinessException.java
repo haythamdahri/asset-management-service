@@ -8,24 +8,24 @@ import java.io.Serializable;
 /**
  * @author Haytham DAHRI
  */
-@ResponseStatus(code = HttpStatus.NOT_FOUND, reason = "Invalid Input Object")
-public class TechnicalException extends RuntimeException implements Serializable {
-    public TechnicalException() {
+@ResponseStatus(code = HttpStatus.BAD_REQUEST, reason = "Invalid Input Object")
+public class BusinessException extends RuntimeException implements Serializable {
+    public BusinessException() {
     }
 
-    public TechnicalException(String message) {
+    public BusinessException(String message) {
         super(message);
     }
 
-    public TechnicalException(String message, Throwable cause) {
+    public BusinessException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public TechnicalException(Throwable cause) {
+    public BusinessException(Throwable cause) {
         super(cause);
     }
 
-    public TechnicalException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+    public BusinessException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 }

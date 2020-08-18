@@ -1,5 +1,6 @@
 package org.management.asset.controllers;
 
+import org.management.asset.bo.Asset;
 import org.management.asset.bo.Process;
 import org.management.asset.dto.ProcessDTO;
 import org.management.asset.dto.ProcessRequestDTO;
@@ -11,6 +12,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Haytham DAHRI
@@ -43,6 +45,12 @@ public class ProcessController {
     @GetMapping(path = "/{id}")
     public ResponseEntity<Process> getProcess(@PathVariable(name = "id") String id) {
         return ResponseEntity.ok(this.processService.getProcess(id));
+    }
+
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_PROCESSES_VIEW') or hasRole('ROLE_SUPER_USER')")
+    @GetMapping(path = "/{id}/assets")
+    public ResponseEntity<Set<Asset>> getProcessAssets(@PathVariable(name = "id") String id) {
+        return ResponseEntity.ok(this.processService.getProcessAssets(id));
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_PROCESSES_DELETE') or hasRole('ROLE_SUPER_USER')")
