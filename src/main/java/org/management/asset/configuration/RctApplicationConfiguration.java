@@ -61,6 +61,7 @@ public class RctApplicationConfiguration {
 
     @EventListener(value = {ApplicationReadyEvent.class})
     public void runApplication() throws IOException {
+        /**
         Group superAdmins = null;
         Group basicUsers = null;
         // Add roles to the system
@@ -226,6 +227,7 @@ public class RctApplicationConfiguration {
             setting.setMaxAttemptsWithoutCaptcha(5);
             this.settingRepository.save(setting);
         }
+         **/
         // Logging Message
         log.info("SYSTEM HAS BEEN INITIALIZED SUCCESSFULLY");
     }
