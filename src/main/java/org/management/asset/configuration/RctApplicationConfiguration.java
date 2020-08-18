@@ -75,7 +75,7 @@ public class RctApplicationConfiguration {
         }
         if (this.userService.getUsers().isEmpty()) {
             // Add ADMIN User For Dev
-            InputStream inputStream = getClass().getResourceAsStream("/resources/static/images/profile.jpg");
+            InputStream inputStream = getClass().getResourceAsStream("static/images/profile.jpg");
             byte[] bytes = new byte[inputStream.available()];
             AssetFile avatar = new AssetFile("Database.png", "png", MediaType.IMAGE_PNG_VALUE, bytes, LocalDateTime.now(), LocalDateTime.now());
             Organization acerOrganization = this.organizationService.saveOrganization(new Organization(null, "ACER", "Description", avatar));
