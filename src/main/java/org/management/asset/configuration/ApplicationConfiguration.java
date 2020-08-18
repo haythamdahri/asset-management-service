@@ -12,9 +12,11 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.EventListener;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.util.ResourceUtils;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.HashSet;
@@ -73,7 +75,8 @@ public class ApplicationConfiguration {
         }
         if (this.userService.getUsers().isEmpty()) {
             // Add ADMIN User For Dev
-            AssetFile avatar = new AssetFile("Database.png", "png", MediaType.IMAGE_PNG_VALUE, Constants.USER_DEFAULT_IMAGE_BYTES, LocalDateTime.now(), LocalDateTime.now());
+            byte[] bytes = Files.readAllBytes(Paths.get(ResourceUtils.getFile(Constants.USER_DEFAULT_IMAGE).getPath()));
+            AssetFile avatar = new AssetFile("Database.png", "png", MediaType.IMAGE_PNG_VALUE, bytes, LocalDateTime.now(), LocalDateTime.now());
             Organization acerOrganization = this.organizationService.saveOrganization(new Organization(null, "ACER", "Description", avatar));
             Organization dellOrganization = this.organizationService.saveOrganization(new Organization(null, "DELL", "Description", avatar));
             Language language = this.languageService.saveLanguage(new Language(null, "Francais"));

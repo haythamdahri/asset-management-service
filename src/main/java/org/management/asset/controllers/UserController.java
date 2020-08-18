@@ -74,7 +74,6 @@ public class UserController {
         if (assetFile != null) {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.valueOf(assetFile.getMediaType()));
-            System.out.println(Arrays.toString(assetFile.getFile()));
             return ResponseEntity.status(HttpStatus.OK).headers(headers).body(assetFile.getFile());
         }
         // Return 404 not found
