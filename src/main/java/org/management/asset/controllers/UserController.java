@@ -18,6 +18,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -73,6 +74,7 @@ public class UserController {
         if (assetFile != null) {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.valueOf(assetFile.getMediaType()));
+            System.out.println(Arrays.toString(assetFile.getFile()));
             return ResponseEntity.status(HttpStatus.OK).headers(headers).body(assetFile.getFile());
         }
         // Return 404 not found

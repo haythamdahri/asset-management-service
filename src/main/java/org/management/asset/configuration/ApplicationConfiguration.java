@@ -4,6 +4,7 @@ import lombok.extern.log4j.Log4j2;
 import org.management.asset.bo.*;
 import org.management.asset.dao.SettingRepository;
 import org.management.asset.services.*;
+import org.management.asset.utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.Configuration;
@@ -72,9 +73,7 @@ public class ApplicationConfiguration {
         }
         if (this.userService.getUsers().isEmpty()) {
             // Add ADMIN User For Dev
-            InputStream inputStream = getClass().getResourceAsStream("/resources/static/images/profile.jpg");
-            byte[] bytes = new byte[inputStream.available()];
-            AssetFile avatar = new AssetFile("Database.png", "png", MediaType.IMAGE_PNG_VALUE, bytes, LocalDateTime.now(), LocalDateTime.now());
+            AssetFile avatar = new AssetFile("Database.png", "png", MediaType.IMAGE_PNG_VALUE, Constants.USER_DEFAULT_IMAGE_BYTES, LocalDateTime.now(), LocalDateTime.now());
             Organization acerOrganization = this.organizationService.saveOrganization(new Organization(null, "ACER", "Description", avatar));
             Organization dellOrganization = this.organizationService.saveOrganization(new Organization(null, "DELL", "Description", avatar));
             Language language = this.languageService.saveLanguage(new Language(null, "Francais"));

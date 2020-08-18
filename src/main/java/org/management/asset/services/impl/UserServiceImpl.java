@@ -20,6 +20,7 @@ import org.management.asset.utils.ApplicationUtils;
 import org.management.asset.utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -29,13 +30,9 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.util.ResourceUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -86,6 +83,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private MongoOperations mongoOperations;
+
+    @Autowired
+    private ResourceLoader resourceLoader;
 
     @Override
     public User saveUser(User user) {
@@ -214,11 +214,10 @@ public class UserServiceImpl implements UserService {
             }
             // Get user image file or create a default one
             if (file == null || file.isEmpty()) {
-                Path path = Paths.get(ResourceUtils.getFile("classpath:static/images/user.png").getPath());
-                avatar.setName(FilenameUtils.removeExtension(path.getFileName().toString()));
-                avatar.setExtension(FilenameUtils.getExtension(path.getFileName().toString()));
-                avatar.setFile(Files.readAllBytes(path));
-                avatar.setMediaType(MediaType.valueOf(Objects.requireNonNull(Files.probeContentType(path))).toString());
+                avatar.setName("profile.png");
+                avatar.setExtension(".png");
+                avatar.setFile(Constants.USER_DEFAULT_IMAGE_BYTES);
+                avatar.setMediaType(MediaType.IMAGE_PNG_VALUE);
             } else {
                 // Update user image file and link it with current user
                 avatar.setName(FilenameUtils.removeExtension(file.getOriginalFilename()));
