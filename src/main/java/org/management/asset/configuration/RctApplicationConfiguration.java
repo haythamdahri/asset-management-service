@@ -14,6 +14,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.util.ResourceUtils;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
@@ -74,7 +75,8 @@ public class RctApplicationConfiguration {
         }
         if (this.userService.getUsers().isEmpty()) {
             // Add ADMIN User For Dev
-            byte[] bytes = Files.readAllBytes(Paths.get(ResourceUtils.getFile("classpath:/static/images/profile.jpg").getPath()));
+            InputStream inputStream = getClass().getResourceAsStream("/resources/static/images/profile.jpg");
+            byte[] bytes = new byte[inputStream.available()];
             AssetFile avatar = new AssetFile("Database.png", "png", MediaType.IMAGE_PNG_VALUE, bytes, LocalDateTime.now(), LocalDateTime.now());
             Organization acerOrganization = this.organizationService.saveOrganization(new Organization(null, "ACER", "Description", avatar));
             Organization dellOrganization = this.organizationService.saveOrganization(new Organization(null, "DELL", "Description", avatar));
