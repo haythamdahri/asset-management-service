@@ -41,7 +41,7 @@ spring:
   ## MONGODB CONFIGURATION
   data:
     mongodb:
-      uri: ${SCALINGO_MONGO_URL}
+      uri: ${MONGO_URL}
 
 ## JWT CONFIGURATION
 jwt:
