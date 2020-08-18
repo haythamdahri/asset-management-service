@@ -27,8 +27,8 @@ import java.util.stream.Stream;
  */
 @Configuration
 @Log4j2
-@Profile("dev")
-public class ApplicationConfiguration {
+@Profile("rct")
+public class RctApplicationConfiguration {
 
     @Autowired
     private UserService userService;
@@ -206,7 +206,7 @@ public class ApplicationConfiguration {
 //        }
 
         // Set Default Application Configuration
-        if (!this.settingRepository.findAll().isEmpty()) {
+        if( !this.settingRepository.findAll().isEmpty() ) {
             Setting setting = new Setting();
             setting.setProbabilities(Stream.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).collect(Collectors.toList()));
             setting.setFinancialImpacts(Stream.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).collect(Collectors.toList()));
