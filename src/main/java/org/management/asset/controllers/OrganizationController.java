@@ -48,7 +48,7 @@ public class OrganizationController {
     }
 
     @PreAuthorize(value = "hasRole('ROLE_ADMIN') or hasRole('ROLE_ORGANIZATIONS_CREATE') or hasRole('ROLE_ORGANIZATIONS_UPDATE') or hasRole('ROLE_SUPER_USER')")
-    @PutMapping(path = "/")
+    @PostMapping(path = "/", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Organization> saveOrganization(@ModelAttribute OrganizationRequestDTO organizationRequest) {
         return ResponseEntity.ok(this.organizationService.saveOrganization(organizationRequest));
     }

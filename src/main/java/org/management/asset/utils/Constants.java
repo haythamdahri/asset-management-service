@@ -24,7 +24,9 @@ public class Constants {
     public static final String ACCOUNT_ACTIVATED_SUCCESSFULLY = "Compte est activé avec succés";
     public static final String PASSWORD_CHANGED_SUCCESSFULLY = "Mot de passe est mis à jour avec succés";
     public static final String VALID_TOKEN = "Token est invalid!";
-    public static final String USER_DEFAULT_IMAGE = "classpath:static/images/user.jpg";
+//    public static final String USER_DEFAULT_IMAGE = "classpath:static/images/user.jpg";
+    public static final String USER_DEFAULT_IMAGE = "https://drive.google.com/uc?export=download&id=1BqguTfDVgn-4rXrOawpAnkHSwIMiej_G";
+    public static final String ORGANIZATON_DEFAULT_IMAGE = "https://drive.google.com/uc?export=download&id=1cf5YN34NnMtKnuHO1hnO4z-gAJuMD6Bj";
 
     public static final String ORGANIZATION_NAME_ALREADY_USER = "Le nom d'organisme est déja utilisé!";
     public static final String INVALID_ORGANIZATION_IMAGE = "Image d'organisme non valide!";

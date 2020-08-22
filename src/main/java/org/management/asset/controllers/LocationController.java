@@ -52,7 +52,7 @@ public class LocationController {
         return ResponseEntity.notFound().build();
     }
 
-    @PostMapping(path = "/")
+    @PostMapping(path = "/", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Location> saveLocation(@ModelAttribute LocationRequestDTO locationRequest) {
         return ResponseEntity.ok(this.locationService.saveLocation(locationRequest));
     }

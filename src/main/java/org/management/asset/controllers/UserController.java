@@ -48,7 +48,7 @@ public class UserController {
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USERS_CREATE_USERS') or hasRole('ROLE_USERS_EDIT_USERS') or hasRole('ROLE_SUPER_USER')")
-    @PutMapping(path = "/")
+    @PostMapping(path = "/", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<User> saveUser(@ModelAttribute UserRequestDTO userRequest) {
         String authenticatedUserEmail = this.authenticationFacade.getAuthentication().getName();
         // Save user

@@ -59,7 +59,7 @@ public class EntityController {
 
     @PreAuthorize(value = "hasRole('ROLE_ADMIN') or hasRole('ROLE_ORGANIZATIONS_CREATE') or hasRole('ROLE_ORGANIZATIONS_UPDATE') or hasRole('ROLE_SUPER_USER')")
     @PostMapping(path = "/")
-    public ResponseEntity<Entity> saveOrganization(@RequestBody EntityRequestDTO entityRequest) {
+    public ResponseEntity<Entity> saveEntity(@RequestBody EntityRequestDTO entityRequest) {
         return ResponseEntity.ok(this.entityService.saveEntity(entityRequest));
     }
 

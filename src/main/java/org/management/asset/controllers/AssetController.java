@@ -33,7 +33,7 @@ public class AssetController {
 
 
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ASSETS_CREATE') or hasRole('ROLE_ASSETS_EDIT') or hasRole('ROLE_SUPER_USER')")
-    @PostMapping(path = "/")
+    @PostMapping(path = "/", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Asset> saveAsset(@ModelAttribute AssetRequestDTO assetRequest) {
         return ResponseEntity.ok(this.assetService.saveAsset(assetRequest));
     }

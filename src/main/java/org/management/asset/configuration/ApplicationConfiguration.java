@@ -1,6 +1,7 @@
 package org.management.asset.configuration;
 
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.io.IOUtils;
 import org.management.asset.bo.*;
 import org.management.asset.dao.SettingRepository;
 import org.management.asset.services.*;
@@ -15,6 +16,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.util.ResourceUtils;
 
 import java.io.IOException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
@@ -72,13 +74,16 @@ public class ApplicationConfiguration {
                     new Group(null, "Super Admins", "Utilisateurs Admins", new HashSet<>(this.roleService.getRoles()), null));
             basicUsers = this.groupService.saveGroup(
                     new Group(null, "Basic Users", "Utilisateurs Basiques", Stream.of(this.roleService.getRole(RoleType.ROLE_USERS_VIEW)).collect(Collectors.toCollection(HashSet::new)), null));
+        } else {
+            superAdmins = this.groupService.getGroupByName("Super Admins");
+            basicUsers = this.groupService.getGroupByName("Basic Users");
         }
         if (this.userService.getUsers().isEmpty()) {
             // Add ADMIN User For Dev
-            byte[] bytes = Files.readAllBytes(Paths.get(ResourceUtils.getFile(Constants.USER_DEFAULT_IMAGE).getPath()));
-            AssetFile avatar = new AssetFile("Database.png", "png", MediaType.IMAGE_PNG_VALUE, bytes, LocalDateTime.now(), LocalDateTime.now());
-            Organization acerOrganization = this.organizationService.saveOrganization(new Organization(null, "ACER", "Description", avatar));
-            Organization dellOrganization = this.organizationService.saveOrganization(new Organization(null, "DELL", "Description", avatar));
+            AssetFile avatar = new AssetFile("Database.png", "png", MediaType.IMAGE_PNG_VALUE, IOUtils.toByteArray(new URL(Constants.USER_DEFAULT_IMAGE).openConnection().getInputStream()), LocalDateTime.now(), LocalDateTime.now());
+            AssetFile organizationAvatar = new AssetFile("Database.png", "png", MediaType.IMAGE_PNG_VALUE, IOUtils.toByteArray(new URL(Constants.ORGANIZATON_DEFAULT_IMAGE).openConnection().getInputStream()), LocalDateTime.now(), LocalDateTime.now());
+            Organization acerOrganization = this.organizationService.saveOrganization(new Organization(null, "ACER", "Description", organizationAvatar));
+            Organization dellOrganization = this.organizationService.saveOrganization(new Organization(null, "DELL", "Description", organizationAvatar));
             Language language = this.languageService.saveLanguage(new Language(null, "Francais"));
             Entity entity = this.entityService.saveEntity(
                     new Entity(null, "Système d'information", null, null));
@@ -154,7 +159,7 @@ public class ApplicationConfiguration {
             this.userService.saveUser(basicUser);
 
 //             =============== Generate Users ===============
-            for (int i = 0; i < 650; i++) {
+            for (int i = 0; i < 10; i++) {
                 basicUser = new User();
                 basicUser.setCreationDate(LocalDateTime.now());
                 basicUser.setFirstName("Basic" + i);

@@ -48,6 +48,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Override
     public Organization saveOrganization(OrganizationRequestDTO organizationRequest) {
         try {
+            System.out.println(organizationRequest);
             final boolean organizationIdNotExists = StringUtils.isEmpty(organizationRequest.getId()) ||
                     organizationRequest.getId() == null ||
                     StringUtils.equals(organizationRequest.getId(), "null") ||
