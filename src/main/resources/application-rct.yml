@@ -41,7 +41,9 @@ spring:
   ## MONGODB CONFIGURATION
   data:
     mongodb:
-      uri: ${MONGO_URL}
+      database: assetmanagement
+      uri: mongodb+srv://root:toortoor@cluster0.gkcjl.mongodb.net/assetmanagement?retryWrites=true&w=majority
+
 
 ## JWT CONFIGURATION
 jwt:

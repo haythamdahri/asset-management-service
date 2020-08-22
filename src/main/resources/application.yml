@@ -1,4 +1,4 @@
 spring:
   ## ACTIVE PROFILE
   profiles:
-    active: dev
+    active: rct
