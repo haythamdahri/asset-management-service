@@ -28,7 +28,7 @@ import java.util.stream.Stream;
 @Configuration
 @Log4j2
 @Profile("rct")
-public class RctApplicationConfiguration {
+public class ApplicationRCTConfiguration {
 
     @Autowired
     private UserService userService;

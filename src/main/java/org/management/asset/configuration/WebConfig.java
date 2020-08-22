@@ -1,4 +1,4 @@
-package org.restaurant.salado.configuration;
+package org.management.asset.configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
