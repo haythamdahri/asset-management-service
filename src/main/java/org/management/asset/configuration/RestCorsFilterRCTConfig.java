@@ -33,7 +33,7 @@ public class RestCorsFilterRCTConfig implements Filter {
         final HttpServletRequest request = (HttpServletRequest) req;
         String origin = request.getHeader("Origin");
         response.setHeader("Access-Control-Allow-Credentials", "true");
-        response.setHeader("Access-Control-Allow-Origin", allowedOrigins.contains(origin) ? origin : "");
+        response.setHeader("Access-Control-Allow-Origin", "*");
         response.setHeader("Access-Control-Allow-Methods", "POST, PUT, GET, OPTIONS, DELETE, PATCH");
         response.setHeader("Access-Control-Allow-Headers", "Authorization, Content-Type, token, Origin, X-Requested-With, Content-Type, Accept, X-CSRF-TOKEN");
         response.setHeader("Access-Control-Max-Age", "3600");
