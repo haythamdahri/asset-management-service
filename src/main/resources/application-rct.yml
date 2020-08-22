@@ -41,8 +41,8 @@ spring:
   ## MONGODB CONFIGURATION
   data:
     mongodb:
-      database: ${MONGO_DB}
-      uri: {MONGO_URI}
+      database: ${MONGO_DB:assetmanagement}
+      uri: ${MONGO_URI:mongodb+srv://root:toortoor@cluster0.gkcjl.mongodb.net/assetmanagement?retryWrites=true&w=majority}
 
 
 ## JWT CONFIGURATION
@@ -55,7 +55,7 @@ token:
 
 ## SERVER PORT
 server:
-  port: ${PORT}
+  port: ${PORT:8080}
 
 ## UPLOAD DIRECTORY
 files:
