@@ -70,7 +70,7 @@ public class RiskScenarioServiceImpl implements RiskScenarioService {
                 typologies = this.typologyRepository.findAll();
             }
             typologies.forEach(typology -> {
-                if (typology.getVulnerabilities() != null) {
+                if (typology.getRiskScenarios() != null) {
                     typology.getRiskScenarios().forEach(riskScenario -> {
                         if (riskScenario.getName().toLowerCase().contains(name.toLowerCase())) {
                             riskScenarioResponses.add(new RiskScenarioResponseDTO(typology.getId(), typology.getName(), riskScenario));

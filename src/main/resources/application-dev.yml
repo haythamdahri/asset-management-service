@@ -48,6 +48,10 @@ spring:
       port: 27017
       database: assetmanagement
 
+logging:
+  level:
+    org.springframework.data.mongodb.core.MongoTemplate: debug
+
 ## JWT CONFIGURATION
 jwt:
   secret: topsecretjwt

@@ -33,4 +33,9 @@ public interface RiskAnalysisService {
 
     CompletableFuture<Void> setNullRiskAnalysisVulnerability(String typologyId, Vulnerability vulnerability);
 
+    void setNullRiskAnalysisThreatSynchronously(String typologyId, Threat threat);
+
+    void setNullRiskAnalysisRiskScenarioSynchronously(String typologyId, RiskScenario riskScenario);
+
+    void setNullRiskAnalysisVulnerabilitySynchronously(String typologyId, Vulnerability vulnerability);
 }

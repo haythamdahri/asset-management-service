@@ -73,8 +73,25 @@ public class TypologyServiceImpl implements TypologyService {
 
     @Override
     public boolean deleteTypology(String id) {
+        // Get typology
+        Typology typology = this.typologyRepository.findById(id).orElseThrow(BusinessException::new);
+        if( this.typologyRepository.findById(id).isPresent() ) {
+            // Set null on risk analyzes related vulnerabilities, threats and risk scenarios before delete
+            if( typology.getVulnerabilities() != null ) {
+                typology.getVulnerabilities().forEach(vulnerability -> this.riskAnalysisService.setNullRiskAnalysisVulnerabilitySynchronously(typology.getId(), vulnerability));
+            }
+            if( typology.getThreats() != null ) {
+                typology.getThreats().forEach(threat -> this.riskAnalysisService.setNullRiskAnalysisThreatSynchronously(typology.getId(), threat));
+            }
+            if( typology.getRiskScenarios() != null ) {
+                typology.getRiskScenarios().forEach(riskScenario -> this.riskAnalysisService.setNullRiskAnalysisRiskScenarioSynchronously(typology.getId(), riskScenario));
+            }
+        } else {
+            throw new BusinessException();
+        }
+        // Delete typology
         this.typologyRepository.deleteById(id);
-        return !this.typologyRepository.findById(id).isPresent();
+        return true;
     }
 
     @Override

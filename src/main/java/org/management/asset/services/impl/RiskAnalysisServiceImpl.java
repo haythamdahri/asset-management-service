@@ -176,16 +176,16 @@ public class RiskAnalysisServiceImpl implements RiskAnalysisService {
         List<Asset> assets = this.assetRepository.findAssetsByTypology_Id(typologyId);
         if (assets != null) {
             assets.forEach(asset -> {
-                AtomicReference<RiskAnalysis> riskAnalysisAtomicReference = new AtomicReference<>(null);
+                AtomicReference<Boolean> riskAnalysisAtomicReference = new AtomicReference<>(false);
                 if (asset != null && asset.getRiskAnalyzes() != null) {
-                    asset.getRiskAnalyzes().forEach(riskAnalysis -> {
+                    asset.setRiskAnalyzes(asset.getRiskAnalyzes().stream().peek(riskAnalysis -> {
                         if (riskAnalysis.getThreat().getId().equals(threat.getId())) {
                             riskAnalysis.setThreat(threat);
-                            riskAnalysisAtomicReference.set(riskAnalysis);
+                            riskAnalysisAtomicReference.set(true);
                         }
-                    });
+                    }).collect(Collectors.toSet()));
                     // Check if riskAnalysis is assigned
-                    if (riskAnalysisAtomicReference.get() != null) {
+                    if (riskAnalysisAtomicReference.get().equals(true)) {
                         this.assetRepository.save(asset);
                     }
                 }
@@ -200,16 +200,16 @@ public class RiskAnalysisServiceImpl implements RiskAnalysisService {
         List<Asset> assets = this.assetRepository.findAssetsByTypology_Id(typologyId);
         if (assets != null) {
             assets.forEach(asset -> {
-                AtomicReference<RiskAnalysis> riskAnalysisAtomicReference = new AtomicReference<>(null);
+                AtomicReference<Boolean> riskAnalysisAtomicReference = new AtomicReference<>(false);
                 if (asset != null && asset.getRiskAnalyzes() != null) {
-                    asset.getRiskAnalyzes().forEach(riskAnalysis -> {
+                    asset.setRiskAnalyzes(asset.getRiskAnalyzes().stream().peek(riskAnalysis -> {
                         if (riskAnalysis.getRiskScenario().getId().equals(riskScenario.getId())) {
                             riskAnalysis.setRiskScenario(riskScenario);
-                            riskAnalysisAtomicReference.set(riskAnalysis);
+                            riskAnalysisAtomicReference.set(true);
                         }
-                    });
+                    }).collect(Collectors.toSet()));
                     // Check if riskAnalysis is assigned
-                    if (riskAnalysisAtomicReference.get() != null) {
+                    if (riskAnalysisAtomicReference.get().equals(true)) {
                         this.assetRepository.save(asset);
                     }
                 }
@@ -224,16 +224,16 @@ public class RiskAnalysisServiceImpl implements RiskAnalysisService {
         List<Asset> assets = this.assetRepository.findAssetsByTypology_Id(typologyId);
         if (assets != null) {
             assets.forEach(asset -> {
-                AtomicReference<RiskAnalysis> riskAnalysisAtomicReference = new AtomicReference<>(null);
+                AtomicReference<Boolean> riskAnalysisAtomicReference = new AtomicReference<>(Boolean.FALSE);
                 if (asset != null && asset.getRiskAnalyzes() != null) {
-                    asset.getRiskAnalyzes().forEach(riskAnalysis -> {
+                    asset.setRiskAnalyzes(asset.getRiskAnalyzes().stream().peek(riskAnalysis -> {
                         if (riskAnalysis.getVulnerability().getId().equals(vulnerability.getId())) {
                             riskAnalysis.setVulnerability(vulnerability);
-                            riskAnalysisAtomicReference.set(riskAnalysis);
+                            riskAnalysisAtomicReference.set(true);
                         }
-                    });
+                    }).collect(Collectors.toSet()));
                     // Check if riskAnalysis is assigned
-                    if (riskAnalysisAtomicReference.get() != null) {
+                    if (riskAnalysisAtomicReference.get().equals(true)) {
                         this.assetRepository.save(asset);
                     }
                 }
@@ -248,16 +248,17 @@ public class RiskAnalysisServiceImpl implements RiskAnalysisService {
         List<Asset> assets = this.assetRepository.findAssetsByTypology_Id(typologyId);
         if (assets != null) {
             assets.forEach(asset -> {
-                AtomicReference<RiskAnalysis> riskAnalysisAtomicReference = new AtomicReference<>(null);
+                AtomicReference<Boolean> riskAnalysisAtomicReference = new AtomicReference<>(false);
                 if (asset != null && asset.getRiskAnalyzes() != null) {
-                    asset.getRiskAnalyzes().forEach(riskAnalysis -> {
+                    asset.setRiskAnalyzes(asset.getRiskAnalyzes().stream().map(riskAnalysis -> {
                         if (riskAnalysis.getThreat() != null && riskAnalysis.getThreat().getId().equals(threat.getId())) {
                             riskAnalysis.setThreat(null);
-                            riskAnalysisAtomicReference.set(riskAnalysis);
+                            riskAnalysisAtomicReference.set(true);
                         }
-                    });
+                        return riskAnalysis;
+                    }).collect(Collectors.toSet()));
                     // Check if riskAnalysis is assigned
-                    if (riskAnalysisAtomicReference.get() != null) {
+                    if (riskAnalysisAtomicReference.get().equals(true)) {
                         this.assetRepository.save(asset);
                     }
                 }
@@ -272,16 +273,16 @@ public class RiskAnalysisServiceImpl implements RiskAnalysisService {
         List<Asset> assets = this.assetRepository.findAssetsByTypology_Id(typologyId);
         if (assets != null) {
             assets.forEach(asset -> {
-                AtomicReference<RiskAnalysis> riskAnalysisAtomicReference = new AtomicReference<>(null);
+                AtomicReference<Boolean> riskAnalysisAtomicReference = new AtomicReference<>(false);
                 if (asset != null && asset.getRiskAnalyzes() != null) {
-                    asset.getRiskAnalyzes().forEach(riskAnalysis -> {
+                    asset.setRiskAnalyzes(asset.getRiskAnalyzes().stream().peek(riskAnalysis -> {
                         if (riskAnalysis.getRiskScenario() != null && riskAnalysis.getRiskScenario().getId().equals(riskScenario.getId())) {
                             riskAnalysis.setRiskScenario(null);
-                            riskAnalysisAtomicReference.set(riskAnalysis);
+                            riskAnalysisAtomicReference.set(true);
                         }
-                    });
+                    }).collect(Collectors.toSet()));
                     // Check if riskAnalysis is assigned
-                    if (riskAnalysisAtomicReference.get() != null) {
+                    if (riskAnalysisAtomicReference.get().equals(true)) {
                         this.assetRepository.save(asset);
                     }
                 }
@@ -296,16 +297,16 @@ public class RiskAnalysisServiceImpl implements RiskAnalysisService {
         List<Asset> assets = this.assetRepository.findAssetsByTypology_Id(typologyId);
         if (assets != null) {
             assets.forEach(asset -> {
-                AtomicReference<RiskAnalysis> riskAnalysisAtomicReference = new AtomicReference<>(null);
+                AtomicReference<Boolean> riskAnalysisAtomicReference = new AtomicReference<>(false);
                 if (asset != null && asset.getRiskAnalyzes() != null) {
-                    asset.getRiskAnalyzes().forEach(riskAnalysis -> {
+                    asset.setRiskAnalyzes(asset.getRiskAnalyzes().stream().peek(riskAnalysis -> {
                         if (riskAnalysis.getVulnerability() != null && riskAnalysis.getVulnerability().getId().equals(vulnerability.getId())) {
                             riskAnalysis.setVulnerability(null);
-                            riskAnalysisAtomicReference.set(riskAnalysis);
+                            riskAnalysisAtomicReference.set(true);
                         }
-                    });
+                    }).collect(Collectors.toSet()));
                     // Check if riskAnalysis is assigned
-                    if (riskAnalysisAtomicReference.get() != null) {
+                    if (riskAnalysisAtomicReference.get().equals(true)) {
                         this.assetRepository.save(asset);
                     }
                 }
@@ -313,4 +314,72 @@ public class RiskAnalysisServiceImpl implements RiskAnalysisService {
         }
         return CompletableFuture.completedFuture(null);
     }
+
+    @Override
+    public void setNullRiskAnalysisThreatSynchronously(String typologyId, Threat threat) {
+        List<Asset> assets = this.assetRepository.findAssetsByTypology_Id(typologyId);
+        if (assets != null) {
+            assets.forEach(asset -> {
+                AtomicReference<Boolean> riskAnalysisAtomicReference = new AtomicReference<>(false);
+                if (asset != null && asset.getRiskAnalyzes() != null) {
+                    asset.setRiskAnalyzes(asset.getRiskAnalyzes().stream().map(riskAnalysis -> {
+                        if (riskAnalysis.getThreat() != null && riskAnalysis.getThreat().getId().equals(threat.getId())) {
+                            riskAnalysis.setThreat(null);
+                            riskAnalysisAtomicReference.set(true);
+                        }
+                        return riskAnalysis;
+                    }).collect(Collectors.toSet()));
+                    // Check if riskAnalysis is assigned
+                    if (riskAnalysisAtomicReference.get().equals(true)) {
+                        this.assetRepository.save(asset);
+                    }
+                }
+            });
+        }
+    }
+
+    @Override
+    public void setNullRiskAnalysisRiskScenarioSynchronously(String typologyId, RiskScenario riskScenario) {
+        List<Asset> assets = this.assetRepository.findAssetsByTypology_Id(typologyId);
+        if (assets != null) {
+            assets.forEach(asset -> {
+                AtomicReference<Boolean> riskAnalysisAtomicReference = new AtomicReference<>(false);
+                if (asset != null && asset.getRiskAnalyzes() != null) {
+                    asset.setRiskAnalyzes(asset.getRiskAnalyzes().stream().peek(riskAnalysis -> {
+                        if (riskAnalysis.getRiskScenario() != null && riskAnalysis.getRiskScenario().getId().equals(riskScenario.getId())) {
+                            riskAnalysis.setRiskScenario(null);
+                            riskAnalysisAtomicReference.set(true);
+                        }
+                    }).collect(Collectors.toSet()));
+                    // Check if riskAnalysis is assigned
+                    if (riskAnalysisAtomicReference.get().equals(true)) {
+                        this.assetRepository.save(asset);
+                    }
+                }
+            });
+        }
+    }
+
+    @Override
+    public void setNullRiskAnalysisVulnerabilitySynchronously(String typologyId, Vulnerability vulnerability) {
+        List<Asset> assets = this.assetRepository.findAssetsByTypology_Id(typologyId);
+        if (assets != null) {
+            assets.forEach(asset -> {
+                AtomicReference<Boolean> riskAnalysisAtomicReference = new AtomicReference<>(false);
+                if (asset != null && asset.getRiskAnalyzes() != null) {
+                    asset.setRiskAnalyzes(asset.getRiskAnalyzes().stream().peek(riskAnalysis -> {
+                        if (riskAnalysis.getVulnerability() != null && riskAnalysis.getVulnerability().getId().equals(vulnerability.getId())) {
+                            riskAnalysis.setVulnerability(null);
+                            riskAnalysisAtomicReference.set(true);
+                        }
+                    }).collect(Collectors.toSet()));
+                    // Check if riskAnalysis is assigned
+                    if (riskAnalysisAtomicReference.get().equals(true)) {
+                        this.assetRepository.save(asset);
+                    }
+                }
+            });
+        }
+    }
+
 }
