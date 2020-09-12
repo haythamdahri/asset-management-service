@@ -95,7 +95,12 @@ public class RiskAnalysisServiceImpl implements RiskAnalysisService {
 
     @Override
     public Integer getRiskAnalyzesCounter() {
-        return this.assetRepository.findAll().stream().map(Asset::getRiskAnalyzes).collect(ArrayList::new, List::addAll, List::addAll).size();
+        return this.assetRepository.findAll().stream().map(typology -> {
+            if( typology.getRiskAnalyzes() != null ) {
+                return typology.getRiskAnalyzes().size();
+            }
+            return 0;
+        }).reduce(0, Integer::sum);
     }
 
     /**

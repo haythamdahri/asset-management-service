@@ -47,7 +47,7 @@ public interface TypologyService {
 
     Page<Typology> getTypologies(int page, int size);
 
-    Integer getTypologiesCounter();
+    long getTypologiesCounter();
 
     Page<Typology> getTypologies(String name, int page, int size, String direction, String... sort);
 

@@ -116,6 +116,11 @@ public class LocationServiceImpl implements LocationService {
     }
 
     @Override
+    public long getLocationsCounter() {
+        return this.locationRepository.count();
+    }
+
+    @Override
     public Page<Location> getLocations(String search, int page, int size, String direction, String... sort) {
         if( search == null || StringUtils.isEmpty(search) ) {
             return this.locationRepository.findAll(PageRequest.of(page, size, Sort.Direction.valueOf(direction), sort));

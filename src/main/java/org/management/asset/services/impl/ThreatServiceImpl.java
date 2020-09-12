@@ -48,8 +48,13 @@ public class ThreatServiceImpl implements ThreatService {
         return this.typologyService.getTypologies().stream().map(Typology::getThreats).flatMap(List::stream).collect(Collectors.toList());
     }
     @Override
-    public Long getThreatsCounter() {
-        return this.typologyService.getTypologies().stream().map(Typology::getThreats).flatMap(List::stream).count();
+    public Integer getThreatsCounter() {
+        return this.typologyService.getTypologies().stream().map(typology -> {
+            if( typology.getThreats() != null ) {
+                return typology.getThreats().size();
+            }
+            return 0;
+        }).reduce(0, Integer::sum);
     }
 
     @Override

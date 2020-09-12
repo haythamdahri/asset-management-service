@@ -22,7 +22,7 @@ public class TypologyController {
     private TypologyService typologyService;
 
     @GetMapping(path = "/counter")
-    public ResponseEntity<Integer> getTypologiesCounter() {
+    public ResponseEntity<Long> getTypologiesCounter() {
         return ResponseEntity.ok(this.typologyService.getTypologiesCounter());
     }
 

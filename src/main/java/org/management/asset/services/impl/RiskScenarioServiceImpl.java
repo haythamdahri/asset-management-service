@@ -49,8 +49,13 @@ public class RiskScenarioServiceImpl implements RiskScenarioService {
     }
 
     @Override
-    public Long getRiskScenariosCounter() {
-        return this.typologyService.getTypologies().stream().map(Typology::getRiskScenarios).flatMap(List::stream).count();
+    public Integer getRiskScenariosCounter() {
+        return this.typologyService.getTypologies().stream().map(typology -> {
+            if( typology.getRiskScenarios() != null ) {
+                return typology.getRiskScenarios().size();
+            }
+            return 0;
+        }).reduce(0, Integer::sum);
     }
 
     @Override

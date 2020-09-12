@@ -14,7 +14,7 @@ public interface RiskScenarioService {
 
     List<RiskScenario> getRiskScenarios();
 
-    Long getRiskScenariosCounter();
+    Integer getRiskScenariosCounter();
 
     RiskScenarioResponseDTO saveRiskScenario(RiskScenarioRequestDTO riskScenarioRequest);
 

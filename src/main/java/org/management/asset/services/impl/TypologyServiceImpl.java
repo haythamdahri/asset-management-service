@@ -324,8 +324,8 @@ public class TypologyServiceImpl implements TypologyService {
     }
 
     @Override
-    public Integer getTypologiesCounter() {
-        return this.typologyRepository.findAll().size();
+    public long getTypologiesCounter() {
+        return this.typologyRepository.count();
     }
 
     @Override

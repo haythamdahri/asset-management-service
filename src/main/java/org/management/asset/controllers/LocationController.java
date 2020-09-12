@@ -31,6 +31,11 @@ public class LocationController {
         return ResponseEntity.ok(this.locationService.getLocations());
     }
 
+    @GetMapping(path = "/counter")
+    public ResponseEntity<Long> retrieveLocationsCounter() {
+        return ResponseEntity.ok(this.locationService.getLocationsCounter());
+    }
+
     @PreAuthorize(value = "hasRole('ROLE_ADMIN') or hasRole('ROLE_LOCATIONS_VIEW') or hasRole('ROLE_SUPER_USER')")
     @GetMapping(path = "/page")
     public ResponseEntity<Page<Location>> getLocationsPage(@RequestParam(value = "search", required = false, defaultValue = "") String search, @RequestParam(value = "page", required = false, defaultValue = "0") int page, @RequestParam(value = "size", required = false, defaultValue = "${page.default-size}") int size, @RequestParam(name = "sort", defaultValue = "id") String[] sort, @RequestParam(name = "direction", defaultValue = "DESC") String direction) {

@@ -14,7 +14,7 @@ public interface ThreatService {
 
     List<Threat> getThreats();
 
-    Long getThreatsCounter();
+    Integer getThreatsCounter();
 
     ThreatResponseDTO saveThreat(ThreatRequestDTO threatRequest);
 

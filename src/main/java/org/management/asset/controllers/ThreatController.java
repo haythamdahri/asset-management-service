@@ -24,7 +24,7 @@ public class ThreatController {
 
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_THREATS_VIEW') or hasRole('ROLE_SUPER_USER')")
     @GetMapping(path = "/counter")
-    public ResponseEntity<Long> getThreatsCounter() {
+    public ResponseEntity<Integer> getThreatsCounter() {
         return ResponseEntity.ok(this.threatService.getThreatsCounter());
     }
 

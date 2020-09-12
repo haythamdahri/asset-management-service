@@ -30,7 +30,7 @@ public class RiskScenarioController {
 
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_RISKSCENARIOS_VIEW') or hasRole('ROLE_SUPER_USER')")
     @GetMapping(path = "/counter")
-    public ResponseEntity<Long> getRiskScenariosCounter() {
+    public ResponseEntity<Integer> getRiskScenariosCounter() {
         return ResponseEntity.ok(this.riskScenarioService.getRiskScenariosCounter());
     }
 
