@@ -9,7 +9,7 @@
     </parent>
     <groupId>org.management</groupId>
     <artifactId>asset</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.1</version>
     <name>Asset-management-service</name>
     <description>Asset Management Service</description>
 
@@ -135,5 +135,6 @@
     <scm>
         <connection>scm:git:git@github.com:haythamdahri/asset-management-service.git</connection>
         <developerConnection>scm:git:git@github.com:haythamdahri/asset-management-service.git</developerConnection>
-    </scm>
+      <tag>asset-0.0.1</tag>
+  </scm>
 </project>
