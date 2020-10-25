@@ -1,7 +1,4 @@
 spring:
-  ## ACTIVE PROFILE
-  profiles:
-    active: rct
   ## APPLICATION NAME
   application:
     name: asset-management
